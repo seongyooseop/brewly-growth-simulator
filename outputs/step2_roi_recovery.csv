@@ -1,0 +1,13 @@
+region,channel,true_roi,true_mroi,nolift_roi,nolift_roi_lo90,nolift_roi_hi90,nolift_roi_covered,nolift_mroi,nolift_mroi_lo90,nolift_mroi_hi90,nolift_mroi_covered,cal_roi,cal_roi_lo90,cal_roi_hi90,cal_roi_covered,cal_mroi,cal_mroi_lo90,cal_mroi_hi90,cal_mroi_covered
+SEL,referral,2.422,1.709,3.29,1.348,5.878,True,1.376,0.665,2.137,True,3.686,1.885,6.124,True,1.561,1.021,2.193,True
+SEL,store_trial,1.791,1.35,2.289,0.996,3.851,True,1.323,0.485,2.311,True,1.927,1.184,2.846,True,1.129,0.508,1.878,True
+SEL,retail_partner,0.974,0.392,2.018,0.897,3.396,True,1.142,0.46,1.936,False,1.368,0.655,2.271,True,0.792,0.29,1.411,True
+SEL,events,1.253,0.838,0.833,0.314,1.673,True,0.38,0.157,0.65,False,0.861,0.316,1.753,True,0.377,0.144,0.684,False
+YNG,referral,2.035,1.5,3.151,1.333,5.643,True,1.323,0.655,2.027,True,3.528,1.854,5.816,True,1.488,0.937,2.088,True
+YNG,store_trial,1.589,1.18,2.175,1.009,3.397,True,1.215,0.504,2.088,True,1.813,1.319,2.343,True,1.042,0.548,1.637,True
+YNG,retail_partner,0.931,0.334,2.175,0.897,3.757,True,1.226,0.462,2.191,False,1.436,0.671,2.413,True,0.854,0.295,1.613,True
+YNG,events,1.263,0.844,0.829,0.312,1.67,True,0.376,0.149,0.656,False,0.854,0.32,1.715,True,0.37,0.152,0.673,False
+ROK,referral,2.612,1.969,2.918,1.217,5.257,True,1.225,0.597,1.886,False,3.256,1.645,5.481,True,1.369,0.831,1.976,True
+ROK,store_trial,1.943,1.406,2.069,0.95,3.394,True,1.2,0.446,2.021,True,1.777,1.121,2.575,True,1.042,0.491,1.65,True
+ROK,retail_partner,0.982,0.406,2.115,0.937,3.443,True,1.191,0.474,2.106,False,1.351,0.696,2.078,True,0.788,0.296,1.377,True
+ROK,events,1.406,0.929,0.879,0.318,1.804,True,0.403,0.147,0.743,False,0.908,0.322,1.877,True,0.394,0.155,0.716,False

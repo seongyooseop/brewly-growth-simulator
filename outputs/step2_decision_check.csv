@@ -1,0 +1,4 @@
+region,truth_order,nolift_order,nolift_rank_corr,nolift_breakeven_calls_right,cal_order,cal_rank_corr,cal_breakeven_calls_right
+SEL,Member referrals > Store trials > Brand events > Retail partners,Member referrals > Store trials > Retail partners > Brand events,0.8,3,Member referrals > Store trials > Retail partners > Brand events,0.8,4
+YNG,Member referrals > Store trials > Brand events > Retail partners,Member referrals > Retail partners > Store trials > Brand events,0.4,3,Member referrals > Store trials > Retail partners > Brand events,0.8,4
+ROK,Member referrals > Store trials > Brand events > Retail partners,Member referrals > Store trials > Retail partners > Brand events,0.8,3,Member referrals > Store trials > Retail partners > Brand events,0.8,4

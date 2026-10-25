@@ -1,0 +1,9 @@
+region,channel,test,start_week,n_weeks,unit,observed_lift,se,design,share,intensity,cf_value
+SEL,crm,crm_holdout_w80,80,8,orders,-396.1,128.5,holdout,0.3,1.0,1.4586
+YNG,crm,crm_holdout_w80,80,8,orders,-75.1,82.8,holdout,0.3,1.0,1.4484
+ROK,crm,crm_holdout_w80,80,8,orders,-98.9,77.1,holdout,0.3,1.0,1.458
+SEL,crm,crm_frequency_w92,92,6,orders,-110.2,164.8,frequency,0.5,2.291,0.666
+YNG,crm,crm_frequency_w92,92,6,orders,20.7,107.5,frequency,0.5,2.219,0.6664
+ROK,crm,crm_frequency_w92,92,6,orders,21.4,101.5,frequency,0.5,2.187,0.6686
+YNG,store_trial,geo_store_trial_off,62,6,new members,-84.1,15.0,geo,1.0,0.0,922000.0
+ROK,retail_partner,geo_retail_partner_off,70,4,new members,-23.4,15.0,geo,1.0,0.0,659000.0

@@ -1,0 +1,7 @@
+region,period,mape,coverage_90
+SEL,train,0.048,0.935
+SEL,test,0.05,1.0
+YNG,train,0.063,0.978
+YNG,test,0.094,0.833
+ROK,train,0.075,0.913
+ROK,test,0.067,1.0

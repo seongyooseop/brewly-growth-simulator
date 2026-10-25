@@ -1,0 +1,4 @@
+fit,max_r_hat,min_ess_bulk,min_ess_tail,divergences,draws
+cal,1.006,663.755,884.176,0,8000
+nolift,1.005,712.726,923.987,0,8000
+cal_holdout,1.005,711.175,918.544,0,8000

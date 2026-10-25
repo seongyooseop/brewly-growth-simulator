@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+# posterior samples (several hundred MB); regenerate with src/fit_mmm.py
+models/
+# copy of index.html without the document wrapper, only for the Claude Artifact host
+simulator/artifact.html

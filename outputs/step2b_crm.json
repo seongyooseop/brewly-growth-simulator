@@ -1,0 +1,74 @@
+{
+  "k_frequency": 2.232558656616,
+  "regions": {
+    "SEL": {
+      "attributed_roi": 20.413070848753076,
+      "holdout_avg_roi": 1.0524321039730635,
+      "holdout_avg_roi_ci": [
+        0.3832680665867729,
+        1.721596141359354
+      ],
+      "frequency_marginal_roi": -0.25948721263976876,
+      "frequency_marginal_roi_ci": [
+        -1.0203551489721685,
+        0.501380723692631
+      ],
+      "curve_mroi_mean": 0.24778100065568243,
+      "curve_mroi_90": [
+        0.050302914031992794,
+        0.831198187156653
+      ],
+      "curve_avg_roi_mean": 1.0602499067903177,
+      "true_roi": 1.5214262380674506,
+      "true_marginal_roi": -0.2533790858250107,
+      "plan_year_sends": 722455.0,
+      "plan_year_spend": 86694600.0
+    },
+    "YNG": {
+      "attributed_roi": 19.88352430276711,
+      "holdout_avg_roi": 0.4444565493219794,
+      "holdout_avg_roi_ci": [
+        -0.5159547438572953,
+        1.4048678425012542
+      ],
+      "frequency_marginal_roi": 0.10629102789897152,
+      "frequency_marginal_roi_ci": [
+        -0.9759752464365365,
+        1.1885573022344795
+      ],
+      "curve_mroi_mean": 0.12141280619343028,
+      "curve_mroi_90": [
+        0.0,
+        0.5421257237238475
+      ],
+      "curve_avg_roi_mean": 0.5161504068940163,
+      "true_roi": 1.3642055175472323,
+      "true_marginal_roi": -0.27077115870119156,
+      "plan_year_sends": 330649.0,
+      "plan_year_spend": 39677880.0
+    },
+    "ROK": {
+      "attributed_roi": 20.340227143226663,
+      "holdout_avg_roi": 0.6971739585648621,
+      "holdout_avg_roi_ci": [
+        -0.3672969397814441,
+        1.7616448569111682
+      ],
+      "frequency_marginal_roi": 0.13273116366779092,
+      "frequency_marginal_roi_ci": [
+        -1.1034820515769705,
+        1.3689443789125522
+      ],
+      "curve_mroi_mean": 0.17573635128031526,
+      "curve_mroi_90": [
+        0.0,
+        0.7155760798711409
+      ],
+      "curve_avg_roi_mean": 0.7440616174784471,
+      "true_roi": 1.4666396691578005,
+      "true_marginal_roi": -0.266600400053995,
+      "plan_year_sends": 273990.0,
+      "plan_year_spend": 32878800.0
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "crm_holdout_w80": {
+    "design": {
+      "treated": "holdout",
+      "share": 0.3,
+      "start": 80,
+      "weeks": 8
+    },
+    "srm_p_value": 0.6041923669233573,
+    "n_population": 50154,
+    "regions": {
+      "SEL": {
+        "n_treated": 8403,
+        "n_control": 19574,
+        "mean_treated": 1.2862073069141973,
+        "mean_control": 1.3333503627260652,
+        "diff_per_member": -0.04714305581186795,
+        "se_per_member": 0.015293263236875096,
+        "ci_lo": -0.07711964560332185,
+        "ci_hi": -0.017166466020414054,
+        "p_value": 0.0020555963904806316,
+        "relative_lift": -0.035356840279761804,
+        "mde_per_member": 0.042845380221139755,
+        "sends_treated": 0.0,
+        "sends_control": 2.839021150505773,
+        "total_effect_orders": -396.1430979871264,
+        "total_effect_se": 128.50929097946144
+      },
+      "YNG": {
+        "n_treated": 3520,
+        "n_control": 8259,
+        "mean_treated": 1.293465909090909,
+        "mean_control": 1.3148080881462647,
+        "diff_per_member": -0.021342179055355626,
+        "se_per_member": 0.023529388245045038,
+        "ci_lo": -0.06746755534154986,
+        "ci_hi": 0.024783197230838598,
+        "p_value": 0.3644175415738661,
+        "relative_lift": -0.016232162889601446,
+        "mde_per_member": 0.06591958629855922,
+        "sends_treated": 0.0,
+        "sends_control": 3.172660128344836,
+        "total_effect_orders": -75.1244702748518,
+        "total_effect_se": 82.82344662255854
+      },
+      "ROK": {
+        "n_treated": 3070,
+        "n_control": 7328,
+        "mean_treated": 1.2928338762214984,
+        "mean_control": 1.3250545851528384,
+        "diff_per_member": -0.03222070893133999,
+        "se_per_member": 0.025099880652237026,
+        "ci_lo": -0.0814262445359728,
+        "ci_hi": 0.016984826673292826,
+        "p_value": 0.19930035895621162,
+        "relative_lift": -0.024316514423157517,
+        "mde_per_member": 0.07031945461170694,
+        "sends_treated": 0.0,
+        "sends_control": 2.888236899563319,
+        "total_effect_orders": -98.91757641921377,
+        "total_effect_se": 77.05663360236767
+      },
+      "ALL": {
+        "n_treated": 14993,
+        "n_control": 35161,
+        "mean_treated": 1.2892683252184354,
+        "mean_control": 1.3272660049486646,
+        "diff_per_member": -0.03799767973022927,
+        "se_per_member": 0.011418325419782258,
+        "ci_lo": -0.06037817018613249,
+        "ci_hi": -0.015617189274326048,
+        "p_value": 0.0008765552009132611,
+        "relative_lift": -0.028628533834631684,
+        "mde_per_member": 0.03198941171166553,
+        "sends_treated": 0.0,
+        "sends_control": 2.9276471090128267,
+        "total_effect_orders": -569.6992121953275,
+        "total_effect_se": 171.1949530187954
+      }
+    }
+  },
+  "crm_frequency_w92": {
+    "design": {
+      "treated": "more_messages",
+      "share": 0.5,
+      "start": 92,
+      "weeks": 6
+    },
+    "srm_p_value": 0.9394265734735356,
+    "n_population": 50047,
+    "regions": {
+      "SEL": {
+        "n_treated": 13866,
+        "n_control": 13990,
+        "mean_treated": 1.055170921678927,
+        "mean_control": 1.0631165117941386,
+        "diff_per_member": -0.007945590115211676,
+        "se_per_member": 0.011886757646962698,
+        "ci_lo": -0.031244219889635026,
+        "ci_hi": 0.015353039659211674,
+        "p_value": 0.5038579980968217,
+        "relative_lift": -0.007473865777705329,
+        "mde_per_member": 0.03330176451502199,
+        "sends_treated": 4.611207269580269,
+        "sends_control": 2.0124374553252324,
+        "total_effect_orders": -110.1735525375251,
+        "total_effect_se": 164.82178153278477
+      },
+      "YNG": {
+        "n_treated": 5881,
+        "n_control": 5824,
+        "mean_treated": 1.0615541574562148,
+        "mean_control": 1.0580357142857142,
+        "diff_per_member": 0.0035184431705006514,
+        "se_per_member": 0.018278139499754226,
+        "ci_lo": -0.03230975742429514,
+        "ci_hi": 0.039346643765296445,
+        "p_value": 0.8473581366334768,
+        "relative_lift": 0.003325448397435215,
+        "mde_per_member": 0.051207765437118205,
+        "sends_treated": 5.032647508927053,
+        "sends_control": 2.2675137362637363,
+        "total_effect_orders": 20.69196428571433,
+        "total_effect_se": 107.4937383980546
+      },
+      "ROK": {
+        "n_treated": 5268,
+        "n_control": 5218,
+        "mean_treated": 1.0567577828397874,
+        "mean_control": 1.052702184745113,
+        "diff_per_member": 0.004055598094674373,
+        "se_per_member": 0.019271668608171352,
+        "ci_lo": -0.0337205406316073,
+        "ci_hi": 0.04183173682095605,
+        "p_value": 0.8333256069082706,
+        "relative_lift": 0.0038525597775370254,
+        "mde_per_member": 0.05399122190102458,
+        "sends_treated": 4.630220197418375,
+        "sends_control": 2.117286316596397,
+        "total_effect_orders": 21.364890762744597,
+        "total_effect_se": 101.52315022784668
+      },
+      "ALL": {
+        "n_treated": 25015,
+        "n_control": 25032,
+        "mean_treated": 1.0570057965220867,
+        "mean_control": 1.0597635027165229,
+        "diff_per_member": -0.0027577061944361603,
+        "se_per_member": 0.008851074267655246,
+        "ci_lo": -0.02010591259173282,
+        "ci_hi": 0.014590500202860499,
+        "p_value": 0.7553706109566501,
+        "relative_lift": -0.0026021901937245914,
+        "mde_per_member": 0.024797038832683003,
+        "sends_treated": 4.714291425144913,
+        "sends_control": 2.0936401406200065,
+        "total_effect_orders": -68.98402045382055,
+        "total_effect_se": 221.40962280539597
+      }
+    }
+  }
+}

@@ -1,0 +1,813 @@
+<title>BREWLY Growth Analytics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: a planning worksheet. Channel rows on the left, outcome readout on the right; stacks on phones. */
+:root {
+  --bg: #f6f4f1; --surface: #ffffff; --ink: #231a14; --muted: #6e6258; --line: #e2dbd3;
+  --accent: #8a4b24; --accent-soft: #f3e6dc; --band: rgba(138, 75, 36, 0.18); --guard: rgba(138, 75, 36, 0.14);
+  --track: #ece6df; --obs: #a99d92;
+  --gain: #2a7752; --loss: #ad3838; --warn: #9a5e14;
+  --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #14110f; --surface: #1d1915; --ink: #efe8e1; --muted: #a89c90; --line: #3a322b;
+  --accent: #e0a479; --accent-soft: #3a2a20; --band: rgba(224, 164, 121, 0.22); --guard: rgba(224, 164, 121, 0.18);
+  --track: #2e2721; --obs: #7d7268; --gain: #5fc595; --loss: #ee8080; --warn: #e2a65a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #14110f; --surface: #1d1915; --ink: #efe8e1; --muted: #a89c90; --line: #3a322b;
+  --accent: #e0a479; --accent-soft: #3a2a20; --band: rgba(224, 164, 121, 0.22); --guard: rgba(224, 164, 121, 0.18);
+  --track: #2e2721; --obs: #7d7268; --gain: #5fc595; --loss: #ee8080; --warn: #e2a65a; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px; }
+h1, h2, h3 { font-family: var(--f-display); font-stretch: 85%; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 750; }
+h2 { font-size: 19px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-data); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+header.top .lede { max-width: 62ch; color: var(--muted); margin-top: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 10px; font-size: 12.5px; color: var(--muted); background: var(--surface); }
+
+.bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between;
+  border-block: 1px solid var(--line); padding-block: 10px; }
+.tabs, .seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button { border: 0; background: none; padding: 6px 10px; border-radius: 6px; font-weight: 600; color: var(--muted); }
+.tabs button[aria-selected="true"] { color: var(--ink); background: var(--accent-soft); }
+.seg { border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 4px 12px; border-radius: 5px; font-family: var(--f-data); font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.sim { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.right { display: grid; gap: 18px; min-width: 0; }
+@media (max-width: 900px) { .sim { grid-template-columns: minmax(0, 1fr); } }
+
+.plan-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 6px; font-size: 13.5px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; color: var(--muted); }
+
+.budget { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; border-block: 1px solid var(--line); padding-block: 10px; }
+.budget div { display: grid; gap: 2px; }
+.budget .v { font-family: var(--f-data); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+.rows { display: grid; gap: 4px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 12px; align-items: center;
+  padding: 10px 10px 8px; border-radius: 8px; border: 1px solid transparent; }
+.row.focus { border-color: var(--line); background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.row .name { border: 0; background: none; padding: 0; text-align: left; font-weight: 600; font-size: 15px; }
+.row .name small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+.row .spend { text-align: right; font-family: var(--f-data); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.row .mroi { text-align: right; min-width: 92px; font-size: 12.5px; color: var(--muted); }
+.row .mroi b { display: block; font-family: var(--f-data); font-size: 14px; font-weight: 500; }
+.row input[type="range"] { grid-column: 1 / -1; }
+.chip { display: inline-block; font-family: var(--f-data); font-size: 11.5px; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.chip.up { color: var(--gain); background: color-mix(in srgb, var(--gain) 13%, transparent); }
+.chip.down { color: var(--loss); background: color-mix(in srgb, var(--loss) 13%, transparent); }
+.chip.flat { color: var(--muted); background: var(--track); }
+.chip.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.good { color: var(--gain); } .bad { color: var(--loss); }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; }
+input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: var(--track-bg); }
+input[type="range"]::-moz-range-track { height: 8px; border-radius: 4px; background: var(--track-bg); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -5px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+.legend-line { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.sw { display: inline-block; width: 18px; height: 8px; border-radius: 3px; vertical-align: middle; margin-right: 5px; }
+
+.outcome { display: grid; gap: 4px; }
+.big { font-family: var(--f-display); font-stretch: 80%; font-weight: 800; font-size: clamp(40px, 6vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.kpis div { display: grid; gap: 1px; }
+.kpis .v { font-family: var(--f-data); font-size: 15px; font-variant-numeric: tabular-nums; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { fill: var(--muted); font-family: var(--f-data); font-size: 11px; }
+.note { font-size: 12.5px; color: var(--muted); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stat { border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; display: grid; gap: 2px; }
+.stat .v { font-family: var(--f-display); font-stretch: 85%; font-weight: 750; font-size: 24px; font-variant-numeric: tabular-nums; }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-family: var(--f-data); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.n { text-align: right; font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+.two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.prose { display: grid; gap: 10px; max-width: 68ch; }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+
+.memo { max-width: 760px; display: grid; gap: 16px; }
+.memo .meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 13.5px; border-block: 1px solid var(--line); padding-block: 10px; }
+.memo .meta dt { font-family: var(--f-data); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding-top: 2px; }
+.memo .meta dd { margin: 0; }
+.aside { border: 1px dashed var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; font-size: 14px; }
+footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+@media (max-width: 520px) {
+  .budget { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .mroi { grid-column: 1 / -1; text-align: left; min-width: 0; }
+  .row .mroi b { display: inline; margin-right: 6px; }
+}
+@media (prefers-reduced-motion: no-preference) { .row { transition: background-color 120ms ease; } }
+</style>
+
+<style>
+.guide { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; background: var(--surface);
+  padding: 9px 14px; font-size: 14px; }
+.guide summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.guide[open] summary { margin-bottom: 6px; }
+.guide ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.view { display: grid; gap: 18px; }
+.metric-seg button { font-family: var(--f-body); font-size: 13px; }
+.heat { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 12px; }
+.heat td, .heat th { padding: 4px 2px; text-align: center; border: 0; font-family: var(--f-data); white-space: nowrap; }
+.heat th { font-size: 10.5px; }
+.funnel { display: grid; gap: 8px; }
+.funnel .f-row { display: grid; grid-template-columns: minmax(130px, 34%) 1fr; gap: 10px; align-items: center; font-size: 13.5px; }
+.funnel .f-bar { height: 22px; border-radius: 4px; background: var(--accent); opacity: 0.8; position: relative; min-width: 2px; }
+.funnel .f-val { font-family: var(--f-data); font-size: 12.5px; color: var(--muted); }
+.mix .f-bar { background: var(--obs); }
+.sig { color: var(--gain); font-weight: 600; } .ns { color: var(--muted); }
+.start { font-size: 13.5px; color: var(--muted); }
+.start b { color: var(--ink); }
+#kpis, #upl-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#upl-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) { #kpis, #upl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .three { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">BREWLY · fictional capsule-coffee brand · Korea · member CRM and budget plan 2026</div>
+      <h1>BREWLY Growth Analytics</h1>
+      <p class="lede">An end-to-end analytics demo for a device-and-refills membership brand where paid brand advertising is assumed
+        unavailable: weekly KPIs from SQL marts, randomised CRM experiments with significance tests, a Bayesian marketing-mix model,
+        a five-channel budget simulator, and an uplift model that decides who should get a CRM message.</p>
+      <p class="start">Suggested path: <b>Weekly dashboard</b> → <b>Experiments</b> → <b>Model check</b> → <b>Budget simulator</b> → <b>CRM targeting</b> → <b>Decision memo</b>.</p>
+    </div>
+    <span class="badge">All data synthetic · 121,634 simulated members · no real brand or customers</span>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tab-dashboard" data-tab="dashboard" aria-selected="true">Weekly dashboard</button>
+      <button role="tab" id="tab-experiments" data-tab="experiments" aria-selected="false">Experiments</button>
+      <button role="tab" id="tab-model" data-tab="model" aria-selected="false">Model check</button>
+      <button role="tab" id="tab-simulator" data-tab="simulator" aria-selected="false">Budget simulator</button>
+      <button role="tab" id="tab-targeting" data-tab="targeting" aria-selected="false">CRM targeting</button>
+      <button role="tab" id="tab-memo" data-tab="memo" aria-selected="false">Decision memo</button>
+    </div>
+    <div class="seg" id="region-seg" aria-label="Region"></div>
+  </div>
+
+  <!-- ================= Dashboard ================= -->
+  <section id="view-dashboard" class="view" role="tabpanel" aria-labelledby="tab-dashboard">
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>매주 월요일 담당자가 여는 성과 화면입니다. 숫자는 모두 회원 단위 원시 기록을 SQL로 집계한 표(sql/marts.sql)에서 나옵니다.</li>
+        <li><b>맨 위 카드</b>: 최근 4주(2025년 12월) 값과 1년 전 같은 4주 대비 증감입니다. 오른쪽 위 SEL/YNG/ROK로 지역을 바꿉니다.</li>
+        <li><b>주별 추이</b>: 버튼으로 지표를 고릅니다. 옅은 세로 띠는 프로모션 주(Brand Day, 블랙프라이데이, 연말)입니다.</li>
+        <li><b>회원 생애 퍼널</b>: 가입한 회원이 4주 안에 첫 주문 → (그리고) 13주 안에 3회 이상 주문 → (그리고) 6개월째에도 주문하는 단계로 얼마나 남는지(전 지역). 각 단계는 앞 단계를 포함합니다.</li>
+        <li><b>코호트 히트맵</b>: 행 = 가입한 달, 열 = 가입 후 몇 번째 4주 기간(P0 = 가입 후 첫 4주), 칸 = 그 기간에 주문한 회원 비율(%). 오른쪽으로 갈수록 옅어지면 이탈입니다.</li>
+        <li><b>2025 예산 배분</b>: 이 지역이 작년에 채널별로 쓴 돈입니다. 이 배분을 바꿀지가 뒤 탭들의 질문입니다.</li>
+      </ul></details>
+    <div class="stats" id="kpis"></div>
+    <div class="panel">
+      <div class="plan-head">
+        <div><h2 id="trend-title">Weekly trend</h2><p class="note">104 weeks, 2024-2025. Shaded bands are promotion weeks.</p></div>
+        <div class="seg metric-seg" id="metric-seg"></div>
+      </div>
+      <svg class="chart" id="trend" viewBox="0 0 1100 260" role="img" aria-label="Weekly trend"></svg>
+    </div>
+    <div class="three">
+      <div class="panel">
+        <div><h2>Member lifecycle funnel</h2><p class="note">Members who joined in weeks 0-77 (26 weeks of follow-up), all regions. Each stage includes the previous one.</p></div>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="panel" style="grid-column: span 2; min-width: 0;">
+        <div><h2>Join cohorts: share still ordering</h2><p class="note">2024 monthly join cohorts, all regions. Each cell: % of the cohort that ordered in that 4-week period since joining (P0 = first 4 weeks).</p></div>
+        <div class="tbl-wrap"><table class="heat" id="heat"></table></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div><h2 id="mix-title">Where the 2025 budget went</h2><p class="note">Annual spend by channel. CRM spend = messages sent × ₩120 (message plus average coupon).</p></div>
+      <div class="funnel mix" id="mix"></div>
+    </div>
+  </section>
+
+  <!-- ================= Experiments ================= -->
+  <section id="view-experiments" class="view" role="tabpanel" aria-labelledby="tab-experiments" hidden>
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>회원을 무작위로 나눠 CRM 효과를 직접 잰 실험 두 개입니다. 무작위라서 두 그룹은 메시지 말고는 차이가 없습니다.</li>
+        <li><b>홀드아웃</b>: 회원 30%에게 8주간 메시지를 보내지 않았습니다. 이 그룹의 주문이 줄어든 만큼이 CRM의 평균 효과입니다.</li>
+        <li><b>빈도 테스트</b>: 회원 50%에게 6주간 메시지를 약 2배 보냈습니다. 주문이 더 늘었는지가 "메시지를 더 보내면 남는가"의 답입니다.</li>
+        <li><b>SRM 검사</b>: 그룹 크기가 설계 비율(30:70, 50:50)과 맞는지. p값이 0.01보다 작으면 배정이 깨진 것이라 결과를 믿으면 안 됩니다.</li>
+        <li><b>표</b>: 회원 1명당 주문 수 차이, 95% 신뢰구간(이 범위에 진짜 차이가 있을 가능성 95%), p값(차이가 우연일 가능성), 감지 가능한 최소 효과(MDE).
+          신뢰구간이 0을 지나지 않고 p값이 0.05보다 작으면 초록색입니다.</li>
+        <li><b>그림</b>: 지역별 차이와 신뢰구간. 막대가 0선을 지나면 "우연과 구분할 수 없음"입니다.</li>
+      </ul></details>
+    <div id="exp-cards" class="view"></div>
+    <div class="panel">
+      <h2>Geo tests (acquisition channels)</h2>
+      <p class="note">A channel switched off in one region; effect read against the other regions. These calibrate the marketing-mix model.</p>
+      <div class="tbl-wrap"><table><thead><tr><th>Region</th><th>Channel</th><th>Test</th><th style="text-align:right">Readout (new members)</th><th style="text-align:right">Model after calibration</th></tr></thead><tbody id="geo-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ================= Model check ================= -->
+  <section id="view-model" class="view" role="tabpanel" aria-labelledby="tab-model" hidden>
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>예산을 옮기라고 말하기 전에, 근거가 되는 숫자가 믿을 만한지 채점하는 화면입니다. 데이터가 가상이라 정답(◇)과 비교할 수 있습니다.</li>
+        <li><b>점 그래프</b>: 채널마다 "다음 1원이 만드는 마진(한계 ROI)". 회색 = 실험 전(광고 채널은 관측 모델, CRM은 어트리뷰션), 갈색 = 실험 후. 세로선 1 = 본전.</li>
+        <li><b>CRM 줄</b>: 어트리뷰션은 약 20(화살표, 그래프 밖)으로 보지만 정답은 0 아래입니다. 실험으로 만든 곡선은 본전 아래로 읽어 판단이 맞습니다.</li>
+        <li><b>CRM 세 가지 답 표</b>: 같은 CRM을 어트리뷰션, 홀드아웃(평균), 빈도 테스트(추가 1원)로 잰 값과 정답 비교.</li>
+        <li><b>신규 회원 가치</b>: 가입 코호트 주문으로 계산한 12개월 마진. 광고 채널과 CRM을 같은 원화로 비교하게 해 줍니다.</li>
+      </ul></details>
+    <div class="stats" id="stats"></div>
+    <div class="two">
+      <div class="panel">
+        <div><h2>Marginal ROI vs the hidden truth</h2>
+          <p class="note">Margin from the next won at today's spend. Bars are 90% intervals. Before experiments: observational MMM for acquisition channels, attribution for CRM.</p></div>
+        <svg class="chart" id="dots" viewBox="0 0 520 320" role="img" aria-label="Marginal ROI by channel"></svg>
+        <div class="legend-line"><span>◇ Truth</span><span><span class="sw" style="background: var(--obs)"></span>Before experiments</span>
+          <span><span class="sw" style="background: var(--accent)"></span>After experiments</span></div>
+      </div>
+      <div class="panel prose">
+        <h2>What the check found</h2>
+        <p><b>CRM: attribution says 20, the truth is below zero at the margin.</b> Crediting every order that follows a message makes CRM look
+          like the best channel by far (about ₩20 of margin per won). The randomised holdout puts the average at ₩0.4-1.1, and doubling messages
+          added nothing measurable. Running-low messages mostly reach members who were about to reorder anyway.</p>
+        <p><b>Why CRM is not in the marketing-mix model.</b> Message volume rises with the number of members due to reorder, which also drives
+          baseline orders. Six specifications that put CRM in the weekly model either contradicted the experiments or did not converge.
+          CRM is therefore measured where it can be measured cleanly: member-level holdouts.</p>
+        <p><b>Acquisition: geo tests fix the retail-partner trap.</b> Retail-partner incentives are paid per device sold, so they rise with demand.
+          The observational model reads their next won at about ₩1.2 (truth ₩0.4); after the geo test, below break-even. Every acquisition
+          break-even call now matches the truth (12 of 12, versus 9 of 12 before).</p>
+        <p><b>Still off:</b> both models underrate brand events (₩0.4 vs ₩0.8-0.9); no test covers them. The CRM curve cannot dip below zero,
+          so it reads the next message at about ₩0.1-0.25 instead of slightly negative; the call (cut) is the same.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h2 id="crm3-title">CRM: three answers to "what does a message add?"</h2>
+      <div class="tbl-wrap"><table><thead><tr><th>Method</th><th>What it measures</th><th style="text-align:right">ROI (margin per won)</th><th style="text-align:right">Truth</th></tr></thead><tbody id="crm3-body"></tbody></table></div>
+      <p class="note">Truth is the plan-year effect from re-running the member simulation with and without CRM, so it counts purchases a reminder only moved earlier.</p>
+    </div>
+    <div class="panel two">
+      <div class="prose"><h2>What a new member is worth</h2><p id="ltv-note"></p></div>
+      <div>
+        <svg class="chart" id="cohort" viewBox="0 0 520 220" role="img" aria-label="Capsule orders per member by month since joining"></svg>
+        <div class="legend-line"><span><span class="sw" style="background: var(--accent)"></span>Orders per member in the 4-week period</span>
+          <span><span class="sw" style="background: var(--obs)"></span>Share still ordering (right axis)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Simulator ================= -->
+  <section id="view-simulator" class="view" role="tabpanel" aria-labelledby="tab-simulator" hidden>
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>지역별 예산 총액은 그대로 두고 채널 배분을 바꿔 보는 도구입니다. 처음엔 모델이 추천한 배분으로 열립니다.</li>
+        <li><b>슬라이더</b>: 각 채널의 2025년 주별 패턴을 통째로 키우거나 줄입니다. 옅은 띠 = 허용 범위(가드레일), 가운데 눈금 = 작년 수준.</li>
+        <li><b>오른쪽 숫자(marginal ROI)</b>: 그 채널에 1원을 더 쓰면 돌아오는 마진. 초록 = 본전 이상, 빨강 = 본전 미만.</li>
+        <li><b>큰 숫자</b>: 작년 배분보다 1년에 더 남는 마진(평균). 아래 80% 구간과 막대그래프(가능한 시나리오 200개)로 불확실성을 봅니다.</li>
+        <li><b>곡선</b>: 채널 이름을 누르면 그 채널의 지출-마진 곡선이 나옵니다. 평평해질수록 돈을 더 넣어도 효과가 적습니다.
+          광고 채널 곡선은 마케팅 믹스 모델, CRM 곡선은 실험 결과로 만들었습니다.</li>
+      </ul></details>
+    <div class="sim">
+      <div class="panel">
+        <div class="plan-head">
+          <div><h2>2026 plan by channel</h2><p class="note">Each slider scales the channel's 2025 weekly pattern. Shaded band = agreed guardrail; tick = 2025 level.</p></div>
+          <div class="actions"><button class="btn" id="btn-2025">2025 mix</button><button class="btn primary" id="btn-rec">Recommended mix</button></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="keep-total" checked> Keep the total at the 2025 budget (other channels absorb each change)</label>
+        <div class="budget">
+          <div><span class="eyebrow">2025 budget</span><span class="v" id="b-2025"></span></div>
+          <div><span class="eyebrow">2026 plan</span><span class="v" id="b-plan"></span></div>
+          <div><span class="eyebrow">Difference</span><span class="v" id="b-diff"></span></div>
+        </div>
+        <div class="rows" id="rows"></div>
+        <p class="note">Marginal ROI = gross margin from the next won at the current plan. Above 1.0 the channel pays back; below 1.0 it does not.</p>
+      </div>
+      <div class="right">
+        <div class="panel">
+          <div class="outcome"><span class="eyebrow">Extra gross margin per year vs the 2025 mix</span><div class="big" id="o-mean"></div><p id="o-range" class="muted"></p></div>
+          <div class="kpis">
+            <div><span class="eyebrow">Chance of a gain</span><span class="v" id="o-prob"></span></div>
+            <div><span class="eyebrow">Change in spend</span><span class="v" id="o-spend"></span></div>
+            <div><span class="eyebrow">Extra new members / yr</span><span class="v" id="o-members"></span></div>
+            <div><span class="eyebrow">Extra capsule orders / yr</span><span class="v" id="o-orders"></span></div>
+          </div>
+          <svg class="chart" id="hist" viewBox="0 0 520 170" role="img" aria-label="Distribution of extra gross margin across 200 scenarios"></svg>
+          <p class="note">Each bar counts scenarios: an MMM posterior draw for the acquisition channels paired with an experiment draw for CRM.
+            The page uses 200 of 1,000 scenarios, so figures can differ slightly from the memo.</p>
+        </div>
+        <div class="panel">
+          <div><h2 id="c-title"></h2><p class="note" id="c-note"></p></div>
+          <svg class="chart" id="curve" viewBox="0 0 520 260" role="img" aria-label="Response curve"></svg>
+          <div class="legend-line"><span><span class="sw" style="background: var(--band)"></span>80% interval</span><span><span class="sw" style="background: var(--guard)"></span>Guardrail</span><span>○ 2025</span><span>● Plan</span><span>◇ Recommended</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Targeting ================= -->
+  <section id="view-targeting" class="view" role="tabpanel" aria-labelledby="tab-targeting" hidden>
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>예산 계획은 CRM 메시지를 약 30% 줄이라고 합니다. 이 화면은 "누구에게 보내는 것을 멈출지"를 정합니다.</li>
+        <li><b>업리프트 모델</b>: 홀드아웃 실험 데이터로 "메시지를 받았을 때와 안 받았을 때 주문 차이"를 회원별로 예측하는 머신러닝 모델입니다.
+          어차피 살 단골(sure things)이 아니라, 메시지에 반응하는 회원(persuadables)을 찾습니다.</li>
+        <li><b>곡선</b>: 가로 = 메시지를 보내는 회원 비율, 세로 = 그로 인해 늘어난 주문(평가용 40% 회원 기준). 위에 있을수록 같은 발송량으로 더 많은 주문.
+          갈색 = 업리프트 순, 회색 점선 = 무작위, 회색 실선 = "살 가능성이 높은 순"(지금 여정과 비슷한 방식).</li>
+        <li><b>십분위 그래프</b>: 모델이 예측한 업리프트 순으로 회원을 10묶음으로 나누고, 숨은 정답의 실제 반응도를 막대로 보여줍니다. 오른쪽으로 갈수록 높으면 모델이 순서를 맞힌 것입니다.</li>
+      </ul></details>
+    <div class="stats" id="upl-stats"></div>
+    <div class="two">
+      <div class="panel">
+        <div><h2>Extra orders by how members are chosen</h2><p class="note">Test set (40% of triggered members, 19,470). Dashed line at 70%: the budget plan's CRM volume.</p></div>
+        <svg class="chart" id="qini" viewBox="0 0 520 300" role="img" aria-label="Incremental orders by share of members messaged"></svg>
+        <div class="legend-line"><span><span class="sw" style="background: var(--accent)"></span>By predicted uplift</span>
+          <span><span class="sw" style="background: var(--obs)"></span>By likelihood to buy</span><span>– – Random</span></div>
+      </div>
+      <div class="panel">
+        <div><h2>True response by predicted-uplift decile</h2><p class="note">Hidden truth: average order lift per message for members in each decile (test set).</p></div>
+        <svg class="chart" id="deciles" viewBox="0 0 520 260" role="img" aria-label="True uplift by decile"></svg>
+        <div class="tbl-wrap"><table><thead><tr><th>Decile</th><th style="text-align:right">Orders 12 wk</th><th style="text-align:right">Wks since order</th><th style="text-align:right">Age 20-39</th></tr></thead><tbody id="dec-body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="panel prose">
+      <h2>What it means</h2>
+      <p>The current journey ranks members by how likely they are to buy. Those are the members who need the message least: messaging the 70%
+        most likely to buy keeps only about half of CRM's extra orders, worse than picking at random. Ranking by predicted uplift keeps about 86%
+        with the same number of messages.</p>
+      <p>Who responds: members with fewer recent orders, a longer gap since their last order, and more often aged 20-39 (top decile:
+        1.6 orders in 12 weeks, 7.5 weeks since the last order) respond most. Heavy buyers (bottom decile: 3.2 orders, 3.5 weeks) buy anyway.</p>
+      <p>Caveats: the model is trained on one 8-week holdout, and predicted uplift is noisy for individuals (rank correlation with the truth 0.26).
+        It is good at ordering groups, which is what targeting needs. It should be refreshed from a standing holdout each quarter.</p>
+    </div>
+  </section>
+
+  <!-- ================= Memo ================= -->
+  <section id="view-memo" class="view" role="tabpanel" aria-labelledby="tab-memo" hidden>
+    <details class="guide"><summary>읽는 법 (한국어)</summary>
+      <ul>
+        <li>분석 결과를 의사결정자가 1분 안에 읽도록 정리한 보고서입니다. 제목이 결론이고, 표 → 근거 → 위험 → 다음 단계 순서입니다.</li>
+        <li>맨 아래 상자는 정답을 아는 포트폴리오에만 있는 채점 결과입니다. 실제 업무 메모에는 없습니다.</li>
+      </ul></details>
+    <article class="panel memo">
+      <div class="eyebrow">Decision memo · 2026 growth plan</div>
+      <h2 style="font-size: 24px;">Send about 30% fewer CRM messages, chosen by uplift, and move the money to member referrals and store trials</h2>
+      <dl class="meta">
+        <dt>To</dt><dd>BREWLY CRM and growth leads, Korea (fictional)</dd>
+        <dt>From</dt><dd>Digital Performance Analytics</dd>
+        <dt>Decision</dt><dd>Approve the channel mix and the CRM targeting rule below for 2026</dd>
+      </dl>
+      <div class="prose">
+        <h3>Recommendation</h3>
+        <p>Keep each region's total budget at its 2025 level. Cut CRM message volume by about 30% and stop messaging the members least likely
+          to respond (rank by predicted uplift, not by likelihood to buy). Add about 30% to member referrals and 16-28% to store trials.
+          Reduce retail-partner incentives by 7-18% and brand events by about 20%.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Region</th><th style="text-align: right">Budget</th><th style="text-align: right">Expected extra margin / yr</th><th style="text-align: right">80% range</th><th style="text-align: right">Chance of a gain</th></tr></thead>
+          <tbody>
+            <tr><td>Seoul metro</td><td class="n">₩489M</td><td class="n">+₩38M</td><td class="n">₩22M to ₩55M</td><td class="n">99.5%</td></tr>
+            <tr><td>Yeongnam</td><td class="n">₩220M</td><td class="n">+₩17M</td><td class="n">₩10M to ₩24M</td><td class="n">&gt;99.9%</td></tr>
+            <tr><td>Rest of Korea</td><td class="n">₩184M</td><td class="n">+₩13M</td><td class="n">₩5M to ₩20M</td><td class="n">97.6%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p class="note">Margin counts the 12-month gross margin of extra new members (₩113,027 each) and of extra capsule orders (₩11,000 each). No extra spend.
+          Uplift-based targeting would add to this; it is not in the figures.</p>
+        <h3>Why we believe the direction</h3>
+        <ul>
+          <li><b>CRM's next message does not pay back.</b> The randomised holdout (30% of members, 8 weeks) cost 0.038 orders per member
+            (95% CI 0.016-0.060, p &lt; 0.001), an average return of ₩0.4-1.1 per won. Doubling messages for half the members added nothing measurable
+            (p = 0.76). Attribution reports about ₩20 per won because messages go to members who were about to reorder.</li>
+          <li><b>Who gets the message matters as much as how many.</b> Keeping 70% of messages chosen by predicted uplift keeps about 86% of CRM's
+            extra orders; keeping the 70% most likely to buy keeps about 51%.</li>
+          <li><b>Referrals and store trials still pay back.</b> The next won returns ₩1.0-1.5 in every region. Switching store trials off in Yeongnam
+            for six weeks cost 84 (±15) new members, close to the model's 87.</li>
+          <li><b>Retail-partner incentives follow demand.</b> They look strong in raw data; the Rest-of-Korea pause showed a small effect, and their next won returns below ₩1.</li>
+        </ul>
+        <h3>What could change the answer</h3>
+        <ul>
+          <li>Brand events: the model may underrate them, and no test covers them. Hold the cut at 20% until a test reads.</li>
+          <li>Yeongnam and Rest of Korea CRM: their own holdouts were too small to read alone (p = 0.36 and 0.20); the plan uses the national result.</li>
+        </ul>
+        <h3>Next steps</h3>
+        <ol>
+          <li>Keep a standing 10% CRM holdout, and re-train the uplift model on it each quarter.</li>
+          <li>Run a brand-events geo test in Q1 2026 (one region, 8 weeks).</li>
+          <li>Cap messages per member per week, and refit the marketing-mix model each quarter before reallocating further.</li>
+        </ol>
+      </div>
+      <div class="aside">
+        <strong>Portfolio check against the hidden truth</strong>
+        <p>Replayed on the true response, this plan captures 87% (Seoul metro), 78% (Yeongnam) and 88% (rest of Korea) of the best achievable gain.
+          The plan an analyst would make before experiments (observational model plus attributed CRM) adds 30% to CRM and loses margin in every region
+          (-11% to -31% of the best gain). The model expects less than the truth delivers (Seoul +₩38M vs +₩62M), so the ranges here are conservative.</p>
+      </div>
+    </article>
+  </section>
+
+  <footer>Synthetic data, fictional brand, built as a portfolio piece. Pipeline: member-level simulation → SQL marts (DuckDB) →
+    CRM experiments (Welch t-tests, SRM, power) → hierarchical Bayesian MMM for acquisition channels (PyMC), calibrated with geo tests →
+    experiment-based CRM response curve → budget optimisation → T-learner uplift model. 2026 assumes 2025's weekly pattern, scaled per channel.</footer>
+</div>
+
+<script id="sim-data" type="application/json">/*__SIM_DATA__*/</script>
+<script id="val-data" type="application/json">/*__VALIDATION__*/</script>
+<script id="dash-data" type="application/json">/*__DASHBOARD__*/</script>
+<script id="exp-data" type="application/json">/*__EXPERIMENTS__*/</script>
+<script id="upl-data" type="application/json">/*__UPLIFT__*/</script>
+<script>
+(() => {
+  const J = id => JSON.parse(document.getElementById(id).textContent);
+  const SIM = J("sim-data"), VAL = J("val-data"), DASH = J("dash-data"), EXP = J("exp-data"), UPL = J("upl-data");
+  const CH = SIM.channels, LAB = SIM.channel_labels, GRID = SIM.grid, IS_CRM = SIM.is_crm, UNIT = SIM.unit_value;
+  const STEP = GRID[1] - GRID[0], MAXM = GRID[GRID.length - 1];
+  const NAMES = SIM.region_names, SVGNS = "http://www.w3.org/2000/svg";
+  const state = { region: "SEL", focus: 0, keepTotal: true, mult: {}, metric: "new_members", tab: "dashboard" };
+  SIM.regions.forEach(r => { state.mult[r] = [...SIM.region_data[r].recommended_multiplier]; });
+
+  // ---------- helpers ----------
+  const quant = (arr, q) => { const s = [...arr].sort((a, b) => a - b); const i = (s.length - 1) * q, lo = Math.floor(i);
+    return s[lo] + (s[Math.min(lo + 1, s.length - 1)] - s[lo]) * (i - lo); };
+  const interp = (arr, m) => { const x = Math.min(Math.max(m, 0), MAXM) / STEP; const i = Math.min(Math.floor(x), arr.length - 2);
+    const t = x - i; return arr[i] * (1 - t) + arr[i + 1] * t; };
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  const fmtKRW = v => { const a = Math.abs(v); const s = v < 0 ? "-" : "";
+    return a >= 1e9 ? `${s}₩${(a / 1e9).toFixed(2)}B` : a >= 1e6 ? `${s}₩${Math.round(a / 1e6)}M` : a >= 500 ? `${s}₩${Math.round(a / 1e3)}K` : "₩0"; };
+  const signedKRW = v => (v > 0 ? "+" : "") + fmtKRW(v);
+  const num = (v, d = 0) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+  const signed = (v, d = 0) => (v > 0 ? "+" : v < 0 ? "-" : "") + num(v, d);
+  const pct = (v, d = 0) => `${v > 0 ? "+" : v < 0 ? "-" : ""}${Math.abs(v * 100).toFixed(d)}%`;
+  const share = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
+  const pfmt = p => p < 0.001 ? "<0.001" : p.toFixed(3);
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(SVGNS, tag);
+    Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); if (parent) parent.appendChild(n); return n; };
+  const ticks = (lo, hi, n = 5) => { const span = hi - lo || 1, step0 = span / n, mag = 10 ** Math.floor(Math.log10(step0));
+    const step = [1, 2, 2.5, 5, 10].map(f => f * mag).find(s => span / s <= n) || 10 * mag;
+    const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out; };
+  const txt = (svg, x, y, s, anchor = "middle", style) => { const t = el("text", { x, y, "text-anchor": anchor, ...(style ? { style } : {}) }, svg); t.textContent = s; return t; };
+
+  // ---------- region control ----------
+  const seg = document.getElementById("region-seg");
+  SIM.regions.forEach(r => { const b = document.createElement("button"); b.textContent = r; b.title = NAMES[r];
+    b.addEventListener("click", () => { state.region = r; renderAll(); }); seg.appendChild(b); });
+
+  // ================= Dashboard =================
+  const METRICS = { new_members: "New members", capsule_orders: "Capsule orders", active_members: "Active members (8-week)", crm_sends: "CRM messages sent" };
+  const mseg = document.getElementById("metric-seg");
+  Object.entries(METRICS).forEach(([k, lab]) => { const b = document.createElement("button"); b.textContent = lab; b.dataset.k = k;
+    b.addEventListener("click", () => { state.metric = k; renderDashboard(); }); mseg.appendChild(b); });
+
+  function renderDashboard() {
+    const w = DASH.weekly[state.region], last = [100, 101, 102, 103], prev = [48, 49, 50, 51];
+    const sum = (k, ix) => ix.reduce((a, i) => a + w[k][i], 0), avg = (k, ix) => sum(k, ix) / ix.length;
+    const spendAll = i => ["spend_referral", "spend_store_trial", "spend_retail_partner", "spend_events", "spend_crm"].reduce((a, k) => a + w[k][i], 0);
+    const cards = [
+      ["New members", sum("new_members", last), sum("new_members", prev), v => num(v)],
+      ["Active members (8-week)", avg("active_members", last), avg("active_members", prev), v => num(v)],
+      ["Capsule orders", sum("capsule_orders", last), sum("capsule_orders", prev), v => num(v)],
+      ["Orders per active member / wk", sum("capsule_orders", last) / sum("active_members", last), sum("capsule_orders", prev) / sum("active_members", prev), v => v.toFixed(3)],
+      ["CRM messages per active member / wk", sum("crm_sends", last) / sum("active_members", last), sum("crm_sends", prev) / sum("active_members", prev), v => v.toFixed(2)],
+      ["Marketing spend", last.reduce((a, i) => a + spendAll(i), 0), prev.reduce((a, i) => a + spendAll(i), 0), v => fmtKRW(v)],
+    ];
+    document.getElementById("kpis").innerHTML = cards.map(([lab, now, before, f]) => {
+      const ch = now / before - 1, cls = Math.abs(ch) < 0.005 ? "" : ch > 0 ? "good" : "bad";
+      return `<div class="stat"><span class="v">${f(now)}</span><span class="note">${lab}, last 4 weeks · <span class="${cls}">${pct(ch, 1)}</span> vs same weeks 2024</span></div>`; }).join("");
+    [...mseg.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.k === state.metric));
+    document.getElementById("trend-title").textContent = `${METRICS[state.metric]}, ${NAMES[state.region]}`;
+    const svg = document.getElementById("trend"); svg.textContent = "";
+    const W = 1100, H = 260, L = 56, R = 12, T = 12, B = 30, ys = w[state.metric], n = ys.length;
+    const yMax = Math.max(...ys) * 1.1, x = i => L + i / (n - 1) * (W - L - R), y = v => H - B - v / yMax * (H - B - T);
+    w.event_promo.forEach((p, i) => { if (p) el("rect", { x: x(i) - 4, y: T, width: 8, height: H - B - T, fill: "var(--guard)" }, svg); });
+    ticks(0, yMax, 4).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg);
+      txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    [0, 13, 26, 39, 52, 65, 78, 91].forEach(i => txt(svg, x(i), H - 10, w.week_start[i].slice(0, 7)));
+    el("polyline", { points: ys.map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2 }, svg);
+
+    const f = DASH.funnel, steps = [["Registered a device", f.registered], ["First order within 4 weeks", f.first_order_4w],
+      ["3+ orders within 13 weeks", f.three_orders_13w], ["Ordering in month 6", f.ordering_month_6]];
+    document.getElementById("funnel").innerHTML = steps.map(([lab, v], i) => `<div class="f-row"><span>${lab}<br><span class="f-val">${num(v)} · ${share(v / f.registered, 0)}${i ? ` · ${share(v / steps[i - 1][1], 0)} of previous` : ""}</span></span>
+      <div class="f-bar" style="width:${(v / f.registered * 100).toFixed(1)}%"></div></div>`).join("");
+
+    const c = DASH.cohort, MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    document.getElementById("heat").innerHTML = `<tr><th>Joined</th>${c.months.map(m => `<th>P${m}</th>`).join("")}</tr>` +
+      c.share.map((row, i) => `<tr><th>${MONTH[c.cohorts[i]]} 2024</th>${row.map(v => v < 0 ? "<td></td>" :
+        `<td style="background: color-mix(in srgb, var(--accent) ${Math.round(v * 85)}%, transparent); color:${v > 0.55 ? "var(--surface)" : "var(--ink)"}">${Math.round(v * 100)}</td>`).join("")}</tr>`).join("");
+
+    const S = SIM.region_data[state.region].spend_2025, tot = S.reduce((a, b) => a + b, 0), mx = Math.max(...S);
+    document.getElementById("mix-title").textContent = `Where the 2025 budget went, ${NAMES[state.region]} (${fmtKRW(tot)})`;
+    document.getElementById("mix").innerHTML = S.map((v, k) => `<div class="f-row"><span>${LAB[k]}<br><span class="f-val">${fmtKRW(v)} · ${share(v / tot, 0)}</span></span>
+      <div class="f-bar" style="width:${(v / mx * 100).toFixed(1)}%"></div></div>`).join("");
+  }
+
+  // ================= Experiments =================
+  function forest(svg, rows, mde) {
+    svg.textContent = "";
+    const W = 520, H = 50 + rows.length * 34, L = 110, R = 16, T = 10, B = 42;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const lo = Math.min(-0.02, ...rows.map(r => r.ci_lo)) * 1.15, hi = Math.max(0.02, ...rows.map(r => r.ci_hi)) * 1.15;
+    const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+    ticks(lo, hi, 5).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg);
+      txt(svg, x(t), H - B + 16, (t > 0 ? "+" : "") + t.toFixed(2)); });
+    el("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--ink)", "stroke-width": 1.2 }, svg);
+    txt(svg, W - R, H - 4, "difference in orders per member (8 or 6 weeks)", "end");
+    rows.forEach((r, i) => { const cy = T + 17 + i * 34, sig = r.p_value < 0.05, col = sig ? "var(--accent)" : "var(--obs)";
+      txt(svg, L - 10, cy + 4, r.label, "end", "fill: var(--ink); font-family: var(--f-body); font-size: 13px");
+      el("line", { x1: x(r.ci_lo), x2: x(r.ci_hi), y1: cy, y2: cy, stroke: col, "stroke-width": 4, "stroke-linecap": "round", opacity: 0.6 }, svg);
+      el("circle", { cx: x(r.diff_per_member), cy, r: 5, fill: col }, svg); });
+  }
+
+  function renderExperiments() {
+    const DEF = {
+      crm_holdout_w80: { title: "CRM holdout: 30% of members got no messages for 8 weeks (weeks 80-87)",
+        q: "How much does CRM add on average?", tlab: "Holdout", clab: "Business as usual" },
+      crm_frequency_w92: { title: "CRM frequency test: 50% of members got about twice the messages for 6 weeks (weeks 92-97)",
+        q: "Do more messages bring more orders?", tlab: "More messages", clab: "Business as usual" } };
+    const box = document.getElementById("exp-cards"); box.textContent = "";
+    Object.entries(EXP).forEach(([key, e]) => {
+      const d = DEF[key], all = e.regions.ALL, srmOk = e.srm_p_value >= 0.01;
+      const regs = ["SEL", "YNG", "ROK", "ALL"];
+      const rows = regs.map(r => ({ ...e.regions[r], label: r === "ALL" ? "All regions" : NAMES[r] }));
+      const panel = document.createElement("div"); panel.className = "panel";
+      panel.innerHTML = `<div><h2>${d.title}</h2><p class="note">Question: ${d.q} Population: ${num(e.n_population)} members active when the test started or joining during it (intention to treat).</p></div>
+        <div class="stats">
+          <div class="stat"><span class="v">${pfmt(e.srm_p_value)}</span><span class="note">Sample-ratio check p-value: group sizes ${srmOk ? "match" : "do NOT match"} the ${Math.round(e.design.share * 100)}:${Math.round((1 - e.design.share) * 100)} design</span></div>
+          <div class="stat"><span class="v">${all.sends_treated.toFixed(1)} vs ${all.sends_control.toFixed(1)}</span><span class="note">Messages per member in the window: ${d.tlab.toLowerCase()} vs business as usual (delivery check)</span></div>
+          <div class="stat"><span class="v ${all.p_value < 0.05 ? "sig" : "ns"}">${signed(all.diff_per_member, 3)}</span><span class="note">Orders per member, all regions (95% CI ${signed(all.ci_lo, 3)} to ${signed(all.ci_hi, 3)}; p = ${pfmt(all.p_value)})</span></div>
+          <div class="stat"><span class="v">${signed(all.total_effect_orders)}</span><span class="note">Orders in the window, scaled to the ${d.tlab.toLowerCase()} group (± ${num(all.total_effect_se)} s.e.)</span></div>
+        </div>
+        <div style="display:grid; gap:12px">
+          <div class="tbl-wrap"><table><thead><tr><th>Region</th><th style="text-align:right">n (${d.tlab} / BAU)</th><th style="text-align:right">Orders per member</th><th style="text-align:right">Difference [95% CI]</th><th style="text-align:right">p</th><th style="text-align:right">Lift</th><th style="text-align:right">MDE</th></tr></thead>
+          <tbody>${rows.map(r => `<tr><td>${r.label}</td><td class="n">${num(r.n_treated)} / ${num(r.n_control)}</td><td class="n">${r.mean_treated.toFixed(3)} vs ${r.mean_control.toFixed(3)}</td>
+            <td class="n ${r.p_value < 0.05 ? "sig" : "ns"}">${signed(r.diff_per_member, 3)} [${signed(r.ci_lo, 3)}, ${signed(r.ci_hi, 3)}]</td><td class="n">${pfmt(r.p_value)}</td>
+            <td class="n">${pct(r.relative_lift, 1)}</td><td class="n">±${r.mde_per_member.toFixed(3)}</td></tr>`).join("")}</tbody></table></div>
+          <div style="max-width:640px"><svg class="chart"></svg><p class="note">Dot = difference, bar = 95% confidence interval. Brown when p &lt; 0.05. MDE = smallest difference the test could detect with 80% power.</p></div>
+        </div>`;
+      box.appendChild(panel);
+      forest(panel.querySelector("svg"), rows);
+    });
+    const LBL = { store_trial: "Store trials", retail_partner: "Retail partners" };
+    document.getElementById("geo-body").innerHTML = VAL.geo_tests.map(t => `<tr><td>${NAMES[t.region]}</td><td>${LBL[t.channel]}</td>
+      <td>Switched off, weeks ${t.start_week}-${t.start_week + t.n_weeks - 1}</td><td class="n">${signed(t.observed_lift)} ± ${num(t.se)}</td><td class="n">${signed(t.model_implied)}</td></tr>`).join("");
+  }
+
+  // ================= Model check =================
+  function renderModel() {
+    const v = VAL.regions[state.region], u = v.uplift, c = v.crm;
+    const stats = [
+      [share(v.holdout_mape), `Forecast error on 12 unseen weeks, new members, ${NAMES[state.region]}`],
+      [`${VAL.coverage_mroi.cal} of ${VAL.coverage_mroi.n}`, `Acquisition: true marginal ROI inside the 90% interval (before geo tests: ${VAL.coverage_mroi.nolift})`],
+      [share(u.share_of_best_captured), `Share of the best possible gain the plan captures on the truth (plan made before experiments: ${share(u.before_experiments_share_of_best, 0)})`],
+      [`${VAL.convergence.divergences} · ${VAL.convergence.max_r_hat}`, `Divergences and max R-hat over ${VAL.convergence.draws.toLocaleString()} draws`],
+    ];
+    document.getElementById("stats").innerHTML = stats.map(([val, lab]) => `<div class="stat"><span class="v">${val}</span><span class="note">${lab}</span></div>`).join("");
+
+    const svg = document.getElementById("dots"); svg.textContent = "";
+    const rows = v.channels.map(ch => ({ ...ch })).concat([{ true_mroi: c.true_marginal_roi, nolift_mroi: c.attributed_roi, nolift_mroi_lo90: null, nolift_mroi_hi90: null,
+      cal_mroi: c.curve_mroi_mean, cal_mroi_lo90: c.curve_mroi_90[0], cal_mroi_hi90: c.curve_mroi_90[1], crm: true }]);
+    const W = 520, H = 320, L = 128, R = 26, T = 18, B = 34;
+    const xMin = Math.floor(Math.min(0, ...rows.map(r => Math.min(r.true_mroi, r.cal_mroi_lo90))) * 2) / 2;
+    const xMax = Math.ceil(Math.max(...rows.map(r => Math.max(r.true_mroi, r.cal_mroi_hi90, r.crm ? 0 : r.nolift_mroi_hi90))) + 0.2);
+    const x = val => L + (clamp(val, xMin, xMax) - xMin) / (xMax - xMin) * (W - L - R), rowH = (H - T - B) / rows.length;
+    ticks(xMin, xMax, 6).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--line)", "stroke-dasharray": t === 1 ? "" : "2 3" }, svg); txt(svg, x(t), H - B + 16, t); });
+    txt(svg, x(1) + 4, T - 4, "break-even", "start");
+    txt(svg, W - R, H - 4, "margin from the next won", "end");
+    rows.forEach((r, i) => {
+      const cy = T + rowH * (i + 0.5);
+      txt(svg, L - 10, cy + 4, LAB[i], "end", "fill: var(--ink); font-family: var(--f-body); font-size: 13px");
+      if (r.crm) {
+        const off = r.nolift_mroi > xMax, gx = x(r.nolift_mroi);
+        el("circle", { cx: gx - (off ? 6 : 0), cy: cy - 7, r: 4.5, fill: "var(--obs)" }, svg);
+        if (off) { el("path", { d: `M${gx},${cy - 7} l-8,-5 v10 z`, fill: "var(--obs)" }, svg); txt(svg, gx - 14, cy - 13, `attribution ${r.nolift_mroi.toFixed(1)} →`, "end"); }
+      } else {
+        el("line", { x1: x(r.nolift_mroi_lo90), x2: x(r.nolift_mroi_hi90), y1: cy - 7, y2: cy - 7, stroke: "var(--obs)", "stroke-width": 4, "stroke-linecap": "round", opacity: 0.55 }, svg);
+        el("circle", { cx: x(r.nolift_mroi), cy: cy - 7, r: 4.5, fill: "var(--obs)" }, svg);
+      }
+      el("line", { x1: x(r.cal_mroi_lo90), x2: x(r.cal_mroi_hi90), y1: cy + 7, y2: cy + 7, stroke: "var(--accent)", "stroke-width": 4, "stroke-linecap": "round", opacity: 0.55 }, svg);
+      el("circle", { cx: x(r.cal_mroi), cy: cy + 7, r: 4.5, fill: "var(--accent)" }, svg);
+      const tx = x(r.true_mroi);
+      el("polygon", { points: `${tx},${cy - 7} ${tx + 7},${cy} ${tx},${cy + 7} ${tx - 7},${cy}`, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.6 }, svg);
+    });
+    document.getElementById("crm3-title").textContent = `CRM: three answers to "what does a message add?", ${NAMES[state.region]}`;
+    const ci = a => `[${a[0].toFixed(2)}, ${a[1].toFixed(2)}]`;
+    document.getElementById("crm3-body").innerHTML = [
+      ["Attribution", "Orders in the same week as a message, credited to the message", c.attributed_roi.toFixed(1), "—"],
+      ["Holdout (average)", "Orders the 30% holdout lost, per message it would have received", `${c.holdout_avg_roi.toFixed(2)} ${ci(c.holdout_avg_roi_ci)}`, `${c.true_roi.toFixed(2)} (average)`],
+      ["Frequency test (next message)", "Extra orders per extra message", `${c.frequency_marginal_roi.toFixed(2)} ${ci(c.frequency_marginal_roi_ci)}`, `${c.true_marginal_roi.toFixed(2)} (marginal)`],
+      ["Experiment curve (used in the plan)", "Holdout level + national curvature, marginal at today's volume", `${c.curve_mroi_mean.toFixed(2)} [${c.curve_mroi_90[0].toFixed(2)}, ${c.curve_mroi_90[1].toFixed(2)}]`, `${c.true_marginal_roi.toFixed(2)} (marginal)`],
+    ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td></tr>`).join("");
+  }
+
+  function renderCohort() {
+    const co = VAL.cohort, svg = document.getElementById("cohort"); svg.textContent = "";
+    document.getElementById("ltv-note").textContent =
+      `2024 join cohorts place ${co.orders_per_member_12m.toFixed(1)} capsule orders per member in their first 52 weeks (from the cohort mart). ` +
+      `At ₩${co.margin_per_order.toLocaleString("en-US")} margin per order plus ₩${co.device_margin.toLocaleString("en-US")} on the machine, ` +
+      `a new member is worth ₩${co.value_per_new_member.toLocaleString("en-US")}. That value turns new members into won, so acquisition channels and CRM compete for budget on one scale.`;
+    const W = 520, H = 220, L = 40, R = 40, T = 12, B = 34, n = co.orders_per_member.length;
+    const x = i => L + i / (n - 1) * (W - L - R), yMax = Math.ceil(Math.max(...co.orders_per_member) * 5 + 0.5) / 5;
+    const y = v => H - B - v / yMax * (H - B - T), y2 = v => H - B - v * (H - B - T);
+    ticks(0, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, t.toFixed(1), "end"); });
+    [0, 0.5, 1].forEach(t => txt(svg, W - R + 6, y2(t) + 4, `${t * 100}%`, "start"));
+    co.orders_per_member.forEach((_, i) => txt(svg, x(i), H - B + 16, i));
+    txt(svg, W - R, H - 2, "4-week periods since joining", "end");
+    el("polyline", { points: co.active_share.map((v, i) => `${x(i)},${y2(v)}`).join(" "), fill: "none", stroke: "var(--obs)", "stroke-width": 2, "stroke-dasharray": "5 4" }, svg);
+    el("polyline", { points: co.orders_per_member.map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2.2 }, svg);
+    co.orders_per_member.forEach((v, i) => el("circle", { cx: x(i), cy: y(v), r: 3, fill: "var(--accent)" }, svg));
+  }
+
+  // ================= Simulator =================
+  const SUM = {};
+  SIM.regions.forEach(r => { const curves = SIM.region_data[r].curves;
+    SUM[r] = CH.map((_, c) => { const mean = [], p10 = [], p90 = [];
+      GRID.forEach((_, g) => { const v = curves.map(d => d[c][g]); mean.push(v.reduce((a, b) => a + b, 0) / v.length); p10.push(quant(v, 0.1)); p90.push(quant(v, 0.9)); });
+      return { mean, p10, p90 }; }); });
+
+  function compute() {
+    const r = state.region, rd = SIM.region_data[r], mult = state.mult[r], S = rd.spend_2025;
+    const uplift = rd.curves.map(d => d.reduce((acc, row, c) => acc + interp(row, mult[c]) - interp(row, 1), 0) * 1e6);
+    const mean = uplift.reduce((a, b) => a + b, 0) / uplift.length;
+    const plan = S.reduce((a, s, c) => a + s * mult[c], 0), base = S.reduce((a, b) => a + b, 0);
+    const delta = CH.map((_, c) => (interp(SUM[r][c].mean, mult[c]) - interp(SUM[r][c].mean, 1)) * 1e6 / UNIT[c]);
+    const members = delta.reduce((a, v, c) => a + (IS_CRM[c] ? 0 : v), 0), orders = delta.reduce((a, v, c) => a + (IS_CRM[c] ? v : 0), 0);
+    const mroi = CH.map((_, c) => { const h = 0.02, lo = clamp(mult[c] - h, 0, MAXM), hi = clamp(mult[c] + h, 0, MAXM);
+      return (interp(SUM[r][c].mean, hi) - interp(SUM[r][c].mean, lo)) * 1e6 / ((hi - lo) * S[c]); });
+    return { uplift, mean, p10: quant(uplift, 0.1), p90: quant(uplift, 0.9), prob: uplift.filter(u => u > 0).length / uplift.length, plan, base, members, orders, mroi };
+  }
+
+  function setMult(k, v) {
+    const r = state.region, mult = state.mult[r], S = SIM.region_data[r].spend_2025;
+    v = clamp(v, 0, MAXM);
+    if (!state.keepTotal) { mult[k] = v; return; }
+    let remaining = (v - mult[k]) * S[k], free = CH.map((_, j) => j).filter(j => j !== k);
+    for (let pass = 0; pass < 8 && Math.abs(remaining) > 1 && free.length; pass++) {
+      const w = free.map(j => mult[j] * S[j] + 1), Wt = w.reduce((a, b) => a + b, 0);
+      free.forEach((j, i) => { const target = clamp(mult[j] - remaining * w[i] / Wt / S[j], 0, MAXM); remaining -= (mult[j] - target) * S[j]; mult[j] = target; });
+      free = free.filter(j => remaining > 0 ? mult[j] > 1e-6 : mult[j] < MAXM - 1e-6);
+    }
+    mult[k] = clamp(v - remaining / S[k], 0, MAXM);
+  }
+
+  function buildRows() {
+    const rows = document.getElementById("rows"); rows.textContent = "";
+    CH.forEach((c, k) => {
+      const [lo, hi] = SIM.bounds[c];
+      const row = document.createElement("div"); row.className = "row"; row.dataset.k = k;
+      row.innerHTML = `<button class="name" id="name-${k}">${LAB[k]}<small id="sub-${k}"></small></button>
+        <div class="spend" id="sp-${k}"></div><div class="mroi"><b id="mr-${k}"></b>marginal ROI</div>
+        <input type="range" id="sl-${k}" min="0" max="${MAXM}" step="0.01" aria-labelledby="name-${k}">`;
+      const sl = row.querySelector("input"), a = (lo / MAXM) * 100, b = (hi / MAXM) * 100;
+      sl.style.setProperty("--track-bg", `linear-gradient(to right, transparent calc(50% - 1px), var(--muted) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(to right, var(--track) ${a}%, var(--guard) ${a}% ${b}%, var(--track) ${b}%)`);
+      sl.addEventListener("input", () => { setMult(k, parseFloat(sl.value)); state.focus = k; updateSim(); });
+      row.querySelector(".name").addEventListener("click", () => { state.focus = k; updateSim(); });
+      rows.appendChild(row);
+    });
+  }
+  document.getElementById("btn-2025").addEventListener("click", () => { state.mult[state.region] = CH.map(() => 1); updateSim(); });
+  document.getElementById("btn-rec").addEventListener("click", () => { state.mult[state.region] = [...SIM.region_data[state.region].recommended_multiplier]; updateSim(); });
+  document.getElementById("keep-total").addEventListener("change", e => { state.keepTotal = e.target.checked; });
+
+  function drawHist(res) {
+    const svg = document.getElementById("hist"); svg.textContent = "";
+    const W = 520, H = 170, L = 12, R = 12, T = 8, B = 26, u = res.uplift.map(v => v / 1e6);
+    const lo = Math.min(0, ...u), hi = Math.max(0, ...u), pad = (hi - lo) * 0.05 || 1, x0 = lo - pad, x1 = hi + pad;
+    const x = v => L + (v - x0) / (x1 - x0) * (W - L - R), nb = 28, bw = (x1 - x0) / nb, counts = Array(nb).fill(0);
+    u.forEach(v => counts[Math.min(nb - 1, Math.floor((v - x0) / bw))]++);
+    const cmax = Math.max(...counts), y = c => H - B - c / cmax * (H - B - T);
+    counts.forEach((c, i) => { if (c) el("rect", { x: x(x0 + i * bw) + 0.5, y: y(c), width: Math.max(1, x(x0 + (i + 1) * bw) - x(x0 + i * bw) - 1), height: H - B - y(c), fill: "var(--accent)", opacity: 0.55 }, svg); });
+    el("line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--line)" }, svg);
+    ticks(x0, x1, 6).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: H - B, y2: H - B + 4, stroke: "var(--line)" }, svg); txt(svg, x(t), H - 8, `${signed(t)}M`); });
+    el("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--loss)", "stroke-width": 1.2 }, svg);
+    el("line", { x1: x(res.mean / 1e6), x2: x(res.mean / 1e6), y1: T, y2: H - B, stroke: "var(--accent)", "stroke-width": 2 }, svg);
+  }
+
+  function drawCurve() {
+    const r = state.region, k = state.focus, S = SIM.region_data[r].spend_2025[k], sum = SUM[r][k];
+    const mult = state.mult[r][k], rec = SIM.region_data[r].recommended_multiplier[k], [glo, ghi] = SIM.bounds[CH[k]];
+    document.getElementById("c-title").textContent = `${LAB[k]} response, ${NAMES[r]}`;
+    document.getElementById("c-note").textContent = IS_CRM[k]
+      ? "Gross margin per year from extra capsule orders at each send volume. Built from the holdout and frequency tests. Select a channel name to switch."
+      : "Gross margin per year from the new members this channel brings in, at each spend level (marketing-mix model). Select a channel name to switch.";
+    const svg = document.getElementById("curve"); svg.textContent = "";
+    const W = 520, H = 260, L = 50, R = 14, T = 12, B = 36, xMax = MAXM * S / 1e6, yMax = Math.max(...sum.p90) * 1.08;
+    const x = v => L + v / xMax * (W - L - R), y = v => H - B - v / yMax * (H - B - T);
+    el("rect", { x: x(glo * S / 1e6), y: T, width: x(ghi * S / 1e6) - x(glo * S / 1e6), height: H - B - T, fill: "var(--guard)" }, svg);
+    ticks(0, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    ticks(0, xMax, 5).forEach(t => txt(svg, x(t), H - B + 16, `₩${num(t)}M`));
+    txt(svg, W - R, H - 4, "annual spend", "end"); txt(svg, 4, T + 2, "margin ₩M / yr", "start");
+    const band = GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.p90[i])}`).join(" ") + " " + GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.p10[i])}`).reverse().join(" ");
+    el("polygon", { points: band, fill: "var(--band)", stroke: "none" }, svg);
+    el("polyline", { points: GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.mean[i])}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2 }, svg);
+    const mark = (mm, shape) => { const cx = x(mm * S / 1e6), cy = y(interp(sum.mean, mm));
+      if (shape === "diamond") el("polygon", { points: `${cx},${cy - 7} ${cx + 7},${cy} ${cx},${cy + 7} ${cx - 7},${cy}`, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.6 }, svg);
+      else el("circle", { cx, cy, r: shape === "open" ? 5 : 6, fill: shape === "open" ? "var(--surface)" : "var(--accent)", stroke: shape === "open" ? "var(--muted)" : "var(--surface)", "stroke-width": 2 }, svg); };
+    mark(1, "open"); mark(rec, "diamond"); mark(mult, "filled");
+  }
+
+  function updateSim() {
+    const r = state.region, rd = SIM.region_data[r], mult = state.mult[r], res = compute();
+    CH.forEach((c, k) => {
+      const [lo, hi] = SIM.bounds[c], ch = mult[k] - 1, sl = document.getElementById(`sl-${k}`);
+      sl.value = mult[k].toFixed(2); sl.setAttribute("aria-valuetext", `${fmtKRW(rd.spend_2025[k] * mult[k])}, ${pct(ch)} vs 2025`);
+      const cls = Math.abs(ch) < 0.005 ? "flat" : ch > 0 ? "up" : "down", out = mult[k] < lo - 1e-6 || mult[k] > hi + 1e-6;
+      document.getElementById(`sp-${k}`).innerHTML = `${fmtKRW(rd.spend_2025[k] * mult[k])}<span class="chip ${cls}">${pct(ch)}</span>`;
+      document.getElementById(`sub-${k}`).innerHTML = `2025: ${fmtKRW(rd.spend_2025[k])} · ${IS_CRM[k] ? "lifts orders" : "brings members"}` + (out ? `<span class="chip warn">outside guardrail</span>` : "");
+      const mr = document.getElementById(`mr-${k}`); mr.textContent = res.mroi[k].toFixed(2); mr.className = res.mroi[k] >= 1 ? "good" : "bad";
+      document.querySelector(`.row[data-k="${k}"]`).classList.toggle("focus", k === state.focus);
+    });
+    const diff = res.plan - res.base, onBudget = Math.abs(diff) < 5e4;
+    document.getElementById("b-2025").textContent = fmtKRW(res.base);
+    document.getElementById("b-plan").textContent = fmtKRW(res.plan);
+    const bd = document.getElementById("b-diff"); bd.textContent = onBudget ? "on budget" : signedKRW(diff); bd.className = "v " + (onBudget ? "" : diff > 0 ? "bad" : "good");
+    const om = document.getElementById("o-mean"); om.textContent = signedKRW(res.mean); om.className = "big " + (res.mean >= 0 ? "good" : "bad");
+    document.getElementById("o-range").textContent = `80% interval ${signedKRW(res.p10)} to ${signedKRW(res.p90)} a year in ${NAMES[r]}` + (onBudget ? "" : ` · net of the spend change ${signedKRW(res.mean - diff)}`);
+    document.getElementById("o-prob").textContent = res.prob >= 0.999 ? ">99.9%" : share(res.prob);
+    document.getElementById("o-spend").textContent = onBudget ? "none" : signedKRW(diff);
+    document.getElementById("o-members").textContent = signed(res.members);
+    document.getElementById("o-orders").textContent = signed(res.orders);
+    drawHist(res); drawCurve();
+  }
+
+  // ================= Targeting =================
+  function renderTargeting() {
+    const s = UPL.summary, tot = s.extra_orders_all_messaged;
+    const cards = [
+      [share(s.extra_orders_keep_by_uplift / tot, 0), "of the extra orders kept when 70% of members are messaged, chosen by predicted uplift"],
+      [share(s.extra_orders_keep_random / tot, 0), "kept when the 70% are chosen at random"],
+      [share(s.extra_orders_keep_by_likely_to_buy / tot, 0), "kept when the 70% are the members most likely to buy (how a running-low journey ranks)"],
+      [s.spearman_pred_vs_true_uplift.toFixed(2), "Rank correlation between predicted and hidden true uplift (test set)"],
+    ];
+    document.getElementById("upl-stats").innerHTML = cards.map(([v, l]) => `<div class="stat"><span class="v">${v}</span><span class="note">${l}</span></div>`).join("");
+    const svg = document.getElementById("qini"); svg.textContent = "";
+    const W = 520, H = 300, L = 50, R = 14, T = 12, B = 36, xs = UPL.shares, cv = UPL.curves;
+    const all = [...cv.uplift_model, ...cv.likely_to_buy, ...cv.random], yMin = Math.min(0, ...all), yMax = Math.max(...all) * 1.1;
+    const x = v => L + v * (W - L - R), y = v => H - B - (v - yMin) / (yMax - yMin) * (H - B - T);
+    ticks(yMin, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    [0, 0.25, 0.5, 0.75, 1].forEach(t => txt(svg, x(t), H - B + 16, `${t * 100}%`));
+    txt(svg, W - R, H - 4, "share of triggered members messaged", "end"); txt(svg, 4, T + 2, "extra orders (8 wk)", "start");
+    el("line", { x1: x(0.7), x2: x(0.7), y1: T, y2: H - B, stroke: "var(--muted)", "stroke-dasharray": "4 3" }, svg);
+    const line = (vals, col, dash, w) => el("polyline", { points: vals.map((v, i) => `${x(xs[i])},${y(v)}`).join(" "), fill: "none", stroke: col, "stroke-width": w, ...(dash ? { "stroke-dasharray": dash } : {}) }, svg);
+    line(cv.random, "var(--muted)", "5 4", 1.5); line(cv.likely_to_buy, "var(--obs)", null, 2); line(cv.uplift_model, "var(--accent)", null, 2.4);
+
+    const dsvg = document.getElementById("deciles"); dsvg.textContent = "";
+    const D = UPL.deciles, dW = 520, dH = 260, dL = 50, dR = 12, dT = 12, dB = 36, mx = Math.max(...D.map(d => d.true_uplift_per_message)) * 1.15;
+    const bw = (dW - dL - dR) / D.length, dy = v => dH - dB - v / mx * (dH - dB - dT);
+    ticks(0, mx, 4).forEach(t => { el("line", { x1: dL, x2: dW - dR, y1: dy(t), y2: dy(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, dsvg); txt(dsvg, dL - 6, dy(t) + 4, t.toFixed(2), "end"); });
+    D.forEach((d, i) => { el("rect", { x: dL + i * bw + 4, y: dy(d.true_uplift_per_message), width: bw - 8, height: dH - dB - dy(d.true_uplift_per_message), fill: "var(--accent)", opacity: 0.75 }, dsvg);
+      txt(dsvg, dL + i * bw + bw / 2, dH - dB + 16, `D${d.decile + 1}`); });
+    txt(dsvg, dW - dR, dH - 4, "predicted uplift decile (low → high)", "end"); txt(dsvg, 4, dT + 2, "true lift per message", "start");
+    document.getElementById("dec-body").innerHTML = [0, 4, 9].map(i => D[i]).map(d => `<tr><td>D${d.decile + 1}${d.decile === 0 ? " (lowest)" : d.decile === 9 ? " (highest)" : ""}</td>
+      <td class="n">${d.orders_12w.toFixed(1)}</td><td class="n">${d.recency_weeks.toFixed(1)}</td><td class="n">${share(d.share_young, 0)}</td></tr>`).join("");
+  }
+
+  // ================= Tabs =================
+  const TABS = ["dashboard", "experiments", "model", "simulator", "targeting", "memo"];
+  const REGION_TABS = ["dashboard", "model", "simulator"];
+  function renderAll() {
+    [...seg.children].forEach(b => b.setAttribute("aria-pressed", b.textContent === state.region));
+    renderDashboard(); renderModel(); buildRows(); updateSim();
+  }
+  function showTab(name) {
+    state.tab = name;
+    TABS.forEach(t => { document.getElementById(`view-${t}`).hidden = t !== name; document.getElementById(`tab-${t}`).setAttribute("aria-selected", t === name); });
+    seg.style.visibility = REGION_TABS.includes(name) ? "visible" : "hidden";
+  }
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { showTab(b.dataset.tab); history.replaceState(null, "", `#${b.dataset.tab}`); }));
+  renderAll(); renderExperiments(); renderCohort(); renderTargeting();
+  const fromHash = () => { const h = location.hash.replace("#", ""); showTab(TABS.includes(h) ? h : "dashboard"); };
+  window.addEventListener("hashchange", fromHash);
+  fromHash();
+})();
+</script>
