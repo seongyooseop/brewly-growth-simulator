@@ -23,7 +23,7 @@ and CRM messages. All data is synthetic, generated from a known process so every
 - **Why it can be trusted:** replayed on the hidden truth, the plan captures 78-88% of the best possible gain.
   The plan an analyst would make before experiments (attribution plus an observational model) raises CRM by 30%
   and loses margin in every region.
-- **Try it:** the live demo or `simulator/index.html` (six tabs, each with a Korean "how to read" guide).
+- **Try it:** the live demo or `simulator/index.html` (six tabs, each with a "How to read this tab" guide).
 - **How AI was used:** [`docs/ai_workflow_log.md`](docs/ai_workflow_log.md).
 
 ## Pipeline

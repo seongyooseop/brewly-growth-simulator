@@ -184,14 +184,14 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Dashboard ================= -->
   <section id="view-dashboard" class="view" role="tabpanel" aria-labelledby="tab-dashboard">
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>매주 월요일 담당자가 여는 성과 화면입니다. 숫자는 모두 회원 단위 원시 기록을 SQL로 집계한 표(sql/marts.sql)에서 나옵니다.</li>
-        <li><b>맨 위 카드</b>: 최근 4주(2025년 12월) 값과 1년 전 같은 4주 대비 증감입니다. 오른쪽 위 SEL/YNG/ROK로 지역을 바꿉니다.</li>
-        <li><b>주별 추이</b>: 버튼으로 지표를 고릅니다. 옅은 세로 띠는 프로모션 주(Brand Day, 블랙프라이데이, 연말)입니다.</li>
-        <li><b>회원 생애 퍼널</b>: 가입한 회원이 4주 안에 첫 주문 → (그리고) 13주 안에 3회 이상 주문 → (그리고) 6개월째에도 주문하는 단계로 얼마나 남는지(전 지역). 각 단계는 앞 단계를 포함합니다.</li>
-        <li><b>코호트 히트맵</b>: 행 = 가입한 달, 열 = 가입 후 몇 번째 4주 기간(P0 = 가입 후 첫 4주), 칸 = 그 기간에 주문한 회원 비율(%). 오른쪽으로 갈수록 옅어지면 이탈입니다.</li>
-        <li><b>2025 예산 배분</b>: 이 지역이 작년에 채널별로 쓴 돈입니다. 이 배분을 바꿀지가 뒤 탭들의 질문입니다.</li>
+        <li>The page a team lead opens every Monday. Every number comes from SQL tables built from member-level events (sql/marts.sql).</li>
+        <li><b>Cards:</b> the last four weeks (December 2025) and the change against the same four weeks a year earlier. Use SEL / YNG / ROK at the top right to switch region.</li>
+        <li><b>Weekly trend:</b> pick a metric with the buttons. Light vertical bands are promotion weeks (Brand Day, Black Friday, year-end).</li>
+        <li><b>Lifecycle funnel:</b> how many new members place a first order within 4 weeks, then 3+ orders within 13 weeks, then still order in month 6 (all regions). Each stage includes the previous one.</li>
+        <li><b>Cohort heatmap:</b> rows are join months, columns are 4-week periods since joining (P0 = first 4 weeks), cells are the % of the cohort ordering in that period. Fading to the right is churn.</li>
+        <li><b>2025 budget:</b> what this region spent by channel last year. Whether to change this mix is the question for the other tabs.</li>
       </ul></details>
     <div class="stats" id="kpis"></div>
     <div class="panel">
@@ -219,15 +219,14 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Experiments ================= -->
   <section id="view-experiments" class="view" role="tabpanel" aria-labelledby="tab-experiments" hidden>
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>회원을 무작위로 나눠 CRM 효과를 직접 잰 실험 두 개입니다. 무작위라서 두 그룹은 메시지 말고는 차이가 없습니다.</li>
-        <li><b>홀드아웃</b>: 회원 30%에게 8주간 메시지를 보내지 않았습니다. 이 그룹의 주문이 줄어든 만큼이 CRM의 평균 효과입니다.</li>
-        <li><b>빈도 테스트</b>: 회원 50%에게 6주간 메시지를 약 2배 보냈습니다. 주문이 더 늘었는지가 "메시지를 더 보내면 남는가"의 답입니다.</li>
-        <li><b>SRM 검사</b>: 그룹 크기가 설계 비율(30:70, 50:50)과 맞는지. p값이 0.01보다 작으면 배정이 깨진 것이라 결과를 믿으면 안 됩니다.</li>
-        <li><b>표</b>: 회원 1명당 주문 수 차이, 95% 신뢰구간(이 범위에 진짜 차이가 있을 가능성 95%), p값(차이가 우연일 가능성), 감지 가능한 최소 효과(MDE).
-          신뢰구간이 0을 지나지 않고 p값이 0.05보다 작으면 초록색입니다.</li>
-        <li><b>그림</b>: 지역별 차이와 신뢰구간. 막대가 0선을 지나면 "우연과 구분할 수 없음"입니다.</li>
+        <li>Two experiments that measured CRM directly by splitting members at random, so the groups differ only in the messages they got.</li>
+        <li><b>Holdout:</b> 30% of members got no messages for 8 weeks. The orders they lost are CRM's average effect.</li>
+        <li><b>Frequency test:</b> 50% of members got about twice the messages for 6 weeks. Whether orders rose answers "do more messages pay?".</li>
+        <li><b>Sample-ratio check:</b> do group sizes match the design (30:70, 50:50)? A p-value below 0.01 means the assignment broke and the result should not be trusted.</li>
+        <li><b>Table:</b> difference in orders per member, the 95% confidence interval (the range likely to contain the true difference), the p-value (how likely a difference this size is by chance), and the minimum detectable effect (MDE). Green when the interval excludes zero and p &lt; 0.05.</li>
+        <li><b>Chart:</b> each region's difference and interval. A bar that crosses the zero line cannot be told apart from chance.</li>
       </ul></details>
     <div id="exp-cards" class="view"></div>
     <div class="panel">
@@ -239,13 +238,13 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Model check ================= -->
   <section id="view-model" class="view" role="tabpanel" aria-labelledby="tab-model" hidden>
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>예산을 옮기라고 말하기 전에, 근거가 되는 숫자가 믿을 만한지 채점하는 화면입니다. 데이터가 가상이라 정답(◇)과 비교할 수 있습니다.</li>
-        <li><b>점 그래프</b>: 채널마다 "다음 1원이 만드는 마진(한계 ROI)". 회색 = 실험 전(광고 채널은 관측 모델, CRM은 어트리뷰션), 갈색 = 실험 후. 세로선 1 = 본전.</li>
-        <li><b>CRM 줄</b>: 어트리뷰션은 약 20(화살표, 그래프 밖)으로 보지만 정답은 0 아래입니다. 실험으로 만든 곡선은 본전 아래로 읽어 판단이 맞습니다.</li>
-        <li><b>CRM 세 가지 답 표</b>: 같은 CRM을 어트리뷰션, 홀드아웃(평균), 빈도 테스트(추가 1원)로 잰 값과 정답 비교.</li>
-        <li><b>신규 회원 가치</b>: 가입 코호트 주문으로 계산한 12개월 마진. 광고 채널과 CRM을 같은 원화로 비교하게 해 줍니다.</li>
+        <li>Before recommending a budget move, this tab scores the numbers behind it. The data are synthetic, so every estimate can be compared with the truth (◇).</li>
+        <li><b>Dot chart:</b> margin from the next won (marginal ROI) per channel. Grey = before experiments (observational model for acquisition channels, attribution for CRM); brown = after experiments. The line at 1 is break-even.</li>
+        <li><b>CRM row:</b> attribution reads about 20 (arrow, off the chart) while the truth is below zero. The experiment-based curve reads below break-even, so the decision is right.</li>
+        <li><b>Three answers table:</b> the same CRM measured by attribution, the holdout (average) and the frequency test (next message), next to the truth.</li>
+        <li><b>Value of a new member:</b> 12-month margin from join-cohort orders. It lets acquisition channels and CRM be compared in the same currency.</li>
       </ul></details>
     <div class="stats" id="stats"></div>
     <div class="two">
@@ -288,14 +287,13 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Simulator ================= -->
   <section id="view-simulator" class="view" role="tabpanel" aria-labelledby="tab-simulator" hidden>
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>지역별 예산 총액은 그대로 두고 채널 배분을 바꿔 보는 도구입니다. 처음엔 모델이 추천한 배분으로 열립니다.</li>
-        <li><b>슬라이더</b>: 각 채널의 2025년 주별 패턴을 통째로 키우거나 줄입니다. 옅은 띠 = 허용 범위(가드레일), 가운데 눈금 = 작년 수준.</li>
-        <li><b>오른쪽 숫자(marginal ROI)</b>: 그 채널에 1원을 더 쓰면 돌아오는 마진. 초록 = 본전 이상, 빨강 = 본전 미만.</li>
-        <li><b>큰 숫자</b>: 작년 배분보다 1년에 더 남는 마진(평균). 아래 80% 구간과 막대그래프(가능한 시나리오 200개)로 불확실성을 봅니다.</li>
-        <li><b>곡선</b>: 채널 이름을 누르면 그 채널의 지출-마진 곡선이 나옵니다. 평평해질수록 돈을 더 넣어도 효과가 적습니다.
-          광고 채널 곡선은 마케팅 믹스 모델, CRM 곡선은 실험 결과로 만들었습니다.</li>
+        <li>A tool to change the channel mix while each region's total stays the same. It opens on the recommended mix.</li>
+        <li><b>Sliders:</b> each scales the channel's 2025 weekly pattern. The light band is the agreed guardrail; the centre tick is last year's level.</li>
+        <li><b>Number on the right (marginal ROI):</b> margin returned by one more won in that channel. Green = pays back, red = does not.</li>
+        <li><b>Big number:</b> extra margin per year versus last year's mix (average). The 80% interval and the histogram (200 scenarios) show the uncertainty.</li>
+        <li><b>Curve:</b> select a channel name to see its spend-to-margin curve. The flatter it gets, the less extra spend adds. Acquisition curves come from the marketing-mix model, the CRM curve from the experiments.</li>
       </ul></details>
     <div class="sim">
       <div class="panel">
@@ -336,14 +334,12 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Targeting ================= -->
   <section id="view-targeting" class="view" role="tabpanel" aria-labelledby="tab-targeting" hidden>
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>예산 계획은 CRM 메시지를 약 30% 줄이라고 합니다. 이 화면은 "누구에게 보내는 것을 멈출지"를 정합니다.</li>
-        <li><b>업리프트 모델</b>: 홀드아웃 실험 데이터로 "메시지를 받았을 때와 안 받았을 때 주문 차이"를 회원별로 예측하는 머신러닝 모델입니다.
-          어차피 살 단골(sure things)이 아니라, 메시지에 반응하는 회원(persuadables)을 찾습니다.</li>
-        <li><b>곡선</b>: 가로 = 메시지를 보내는 회원 비율, 세로 = 그로 인해 늘어난 주문(평가용 40% 회원 기준). 위에 있을수록 같은 발송량으로 더 많은 주문.
-          갈색 = 업리프트 순, 회색 점선 = 무작위, 회색 실선 = "살 가능성이 높은 순"(지금 여정과 비슷한 방식).</li>
-        <li><b>십분위 그래프</b>: 모델이 예측한 업리프트 순으로 회원을 10묶음으로 나누고, 숨은 정답의 실제 반응도를 막대로 보여줍니다. 오른쪽으로 갈수록 높으면 모델이 순서를 맞힌 것입니다.</li>
+        <li>The budget plan says to send about 30% fewer CRM messages. This tab decides whom to stop messaging.</li>
+        <li><b>Uplift model:</b> a machine-learning model trained on the holdout experiment that predicts, member by member, how many more orders a message causes. It looks for members who respond to a message (persuadables), not loyal members who buy anyway (sure things).</li>
+        <li><b>Curve:</b> horizontal = share of members messaged, vertical = extra orders it causes (on the 40% of members held back for evaluation). Higher means more orders for the same number of messages. Brown = by predicted uplift, grey dashed = random, grey solid = by likelihood to buy (similar to today's journey).</li>
+        <li><b>Decile chart:</b> members split into ten groups by predicted uplift, with the hidden true response as bars. Rising to the right means the model orders members correctly.</li>
       </ul></details>
     <div class="stats" id="upl-stats"></div>
     <div class="two">
@@ -373,10 +369,10 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 
   <!-- ================= Memo ================= -->
   <section id="view-memo" class="view" role="tabpanel" aria-labelledby="tab-memo" hidden>
-    <details class="guide"><summary>읽는 법 (한국어)</summary>
+    <details class="guide"><summary>How to read this tab</summary>
       <ul>
-        <li>분석 결과를 의사결정자가 1분 안에 읽도록 정리한 보고서입니다. 제목이 결론이고, 표 → 근거 → 위험 → 다음 단계 순서입니다.</li>
-        <li>맨 아래 상자는 정답을 아는 포트폴리오에만 있는 채점 결과입니다. 실제 업무 메모에는 없습니다.</li>
+        <li>The results written for a decision-maker to read in a minute: the title is the conclusion, then the table, evidence, risks and next steps.</li>
+        <li>The box at the bottom is a score against the hidden truth, which only a portfolio piece can have. A real memo would not include it.</li>
       </ul></details>
     <article class="panel memo">
       <div class="eyebrow">Decision memo · 2026 growth plan</div>
