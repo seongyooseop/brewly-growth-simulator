@@ -32,11 +32,6 @@ table 'Dim Member'
 		summarizeBy: none
 		sourceColumn: join_date
 
-		variation Variation
-			isDefault
-			relationship: 45549585-1d30-423d-aee9-27853c484dc0
-			defaultHierarchy: LocalDateTable_11a3792c-79b8-4773-a379-9eefb8802602.'Date Hierarchy'
-
 		annotation UnderlyingDateTimeDataType = Date
 
 	column join_cohort

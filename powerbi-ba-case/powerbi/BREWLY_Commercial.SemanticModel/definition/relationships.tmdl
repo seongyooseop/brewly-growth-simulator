@@ -59,18 +59,3 @@ relationship ce21729a-27c2-58cc-998c-717384710c95
 	fromColumn: 'Fact CX Tickets'.created_week_id
 	toColumn: 'Dim Week'.week_id
 
-relationship 6c4c951c-2538-4298-aca7-2d77362b0895
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Week'.week_start
-	toColumn: LocalDateTable_55ab4690-e188-4f0b-8c7a-57a51add7f3c.Date
-
-relationship 56794c2e-f4cf-4992-b463-620f93703c49
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Week'.month_start
-	toColumn: LocalDateTable_d8bc42b9-f0d4-4fdd-9bb6-a7f4ff8e3e4c.Date
-
-relationship 45549585-1d30-423d-aee9-27853c484dc0
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Member'.join_date
-	toColumn: LocalDateTable_11a3792c-79b8-4773-a379-9eefb8802602.Date
-

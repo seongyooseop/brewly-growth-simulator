@@ -10,7 +10,7 @@
     "tabOrder": 9000
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "multiRowCard",
     "query": {
       "queryState": {
         "Values": {
@@ -23,32 +23,91 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Sell-out Store Coverage"
+                  "Property": "Refill Revenue YoY %"
                 }
               },
-              "queryRef": "_Measures.Sell-out Store Coverage",
-              "nativeQueryRef": "Sell-out Store Coverage"
+              "queryRef": "_Measures.Refill Revenue YoY %",
+              "nativeQueryRef": "Refill Revenue YoY %",
+              "displayName": "Refill revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Active Members YoY %"
+                }
+              },
+              "queryRef": "_Measures.Active Members YoY %",
+              "nativeQueryRef": "Active Members YoY %",
+              "displayName": "Active members"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "New Members YoY %"
+                }
+              },
+              "queryRef": "_Measures.New Members YoY %",
+              "nativeQueryRef": "New Members YoY %",
+              "displayName": "New members"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Retail Net Revenue YoY %"
+                }
+              },
+              "queryRef": "_Measures.Retail Net Revenue YoY %",
+              "nativeQueryRef": "Retail Net Revenue YoY %",
+              "displayName": "Retail revenue"
             }
           ]
         }
       }
     },
     "drillFilterOtherVisuals": true,
-    "objects": {
-      "labels": [
+    "visualContainerObjects": {
+      "title": [
         {
           "properties": {
-            "labelDisplayUnits": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "1D"
+                  "Value": "true"
                 }
               }
             },
-            "fontSize": {
+            "text": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "'Year over year (latest year selected vs prior year)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

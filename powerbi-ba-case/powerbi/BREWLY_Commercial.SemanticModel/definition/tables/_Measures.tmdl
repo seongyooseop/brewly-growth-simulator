@@ -127,6 +127,36 @@ table _Measures
 		displayFolder: Data quality
 		lineageTag: 34b64f5f-82b8-5530-8b75-5a511c0d09da
 
+	/// Refill revenue in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024 (no 2023 data).
+	measure 'Refill Revenue YoY %' = VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Refill Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Refill Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+		formatString: 0.0%
+		displayFolder: Comparisons
+		lineageTag: 30824f74-dcbe-5dd8-bf2a-8943b5f974d5
+
+	/// Active members at the last selected week vs 52 weeks earlier.
+	measure 'Active Members YoY %' = VAR LastWeek = MAX ( 'Dim Week'[week_id] ) VAR Cur = [Active Members (8w)] VAR PY = IF ( LastWeek >= 52, CALCULATE ( [Active Members (8w)], REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] = LastWeek - 52 ) ) RETURN DIVIDE ( Cur - PY, PY )
+		formatString: 0.0%
+		displayFolder: Comparisons
+		lineageTag: 4d65da30-43bb-5038-a490-b56c89da516a
+
+	/// New members in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024.
+	measure 'New Members YoY %' = VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [New Members], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [New Members], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+		formatString: 0.0%
+		displayFolder: Comparisons
+		lineageTag: 0e1fa04b-78a9-59e1-82db-e9a736f41e80
+
+	/// Retail net sell-out (complete weeks) in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024.
+	measure 'Retail Net Revenue YoY %' = VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Retail Net Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Retail Net Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+		formatString: 0.0%
+		displayFolder: Comparisons
+		lineageTag: 39f5c8db-8134-5a77-892e-37614759e771
+
+	/// CX SLA met % minus the 85% target, in percentage points (decision D-07).
+	measure 'CX SLA Gap vs Target' = VAR Target = 0.85 VAR Actual = [CX SLA Met %] RETURN IF ( NOT ISBLANK ( Actual ), Actual - Target )
+		formatString: 0.0%
+		displayFolder: Comparisons
+		lineageTag: 20df9801-3fd2-599d-a86d-88a8d9a84320
+
 	column Placeholder
 		dataType: string
 		isHidden

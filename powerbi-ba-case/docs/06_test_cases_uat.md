@@ -2,7 +2,7 @@
 
 ## Functional tests: measures reconcile to SQL
 
-Each DAX measure is checked against an independent SQL query on the same clean tables (DuckDB, `../tests/expected_values.csv`, which also stores the SQL). A test passes when the Power BI value matches to the displayed precision. The Power BI values below were read from the model open in Power BI Desktop with `../tests/run_dax_tests.ps1` (results in `../tests/dax_results.csv`): 14 of 14 pass.
+Each DAX measure is checked against an independent SQL query on the same clean tables (DuckDB, `../tests/expected_values.csv`, which also stores the SQL). A test passes when the Power BI value matches to the displayed precision. The Power BI values below were read from the model open in Power BI Desktop with `../tests/run_dax_tests.ps1` (results in `../tests/dax_results.csv`): 19 of 19 pass.
 
 | Test | Measure | Filter | Expected (SQL) | Power BI | Result |
 |---|---|---|---|---|---|
@@ -20,6 +20,11 @@ Each DAX measure is checked against an independent SQL query on the same clean t
 | FT-12 | CX SLA Met % | ISO year 2025, resolved tickets | 73.2% | 73.2% | Pass |
 | FT-13 | Lapsed Members (12w+) | As of 2025-W52 | 59,029 | 59,029 | Pass |
 | FT-14 | Retention % | Cohort 2024 Q1, month 3 | 46.5% | 46.5% | Pass |
+| FT-15 | Refill Revenue YoY % | ISO year 2025 vs 2024 | +0.9% | +0.9% | Pass |
+| FT-16 | Active Members YoY % | Week 2025-W52 vs 2024-W52 | +2.1% | +2.1% | Pass |
+| FT-17 | New Members YoY % | ISO year 2025 vs 2024 | +2.9% | +2.9% | Pass |
+| FT-18 | Retail Net Revenue YoY % | ISO year 2025 vs 2024, complete weeks | +9.7% | +9.7% | Pass |
+| FT-19 | CX SLA Gap vs Target | ISO year 2025, target 85% | -11.8% | -11.8% | Pass |
 
 Behaviour tests (no number):
 
@@ -28,7 +33,8 @@ Behaviour tests (no number):
 | BT-01 | Selecting a quarter, `Active Members (8w)` equals the value for that quarter's last week | Pass (2025 Q4 = 2025-W52 = 46,936) |
 | BT-02 | Region slicer filters orders, spend, sell-out, CRM and CX pages consistently | Pass (sum over the three regions equals the total for all five facts) |
 | BT-03 | 2025-W52 is excluded from `Retail Net Revenue (KRW)` and included in the "incl. incomplete" measure | Pass (blank vs 55,998,800) |
-| BT-04 | Every measure shows its description as a tooltip in the Data pane | Pass (21 of 21 measures have a description) |
+| BT-04 | Every measure shows its description as a tooltip in the Data pane | Pass (26 of 26 measures have a description) |
+| BT-05 | Year-over-year measures compare the latest selected year with the year before: blank (not zero) for 2024, and 2025 vs 2024 when all years are selected | Pass (blank; +0.9%) |
 
 ## Defects found in testing
 

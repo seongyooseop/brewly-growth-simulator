@@ -15,11 +15,6 @@ table 'Dim Week'
 		summarizeBy: none
 		sourceColumn: week_start
 
-		variation Variation
-			isDefault
-			relationship: 6c4c951c-2538-4298-aca7-2d77362b0895
-			defaultHierarchy: LocalDateTable_55ab4690-e188-4f0b-8c7a-57a51add7f3c.'Date Hierarchy'
-
 		annotation UnderlyingDateTimeDataType = Date
 
 	column iso_year
@@ -58,11 +53,6 @@ table 'Dim Week'
 		lineageTag: 18400049-d378-5adf-9839-d87e659d5110
 		summarizeBy: none
 		sourceColumn: month_start
-
-		variation Variation
-			isDefault
-			relationship: 56794c2e-f4cf-4992-b463-620f93703c49
-			defaultHierarchy: LocalDateTable_d8bc42b9-f0d4-4fdd-9bb6-a7f4ff8e3e4c.'Date Hierarchy'
 
 		annotation UnderlyingDateTimeDataType = Date
 

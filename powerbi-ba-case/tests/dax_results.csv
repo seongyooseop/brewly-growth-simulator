@@ -13,9 +13,16 @@
 "FT-12","0.732203719933781"
 "FT-13","59029"
 "FT-14","0.465081723625557"
+"FT-15","0.00945661128958449"
+"FT-16","0.0207250505621643"
+"FT-17","0.0288927439133816"
+"FT-18","0.0974916919913835"
+"FT-19","-0.117796280066219"
+"BT-05 YoY blank for 2024",
+"BT-05 all years = latest year (2025 vs 2024)","0.00945661128958449"
 "BT-01 quarter","46936"
 "BT-03 W52 retail (complete only)",
 "BT-03 W52 retail (incl. incomplete)","55998800"
 "DEF-01 blank-week rows with Active Members","0"
 "BT-02 region sum minus total (all facts)","0"
-"BT-04 measures without description","0 of 21"
+"BT-04 measures without description","0 of 26"

@@ -50,6 +50,11 @@
         }
       ]
     },
+    "syncGroup": {
+      "groupName": "Quarter",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
   }
 }

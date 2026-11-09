@@ -2,7 +2,7 @@
 
 **Live demo:** https://seongyooseop.github.io/brewly-growth-simulator/simulator/
 
-**Business Analyst case in Power BI:** [`powerbi-ba-case/`](powerbi-ba-case/) (requirements, KPI definitions, data-quality checks, a 21-measure Power BI model and SQL-reconciled tests).
+**Business Analyst case in Power BI:** [`powerbi-ba-case/`](powerbi-ba-case/) (requirements, design, decisions, data-quality checks, a 26-measure Power BI model, SQL-reconciled tests and an insight brief).
 
 An end-to-end analytics portfolio project for a **fictional** device-and-refills membership brand, "BREWLY"
 (capsule coffee), in three Korean regions. Paid brand advertising is assumed to be unavailable, as in regulated

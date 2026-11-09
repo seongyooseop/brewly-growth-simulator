@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "p5tests",
-  "displayName": "5 Test sheet",
+  "displayName": "5 Test sheet (QA)",
   "displayOption": "FitToPage",
   "height": 720,
   "width": 1280

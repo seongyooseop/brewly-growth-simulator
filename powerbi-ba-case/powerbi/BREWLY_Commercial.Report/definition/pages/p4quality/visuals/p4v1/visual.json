@@ -53,57 +53,12 @@
                       "Entity": "DQ Checks"
                     }
                   },
-                  "Property": "rule"
-                }
-              },
-              "queryRef": "DQ Checks.rule",
-              "nativeQueryRef": "rule",
-              "displayName": "Rule"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DQ Checks"
-                    }
-                  },
-                  "Property": "rows_checked"
-                }
-              },
-              "queryRef": "DQ Checks.rows_checked",
-              "nativeQueryRef": "rows_checked",
-              "displayName": "Rows checked"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DQ Checks"
-                    }
-                  },
                   "Property": "rows_failed_before"
                 }
               },
               "queryRef": "DQ Checks.rows_failed_before",
               "nativeQueryRef": "rows_failed_before",
               "displayName": "Failed before fix"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DQ Checks"
-                    }
-                  },
-                  "Property": "fix_applied"
-                }
-              },
-              "queryRef": "DQ Checks.fix_applied",
-              "nativeQueryRef": "fix_applied",
-              "displayName": "Fix applied"
             },
             {
               "field": {
@@ -134,6 +89,51 @@
               "queryRef": "DQ Checks.status",
               "nativeQueryRef": "status",
               "displayName": "Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rows_checked"
+                }
+              },
+              "queryRef": "DQ Checks.rows_checked",
+              "nativeQueryRef": "rows_checked",
+              "displayName": "Rows checked"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rule"
+                }
+              },
+              "queryRef": "DQ Checks.rule",
+              "nativeQueryRef": "rule",
+              "displayName": "Rule"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "fix_applied"
+                }
+              },
+              "queryRef": "DQ Checks.fix_applied",
+              "nativeQueryRef": "fix_applied",
+              "displayName": "Fix applied"
             }
           ]
         }

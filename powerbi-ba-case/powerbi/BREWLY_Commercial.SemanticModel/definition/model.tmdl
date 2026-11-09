@@ -8,7 +8,7 @@ model Model
 
 annotation PBI_QueryOrder = ["_Measures","Dim Week","Dim Region","Dim Member","Dim Channel","Dim Store","Dim Product","Fact Orders","Fact Spend","Fact CRM Messages","Fact Sellout","Fact CX Tickets","Fact Cohort Retention","DQ Checks"]
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode"]
 
@@ -26,10 +26,6 @@ ref table 'Fact Sellout'
 ref table 'Fact CX Tickets'
 ref table 'Fact Cohort Retention'
 ref table 'DQ Checks'
-ref table DateTableTemplate_88d8b45f-ada2-4f6e-9b58-2c63e713c07b
-ref table LocalDateTable_55ab4690-e188-4f0b-8c7a-57a51add7f3c
-ref table LocalDateTable_d8bc42b9-f0d4-4fdd-9bb6-a7f4ff8e3e4c
-ref table LocalDateTable_11a3792c-79b8-4773-a379-9eefb8802602
 
 ref cultureInfo en-US
 

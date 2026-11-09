@@ -38,9 +38,12 @@ def col(table: str, column: str) -> dict:
     return p
 
 
-def mea(name: str) -> dict:
-    return {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": M}}, "Property": name}},
-            "queryRef": f"{M}.{name}", "nativeQueryRef": name}
+def mea(name: str, label: str | None = None) -> dict:
+    p = {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": M}}, "Property": name}},
+         "queryRef": f"{M}.{name}", "nativeQueryRef": name}
+    if label:
+        p["displayName"] = label
+    return p
 
 
 def visual(name, vtype, x, y, w, h, roles: dict, title: str | None = None, objects: dict | None = None, z=0):
@@ -56,8 +59,20 @@ def visual(name, vtype, x, y, w, h, roles: dict, title: str | None = None, objec
 
 
 def slicer(name, x, y, w, table, column, title):
-    return visual(name, "slicer", x, y, w, 75, {"Values": [col(table, column)]},
-                  objects={"data": [{"properties": {"mode": lit("'Dropdown'")}}]})
+    v = visual(name, "slicer", x, y, w, 75, {"Values": [col(table, column)]},
+               objects={"data": [{"properties": {"mode": lit("'Dropdown'")}}]})
+    v["visual"]["syncGroup"] = {"groupName": title, "fieldChanges": True, "filterChanges": True}  # same choice on every page
+    return v
+
+
+def gradient(measure: str, low: str, high: str) -> dict:
+    """Background colour scale on a table or matrix value column."""
+    rule = {"linearGradient2": {"min": {"color": {"Literal": {"Value": f"'{low}'"}}},
+                                "max": {"color": {"Literal": {"Value": f"'{high}'"}}},
+                                "nullColoringStrategy": {"strategy": {"Literal": {"Value": "'asZero'"}}}}}
+    fill = {"FillRule": {"Input": mea(measure)["field"], "FillRule": rule}}
+    return {"values": [{"properties": {"backColor": {"solid": {"color": {"expr": fill}}}},
+                        "selector": {"data": [{"dataViewWildcard": {"matchingOption": 1}}], "metadata": f"{M}.{measure}"}}]}
 
 
 def card(name, x, y, w, h, measure):
@@ -86,7 +101,10 @@ pages = {
         visual("p1v2", "clusteredBarChart", 840, 200, 430, 360,
                {"Category": [col("Dim Store", "partner")], "Y": [mea("Retail Net Revenue (KRW)")]},
                "Partner net sell-out (complete weeks only)"),
-        card("p1v3", 840, 570, 430, 140, "Sell-out Store Coverage"),
+        visual("p1v3", "multiRowCard", 840, 570, 430, 140,
+               {"Values": [mea("Refill Revenue YoY %", "Refill revenue"), mea("Active Members YoY %", "Active members"),
+                           mea("New Members YoY %", "New members"), mea("Retail Net Revenue YoY %", "Retail revenue")]},
+               "Year over year (latest year selected vs prior year)"),
     ],
     ("p2acquisition", "2 Acquisition"): slicers("p2", with_quarter=False) + [
         visual("p2v1", "columnChart", 10, 85, 625, 385,
@@ -100,45 +118,50 @@ pages = {
                "Blended CAC by region (channel CAC is out of scope: US-07)"),
     ],
     ("p3retention", "3 Retention and CX"): slicers("p3", with_quarter=False) + [
-        card("p3c1", 10, 85, 307, 105, "Lapsed Members (12w+)"),
-        card("p3c2", 327, 85, 307, 105, "CX SLA Met %"),
-        card("p3c3", 644, 85, 307, 105, "Median Resolution Days"),
-        card("p3c4", 961, 85, 309, 105, "Tickets per 1,000 Active Members"),
+        card("p3c1", 10, 85, 244, 105, "Lapsed Members (12w+)"),
+        card("p3c2", 264, 85, 244, 105, "CX SLA Met %"),
+        card("p3c5", 518, 85, 244, 105, "CX SLA Gap vs Target"),
+        card("p3c3", 772, 85, 244, 105, "Median Resolution Days"),
+        card("p3c4", 1026, 85, 244, 105, "Tickets per 1,000 Active Members"),
         visual("p3v1", "pivotTable", 10, 200, 640, 510,
                {"Rows": [col("Fact Cohort Retention", "join_cohort")], "Columns": [col("Fact Cohort Retention", "months_since_join")],
                 "Values": [mea("Retention %")]},
-               "Cohort retention: share ordering n months after joining"),
-        visual("p3v2", "clusteredBarChart", 660, 200, 610, 250,
+               "Cohort retention: share ordering n months after joining", objects=gradient("Retention %", "#F3E9DC", "#2F6B5E")),
+        visual("p3v2", "clusteredBarChart", 660, 200, 610, 215,
                {"Category": [col("Fact CX Tickets", "category")], "Y": [mea("CX Tickets")]}, "CX tickets by category"),
-        visual("p3v3", "tableEx", 660, 460, 610, 250,
+        visual("p3v3", "tableEx", 660, 425, 610, 285,
                {"Values": [col("Fact CX Tickets", "category"), mea("CX Tickets"), mea("CX SLA Met %"), mea("Median Resolution Days")]},
-               "Service level by category (SLA = resolved within 3 days)"),
+               "Service level by category (SLA = resolved within 3 days, target 85%)", objects=gradient("CX SLA Met %", "#B5473A", "#2F6B5E")),
     ],
     ("p4quality", "4 Data quality"): [
         card("p4c1", 10, 10, 300, 105, "DQ Checks Passed"),
         card("p4c2", 320, 10, 300, 105, "DQ Rows Fixed"),
         visual("p4v1", "tableEx", 10, 125, 1260, 330,
-               {"Values": [col("DQ Checks", c) for c in ["check_id", "source_table", "rule", "rows_checked", "rows_failed_before",
-                                                          "fix_applied", "rows_failed_after", "status"]]},
+               {"Values": [col("DQ Checks", c) for c in ["check_id", "source_table", "rows_failed_before", "rows_failed_after", "status",
+                                                          "rows_checked", "rule", "fix_applied"]]},
                "Data-quality checks run before this refresh"),
         visual("p4v2", "lineChart", 10, 465, 1260, 245,
                {"Category": [col("Dim Week", "week_start")], "Y": [mea("Sell-out Store Coverage")]},
                "Share of partner stores reported each week (below 95% = incomplete)"),
     ],
-    ("p5tests", "5 Test sheet"): [
-        visual("p5v1", "tableEx", 10, 10, 1260, 175,
+    ("p5tests", "5 Test sheet (QA)"): [
+        visual("p5v1", "tableEx", 10, 10, 1260, 200,
                {"Values": [col("Dim Week", "iso_year")] + [mea(n) for n in [
                    "Refill Orders", "Refill Revenue (KRW)", "Active Members (8w)", "New Members", "Acquisition Spend (KRW)"]]},
                "FT-01, FT-02, FT-03, FT-05, FT-06 (compare the 2025 row with tests/expected_values.csv)"),
-        visual("p5v2", "tableEx", 10, 195, 1260, 175,
+        visual("p5v2", "tableEx", 10, 215, 1260, 200,
                {"Values": [col("Dim Week", "iso_year")] + [mea(n) for n in [
                    "Retail Net Revenue (KRW)", "Device Return Rate", "CRM Messages Sent", "CX Tickets", "CX SLA Met %"]]},
                "FT-08 to FT-12"),
-        visual("p5v3", "tableEx", 10, 380, 940, 330,
-               {"Values": [col("Dim Week", "iso_year"), col("Dim Region", "region_name"), mea("Active Members (8w)"),
-                           mea("New Members"), mea("Acquisition Spend (KRW)"), mea("Blended CAC (KRW)")]},
-               "FT-04 (2025, Seoul metro active members) and FT-07 (2025, Yeongnam blended CAC)"),
-        card("p5c1", 960, 380, 310, 160, "Lapsed Members (12w+)"),
+        visual("p5v3", "tableEx", 10, 420, 620, 290,
+               {"Values": [col("Dim Week", "iso_year"), col("Dim Region", "region_name"), mea("Active Members (8w)", "Active members"),
+                           mea("New Members", "New members"), mea("Blended CAC (KRW)", "Blended CAC")]},
+               "FT-04 (2025, Seoul metro) and FT-07 (2025, Yeongnam)"),
+        visual("p5v4", "tableEx", 640, 420, 630, 190,
+               {"Values": [col("Dim Week", "iso_year"), mea("Refill Revenue YoY %", "Revenue YoY"), mea("Active Members YoY %", "Active YoY"),
+                           mea("New Members YoY %", "New YoY"), mea("Retail Net Revenue YoY %", "Retail YoY"), mea("CX SLA Gap vs Target", "SLA gap")]},
+               "FT-15 to FT-19 (2025 row; 2024 is blank: no 2023 data)"),
+        card("p5c1", 640, 615, 300, 95, "Lapsed Members (12w+)"),
     ],
 }
 
@@ -158,5 +181,19 @@ for (pname, display), visuals in pages.items():
         vdir.mkdir()
         (vdir / "visual.json").write_text(json.dumps(v, indent=2), encoding="utf-8")
 order = [p for p, _ in pages]
+
+# BREWLY theme on top of the base theme (registered resource, as Power BI Desktop stores an imported theme)
+REPORT = PAGES.parent / "report.json"
+THEME_SRC = CASE / "powerbi" / "brewly_theme.json"
+res = PAGES.parents[1] / "StaticResources" / "RegisteredResources"
+res.mkdir(parents=True, exist_ok=True)
+shutil.copyfile(THEME_SRC, res / "brewly_theme.json")
+rj = json.loads(REPORT.read_text(encoding="utf-8"))
+base = rj["themeCollection"]["baseTheme"]
+rj["themeCollection"]["customTheme"] = {"name": "brewly_theme.json", "reportVersionAtImport": base["reportVersionAtImport"], "type": "RegisteredResources"}
+rj["resourcePackages"] = [r for r in rj.get("resourcePackages", []) if r["type"] != "RegisteredResources"] + [
+    {"name": "RegisteredResources", "type": "RegisteredResources",
+     "items": [{"name": "brewly_theme.json", "path": "brewly_theme.json", "type": "CustomTheme"}]}]
+REPORT.write_text(json.dumps(rj, indent=2), encoding="utf-8")
 (PAGES / "pages.json").write_text(json.dumps({"$schema": S_PAGES, "pageOrder": order, "activePageName": order[0]}, indent=2), encoding="utf-8")
 print(f"{len(order)} pages, {sum(len(v) for v in pages.values())} visuals written to {PAGES}")

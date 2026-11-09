@@ -153,6 +153,11 @@ MEASURES = [
     ("Retention %", "DIVIDE ( SUM ( 'Fact Cohort Retention'[retained_members] ), SUM ( 'Fact Cohort Retention'[cohort_size] ) )", "0.0%", "Members", "Share of a join cohort ordering in the n-th 4-week period after joining. Use with cohort and month on the axes."),
     ("DQ Checks Passed", "CALCULATE ( COUNTROWS ( 'DQ Checks' ), 'DQ Checks'[status] = \"Pass\" )", "0", "Data quality", "Checks with no failing rows after fixes."),
     ("DQ Rows Fixed", "SUM ( 'DQ Checks'[rows_failed_before] )", "#,0", "Data quality", "Rows that failed a check before the fix."),
+    ("Refill Revenue YoY %", "VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Refill Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Refill Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, \"w\", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )", "0.0%", "Comparisons", "Refill revenue in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024 (no 2023 data)."),
+    ("Active Members YoY %", "VAR LastWeek = MAX ( 'Dim Week'[week_id] ) VAR Cur = [Active Members (8w)] VAR PY = IF ( LastWeek >= 52, CALCULATE ( [Active Members (8w)], REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] = LastWeek - 52 ) ) RETURN DIVIDE ( Cur - PY, PY )", "0.0%", "Comparisons", "Active members at the last selected week vs 52 weeks earlier."),
+    ("New Members YoY %", "VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [New Members], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [New Members], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, \"w\", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )", "0.0%", "Comparisons", "New members in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024."),
+    ("Retail Net Revenue YoY %", "VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Retail Net Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Retail Net Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, \"w\", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )", "0.0%", "Comparisons", "Retail net sell-out (complete weeks) in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024."),
+    ("CX SLA Gap vs Target", "VAR Target = 0.85 VAR Actual = [CX SLA Met %] RETURN IF ( NOT ISBLANK ( Actual ), Actual - Target )", "0.0%", "Comparisons", "CX SLA met % minus the 85% target, in percentage points (decision D-07)."),
 ]
 
 # (from table, from column, to table, to column, active)
@@ -246,9 +251,17 @@ def write(p: Path, text: str) -> None:
 
 import sys
 
+def write_dax() -> None:
+    lines = ["// BREWLY commercial dashboard - DAX measures (all live in the _Measures table)", ""]
+    for name, expr, fmt, folder, desc in MEASURES:
+        lines += [f"// [{folder}] {desc}", f"{name} =", "    " + expr, f"// format: {fmt}", ""]
+    (PB / "measures.dax").write_text("\n".join(lines), encoding="utf-8")
+
+
 if (SM / ".pbi").exists() and "--force" not in sys.argv:
-    # Power BI Desktop has saved the project: it now owns the model files (auto date tables, layout).
-    sys.exit("Semantic model already saved by Power BI Desktop; rerun with --force to regenerate it.")
+    # Power BI Desktop has saved the project: it now owns the model files (edit them in Desktop or as TMDL).
+    write_dax()
+    sys.exit("Semantic model already saved by Power BI Desktop: measures.dax refreshed, model left unchanged (--force regenerates it).")
 
 d = SM / "definition"
 write(SM / "definition.pbism", json.dumps({"version": "4.0", "settings": {}}, indent=2))
@@ -286,9 +299,5 @@ else:
 write(PB / f"{NAME}.pbip", json.dumps({"version": "1.0", "artifacts": [{"report": {"path": f"{NAME}.Report"}}], "settings": {"enableAutoRecovery": True}}, indent=2))
 write(PB / ".gitignore", "**/.pbi/localSettings.json\n**/.pbi/cache.abf\n")
 
-# measures.dax for reading and manual setup
-lines = ["// BREWLY commercial dashboard - DAX measures (all live in the _Measures table)", ""]
-for name, expr, fmt, folder, desc in MEASURES:
-    lines += [f"// [{folder}] {desc}", f"{name} =", "    " + expr, f"// format: {fmt}", ""]
-write(PB / "measures.dax", "\n".join(lines))
+write_dax()
 print("PBIP written to", PB)

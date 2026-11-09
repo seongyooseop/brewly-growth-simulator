@@ -406,6 +406,18 @@ t("FT-13", "Lapsed Members (12w+)", f"As of {wk.week_label[LAST]}, all regions",
   f"SELECT COUNT(*) FROM dim_member WHERE last_order_week_id IS NOT NULL AND last_order_week_id <= {LAST - 12}")
 t("FT-14", "Month-3 Retention", "Cohort 2024 Q1",
   "SELECT SUM(retained_members)::DOUBLE / MAX(cohort_size) FROM fact_cohort_retention WHERE join_cohort='2024 Q1' AND months_since_join=3")
+REV = "SELECT SUM(m.refill_price_krw) FROM fact_orders o JOIN dim_week w USING(week_id) JOIN dim_member m USING(member_id) WHERE w.iso_year = {y}"
+t("FT-15", "Refill Revenue YoY %", "ISO year 2025 vs 2024", f"SELECT ({REV.format(y=2025)}) / ({REV.format(y=2024)}) - 1")
+ACT = "SELECT COUNT(DISTINCT member_id) FROM fact_orders WHERE week_id BETWEEN {a} AND {b}"
+t("FT-16", "Active Members YoY %", f"Week {wk.week_label[LAST]} vs {wk.week_label[LAST - 52]}",
+  f"SELECT ({ACT.format(a=LAST - 7, b=LAST)})::DOUBLE / ({ACT.format(a=LAST - 59, b=LAST - 52)}) - 1")
+NEW = "SELECT COUNT(*) FROM dim_member m JOIN dim_week w ON m.join_week_id = w.week_id WHERE w.iso_year = {y}"
+t("FT-17", "New Members YoY %", "ISO year 2025 vs 2024", f"SELECT ({NEW.format(y=2025)})::DOUBLE / ({NEW.format(y=2024)}) - 1")
+RET = "SELECT SUM(f.net_revenue_krw) FROM fact_sellout f JOIN dim_week w USING(week_id) WHERE w.iso_year = {y} AND w.sellout_complete = 1"
+t("FT-18", "Retail Net Revenue YoY %", "ISO year 2025 vs 2024, complete weeks", f"SELECT ({RET.format(y=2025)})::DOUBLE / ({RET.format(y=2024)}) - 1")
+t("FT-19", "CX SLA Gap vs Target (pp)", "ISO year 2025, target 85%",
+  f"""SELECT AVG(CASE WHEN resolution_days <= 3 THEN 1.0 ELSE 0 END) - 0.85 FROM fact_cx_tickets x
+      JOIN dim_week w ON x.created_week_id = w.week_id WHERE {Y25} AND status='Resolved'""")
 pd.DataFrame(tests).to_csv(TESTS / "expected_values.csv", index=False)
 
 # --------------------------------------------------------------------------- headline numbers for the docs

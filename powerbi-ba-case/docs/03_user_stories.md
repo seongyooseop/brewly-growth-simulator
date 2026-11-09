@@ -60,6 +60,14 @@ As the **data governance lead**, I want to see which data checks ran and what wa
 - Page 4 lists all 6 checks with rows checked, rows failing before and after the fix, and status.
 - A week with late partner files is visible on the store-coverage chart.
 
+## US-10 Year-over-year and target (Should, added in workshop 2)
+
+As the **growth marketing manager** and the **CX manager**, I want each headline KPI compared with the same weeks last year, and the SLA compared with its 85% target, so that a number on a card tells me whether things are getting better.
+
+- Given 2025 is selected, refill revenue shows +0.9% year over year, active members +2.1%, new members +2.9% and retail net revenue +9.7% (FT-15 to FT-18).
+- Given 2025 is selected, the SLA gap to target shows -11.8 points (FT-19).
+- Given 2024 is selected, year-over-year values are blank (no 2023 data), not zero.
+
 ## US-09 Definitions in the report (Should)
 
 As the **finance business partner**, I want each KPI's definition in the report, so that everyone quotes the same number.

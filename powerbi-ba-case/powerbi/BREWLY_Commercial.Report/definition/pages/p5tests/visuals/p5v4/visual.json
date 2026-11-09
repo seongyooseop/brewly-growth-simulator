@@ -1,0 +1,149 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "p5v4",
+  "position": {
+    "x": 640,
+    "y": 420,
+    "z": 3000,
+    "height": 190,
+    "width": 630,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Week"
+                    }
+                  },
+                  "Property": "iso_year"
+                }
+              },
+              "queryRef": "Dim Week.iso_year",
+              "nativeQueryRef": "iso_year",
+              "displayName": "Year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Refill Revenue YoY %"
+                }
+              },
+              "queryRef": "_Measures.Refill Revenue YoY %",
+              "nativeQueryRef": "Refill Revenue YoY %",
+              "displayName": "Revenue YoY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Active Members YoY %"
+                }
+              },
+              "queryRef": "_Measures.Active Members YoY %",
+              "nativeQueryRef": "Active Members YoY %",
+              "displayName": "Active YoY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "New Members YoY %"
+                }
+              },
+              "queryRef": "_Measures.New Members YoY %",
+              "nativeQueryRef": "New Members YoY %",
+              "displayName": "New YoY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Retail Net Revenue YoY %"
+                }
+              },
+              "queryRef": "_Measures.Retail Net Revenue YoY %",
+              "nativeQueryRef": "Retail Net Revenue YoY %",
+              "displayName": "Retail YoY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "CX SLA Gap vs Target"
+                }
+              },
+              "queryRef": "_Measures.CX SLA Gap vs Target",
+              "nativeQueryRef": "CX SLA Gap vs Target",
+              "displayName": "SLA gap"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'FT-15 to FT-19 (2025 row; 2024 is blank: no 2023 data)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

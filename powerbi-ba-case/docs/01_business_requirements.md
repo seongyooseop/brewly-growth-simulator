@@ -60,6 +60,7 @@ Each request goes through the analytics team, and the teams' numbers do not agre
 | BR-07 | Show channel-level CAC | Won't (this release) | US-07 |
 | BR-08 | Show data-quality check results for the current refresh | Must | US-08 |
 | BR-09 | Every KPI shows its definition in the report | Should | US-09 |
+| BR-10 | Compare headline KPIs with the same weeks last year, and CX SLA with its target | Should (added in workshop 2) | US-10 |
 
 ## Non-functional requirements
 

@@ -1,6 +1,6 @@
 # 02 KPI definitions and business rules
 
-Every KPI on the dashboard is defined once here, built once as a DAX measure in `_Measures`, and has one owner. The tooltip description of each measure repeats the definition (BR-09).
+Every KPI on the dashboard (26 measures) is defined once here, built once as a DAX measure in `_Measures`, and has one owner. The tooltip description of each measure repeats the definition (BR-09).
 
 | KPI | Definition | Business rules and edge cases | Measure | Owner |
 |---|---|---|---|---|
@@ -18,6 +18,8 @@ Every KPI on the dashboard is defined once here, built once as a DAX measure in 
 | CX tickets | Tickets created in the period | Region from the member record when missing (DQ-05) | `CX Tickets` | CX |
 | CX SLA met % | Resolved tickets closed within 3 days / resolved tickets | Open tickets are excluded until resolved | `CX SLA Met %` | CX |
 | Median resolution days | Median days to resolve | Resolved tickets only | `Median Resolution Days` | CX |
+| Year-over-year % | Latest ISO year in the selection vs the same weeks 52 weeks earlier | Revenue, new members and retail use the same weeks; active members compare the last week; blank for 2024 (no 2023 data) | `Refill Revenue YoY %`, `Active Members YoY %`, `New Members YoY %`, `Retail Net Revenue YoY %` | Finance |
+| CX SLA gap to target | CX SLA met % minus 85% | Target agreed in decision D-07 | `CX SLA Gap vs Target` | CX |
 
 ## Calendar
 

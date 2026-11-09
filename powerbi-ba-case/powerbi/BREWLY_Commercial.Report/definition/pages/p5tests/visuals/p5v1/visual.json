@@ -5,7 +5,7 @@
     "x": 10,
     "y": 10,
     "z": 0,
-    "height": 175,
+    "height": 200,
     "width": 1260,
     "tabOrder": 0
   },
@@ -104,6 +104,7 @@
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
         {
@@ -138,95 +139,6 @@
           }
         }
       ]
-    },
-    "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "a1c4fc918ee5a006ca9c",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Week"
-              }
-            },
-            "Property": "iso_year"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "e3d3ef66eb5aed00c2b0",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Refill Orders"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "73b47be2057a284ec6d5",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Refill Revenue (KRW)"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "c28fd7b96ab3164d7420",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Active Members (8w)"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "f51e75470214d10c9a72",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "New Members"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "6dd56d7dbab408273705",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Acquisition Spend (KRW)"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
+    }
   }
 }

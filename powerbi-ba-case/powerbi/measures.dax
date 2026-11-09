@@ -15,7 +15,7 @@ Ordering Members =
     DISTINCTCOUNT ( 'Fact Orders'[member_id] )
 // format: #,0
 
-// [Members] Members with a refill order in the 8 weeks up to the last selected week (semi-additive: a quarter shows its last week).
+// [Members] Members with a refill order in the 8 weeks up to the last selected week (semi-additive: a quarter shows its last week; blank for the unmatched-week row).
 Active Members (8w) =
     VAR LastWeek = MAX ( 'Dim Week'[week_id] ) RETURN IF ( NOT ISBLANK ( LastWeek ), CALCULATE ( DISTINCTCOUNT ( 'Fact Orders'[member_id] ), REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] > LastWeek - 8, 'Dim Week'[week_id] <= LastWeek ) )
 // format: #,0
@@ -104,3 +104,28 @@ DQ Checks Passed =
 DQ Rows Fixed =
     SUM ( 'DQ Checks'[rows_failed_before] )
 // format: #,0
+
+// [Comparisons] Refill revenue in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024 (no 2023 data).
+Refill Revenue YoY % =
+    VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Refill Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Refill Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+// format: 0.0%
+
+// [Comparisons] Active members at the last selected week vs 52 weeks earlier.
+Active Members YoY % =
+    VAR LastWeek = MAX ( 'Dim Week'[week_id] ) VAR Cur = [Active Members (8w)] VAR PY = IF ( LastWeek >= 52, CALCULATE ( [Active Members (8w)], REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] = LastWeek - 52 ) ) RETURN DIVIDE ( Cur - PY, PY )
+// format: 0.0%
+
+// [Comparisons] New members in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024.
+New Members YoY % =
+    VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [New Members], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [New Members], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+// format: 0.0%
+
+// [Comparisons] Retail net sell-out (complete weeks) in the latest ISO year of the selection vs the same weeks a year earlier. Blank for 2024.
+Retail Net Revenue YoY % =
+    VAR LatestYear = MAX ( 'Dim Week'[iso_year] ) VAR Weeks = CALCULATETABLE ( VALUES ( 'Dim Week'[week_id] ), KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR Cur = CALCULATE ( [Retail Net Revenue (KRW)], KEEPFILTERS ( 'Dim Week'[iso_year] = LatestYear ) ) VAR PY = CALCULATE ( [Retail Net Revenue (KRW)], REMOVEFILTERS ( 'Dim Week' ), TREATAS ( SELECTCOLUMNS ( Weeks, "w", 'Dim Week'[week_id] - 52 ), 'Dim Week'[week_id] ) ) RETURN DIVIDE ( Cur - PY, PY )
+// format: 0.0%
+
+// [Comparisons] CX SLA met % minus the 85% target, in percentage points (decision D-07).
+CX SLA Gap vs Target =
+    VAR Target = 0.85 VAR Actual = [CX SLA Met %] RETURN IF ( NOT ISBLANK ( Actual ), Actual - Target )
+// format: 0.0%

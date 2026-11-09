@@ -3,11 +3,11 @@
   "name": "p3v3",
   "position": {
     "x": 660,
-    "y": 460,
-    "z": 8000,
-    "height": 250,
+    "y": 425,
+    "z": 9000,
+    "height": 285,
     "width": 610,
-    "tabOrder": 8000
+    "tabOrder": 9000
   },
   "visual": {
     "visualType": "tableEx",
@@ -77,6 +77,69 @@
       }
     },
     "drillFilterOtherVisuals": true,
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "_Measures"
+                            }
+                          },
+                          "Property": "CX SLA Met %"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#B5473A'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#2F6B5E'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "_Measures.CX SLA Met %"
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -91,7 +154,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Service level by category (SLA = resolved within 3 days)'"
+                  "Value": "'Service level by category (SLA = resolved within 3 days, target 85%)'"
                 }
               }
             }

@@ -3,10 +3,10 @@
   "name": "p5v3",
   "position": {
     "x": 10,
-    "y": 380,
+    "y": 420,
     "z": 2000,
-    "height": 330,
-    "width": 940,
+    "height": 290,
+    "width": 620,
     "tabOrder": 2000
   },
   "visual": {
@@ -57,7 +57,8 @@
                 }
               },
               "queryRef": "_Measures.Active Members (8w)",
-              "nativeQueryRef": "Active Members (8w)"
+              "nativeQueryRef": "Active Members (8w)",
+              "displayName": "Active members"
             },
             {
               "field": {
@@ -71,21 +72,8 @@
                 }
               },
               "queryRef": "_Measures.New Members",
-              "nativeQueryRef": "New Members"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Acquisition Spend (KRW)"
-                }
-              },
-              "queryRef": "_Measures.Acquisition Spend (KRW)",
-              "nativeQueryRef": "Acquisition Spend (KRW)"
+              "nativeQueryRef": "New Members",
+              "displayName": "New members"
             },
             {
               "field": {
@@ -99,7 +87,8 @@
                 }
               },
               "queryRef": "_Measures.Blended CAC (KRW)",
-              "nativeQueryRef": "Blended CAC (KRW)"
+              "nativeQueryRef": "Blended CAC (KRW)",
+              "displayName": "Blended CAC"
             }
           ]
         }
@@ -120,7 +109,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'FT-04 (2025, Seoul metro active members) and FT-07 (2025, Yeongnam blended CAC)'"
+                  "Value": "'FT-04 (2025, Seoul metro) and FT-07 (2025, Yeongnam)'"
                 }
               }
             }
