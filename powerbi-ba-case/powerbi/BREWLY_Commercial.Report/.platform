@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "BREWLY_Commercial"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "42dbe682-8fd3-4bdd-aabd-b4910aa0f638"
+  }
+}

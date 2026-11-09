@@ -1,0 +1,45 @@
+{
+  "rows": {
+    "dim_week": 104,
+    "dim_region": 3,
+    "dim_member": 121634,
+    "dim_channel": 5,
+    "dim_store": 30,
+    "dim_product": 4,
+    "fact_orders": 1024802,
+    "fact_spend": 1248,
+    "fact_crm_messages": 354,
+    "fact_sellout": 11030,
+    "fact_cx_tickets": 20269,
+    "fact_cohort_retention": 71,
+    "dq_checks": 6
+  },
+  "dq": {
+    "DQ-01": 2221,
+    "DQ-02": 8,
+    "DQ-03": 3595,
+    "DQ-04": 376,
+    "DQ-05": 597,
+    "DQ-06": 1
+  },
+  "incomplete_weeks": [
+    "2025-W52"
+  ],
+  "cancel_tickets_share_within_2w_of_last_order": 0.681,
+  "tests": {
+    "FT-01": 514942,
+    "FT-02": 15798640000,
+    "FT-03": 46936,
+    "FT-04": 25991,
+    "FT-05": 34400,
+    "FT-06": 733537000,
+    "FT-07": 22237.59083630989,
+    "FT-08": 1885800000,
+    "FT-09": 0.03536754507628294,
+    "FT-10": 1327094,
+    "FT-11": 10495,
+    "FT-12": 0.7322037199337813,
+    "FT-13": 59029,
+    "FT-14": 0.4650817236255572
+  }
+}

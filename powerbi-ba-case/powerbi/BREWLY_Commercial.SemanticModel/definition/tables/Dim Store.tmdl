@@ -1,0 +1,52 @@
+table 'Dim Store'
+	lineageTag: e6a64427-1940-593a-84c9-04b2651535e1
+
+	column store_id
+		dataType: string
+		lineageTag: 02074ecb-6ecf-59fd-946b-350b7b30a503
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column store_name
+		dataType: string
+		lineageTag: e3eb73a9-ee8f-5982-8914-6899c3717677
+		summarizeBy: none
+		sourceColumn: store_name
+
+	column partner
+		dataType: string
+		lineageTag: ef50ba2c-8a0c-575e-b037-0124dea3059a
+		summarizeBy: none
+		sourceColumn: partner
+
+	column store_format
+		dataType: string
+		lineageTag: 35f0913e-d79e-5c1c-a5c7-b31192fc1ca5
+		summarizeBy: none
+		sourceColumn: store_format
+
+	column region_code
+		dataType: string
+		isHidden
+		lineageTag: e0f9d234-a699-5e3e-80ae-d739f6a18335
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column size_index
+		dataType: double
+		isHidden
+		formatString: 0.00
+		lineageTag: 83664daf-bee7-5991-be11-f9d7f65fd271
+		summarizeBy: none
+		sourceColumn: size_index
+
+	partition 'Dim Store-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_store.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"store_id", type text}, {"store_name", type text}, {"partner", type text}, {"store_format", type text}, {"region_code", type text}, {"size_index", type number}}, "en-US")
+				in
+				    TypedTable
+

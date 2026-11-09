@@ -1,0 +1,15 @@
+test_id,measure,filter,expected_value,sql
+FT-01,Refill Orders,"ISO year 2025, all regions",514942.0,SELECT COUNT(*) FROM fact_orders o JOIN dim_week w USING(week_id) WHERE w.iso_year = 2025
+FT-02,Refill Revenue (KRW),"ISO year 2025, all regions",15798640000.0,SELECT SUM(m.refill_price_krw) FROM fact_orders o JOIN dim_week w USING(week_id) JOIN dim_member m USING(member_id) WHERE w.iso_year = 2025
+FT-03,Active Members (8w),"Week 2025-W52, all regions",46936.0,SELECT COUNT(DISTINCT member_id) FROM fact_orders WHERE week_id BETWEEN 96 AND 103
+FT-04,Active Members (8w),"Week 2025-W52, Seoul metro",25991.0,SELECT COUNT(DISTINCT o.member_id) FROM fact_orders o JOIN dim_member m USING(member_id) WHERE m.region_code='SEL' AND o.week_id BETWEEN 96 AND 103
+FT-05,New Members,"ISO year 2025, all regions",34400.0,SELECT COUNT(*) FROM dim_member m JOIN dim_week w ON m.join_week_id = w.week_id WHERE w.iso_year = 2025
+FT-06,Acquisition Spend (KRW),"ISO year 2025, all regions",733537000.0,SELECT SUM(s.spend_krw) FROM fact_spend s JOIN dim_week w USING(week_id) JOIN dim_channel c USING(channel_code) WHERE w.iso_year = 2025 AND c.is_acquisition
+FT-07,Blended CAC (KRW),"ISO year 2025, Yeongnam",22237.59083630989,SELECT (SELECT SUM(s.spend_krw) FROM fact_spend s JOIN dim_week w USING(week_id) WHERE w.iso_year = 2025 AND s.region_code='YNG') / (SELECT COUNT(*) FROM dim_member m JOIN dim_week w ON m.join_week_id = w.week_id WHERE w.iso_year = 2025 AND m.region_code='YNG')
+FT-08,Retail Net Revenue (KRW),"ISO year 2025, complete weeks only",1885800000.0,SELECT SUM(f.net_revenue_krw) FROM fact_sellout f JOIN dim_week w USING(week_id) WHERE w.iso_year = 2025 AND w.sellout_complete = 1
+FT-09,Device Return Rate,"ISO year 2025, complete weeks only",0.03536754507628294,SELECT SUM(units_returned)::DOUBLE / SUM(units_sold) FROM fact_sellout f JOIN dim_week w USING(week_id) JOIN dim_product p USING(sku) WHERE w.iso_year = 2025 AND w.sellout_complete = 1 AND p.product_type='Device'
+FT-10,CRM Messages Sent,ISO year 2025 (excludes holdout-suppressed records),1327094.0,SELECT SUM(messages) FROM fact_crm_messages c JOIN dim_week w USING(week_id) WHERE w.iso_year = 2025 AND c.send_type <> 'suppressed'
+FT-11,CX Tickets,ISO year 2025,10495.0,SELECT COUNT(*) FROM fact_cx_tickets x JOIN dim_week w ON x.created_week_id = w.week_id WHERE w.iso_year = 2025
+FT-12,CX SLA Met % (resolved within 3 days),"ISO year 2025, resolved tickets",0.7322037199337813,SELECT AVG(CASE WHEN resolution_days <= 3 THEN 1.0 ELSE 0 END) FROM fact_cx_tickets x JOIN dim_week w ON x.created_week_id = w.week_id WHERE w.iso_year = 2025 AND status='Resolved'
+FT-13,Lapsed Members (12w+),"As of 2025-W52, all regions",59029.0,SELECT COUNT(*) FROM dim_member WHERE last_order_week_id IS NOT NULL AND last_order_week_id <= 91
+FT-14,Month-3 Retention,Cohort 2024 Q1,0.4650817236255572,SELECT SUM(retained_members)::DOUBLE / MAX(cohort_size) FROM fact_cohort_retention WHERE join_cohort='2024 Q1' AND months_since_join=3

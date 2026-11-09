@@ -1,0 +1,34 @@
+table 'Dim Region'
+	lineageTag: ddf6d6a7-d32b-5faa-a952-a70c449d53ae
+
+	column region_code
+		dataType: string
+		lineageTag: 4a77357f-a8af-5cb3-aca3-a4e4ba50dc71
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column region_name
+		dataType: string
+		lineageTag: aa0427f6-954a-5fe2-9100-fc21297e0515
+		summarizeBy: none
+		sourceColumn: region_name
+		sortByColumn: sort_order
+
+	column sort_order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 805b745a-ef46-5a33-bc50-a4128019b31d
+		summarizeBy: none
+		sourceColumn: sort_order
+
+	partition 'Dim Region-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_region.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"region_code", type text}, {"region_name", type text}, {"sort_order", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

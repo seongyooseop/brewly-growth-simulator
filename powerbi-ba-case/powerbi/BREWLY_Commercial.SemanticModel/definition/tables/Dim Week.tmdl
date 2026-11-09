@@ -1,0 +1,96 @@
+table 'Dim Week'
+	lineageTag: b3e93cf4-7837-5305-886d-5047b229e4ce
+
+	column week_id
+		dataType: int64
+		formatString: 0
+		lineageTag: a478dd89-a44d-5421-859f-3ce72b85f31a
+		summarizeBy: none
+		sourceColumn: week_id
+
+	column week_start
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 67b4812e-a958-5325-a4b8-655bf38c53f7
+		summarizeBy: none
+		sourceColumn: week_start
+
+		variation Variation
+			isDefault
+			relationship: 6c4c951c-2538-4298-aca7-2d77362b0895
+			defaultHierarchy: LocalDateTable_55ab4690-e188-4f0b-8c7a-57a51add7f3c.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column iso_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f9183bf-348c-54a1-b434-22b765262b61
+		summarizeBy: sum
+		sourceColumn: iso_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column iso_week
+		dataType: int64
+		formatString: 0
+		lineageTag: 05815c29-064e-5c31-a3c8-10df933adf37
+		summarizeBy: sum
+		sourceColumn: iso_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: string
+		lineageTag: 9171cb7c-8899-51d0-8739-9686e8aac661
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column week_label
+		dataType: string
+		lineageTag: c2ac76be-ea35-533e-bcd2-d243f0762513
+		summarizeBy: none
+		sourceColumn: week_label
+
+	column month_start
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 18400049-d378-5adf-9839-d87e659d5110
+		summarizeBy: none
+		sourceColumn: month_start
+
+		variation Variation
+			isDefault
+			relationship: 56794c2e-f4cf-4992-b463-620f93703c49
+			defaultHierarchy: LocalDateTable_d8bc42b9-f0d4-4fdd-9bb6-a7f4ff8e3e4c.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column sellout_stores_reported
+		dataType: int64
+		formatString: 0
+		lineageTag: 2f3493e7-b845-5188-ae95-7073511d41e8
+		summarizeBy: sum
+		sourceColumn: sellout_stores_reported
+
+		annotation SummarizationSetBy = Automatic
+
+	column sellout_complete
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a86821f-5287-58b0-b1b8-f159a356f795
+		summarizeBy: sum
+		sourceColumn: sellout_complete
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Week-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_week.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"week_id", Int64.Type}, {"week_start", type date}, {"iso_year", Int64.Type}, {"iso_week", Int64.Type}, {"quarter", type text}, {"week_label", type text}, {"month_start", type date}, {"sellout_stores_reported", Int64.Type}, {"sellout_complete", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

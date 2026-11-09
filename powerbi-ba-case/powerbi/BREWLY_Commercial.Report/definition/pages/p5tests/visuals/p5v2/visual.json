@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "p5v2",
+  "position": {
+    "x": 10,
+    "y": 195,
+    "z": 1000,
+    "height": 175,
+    "width": 1260,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Week"
+                    }
+                  },
+                  "Property": "iso_year"
+                }
+              },
+              "queryRef": "Dim Week.iso_year",
+              "nativeQueryRef": "iso_year",
+              "displayName": "Year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Retail Net Revenue (KRW)"
+                }
+              },
+              "queryRef": "_Measures.Retail Net Revenue (KRW)",
+              "nativeQueryRef": "Retail Net Revenue (KRW)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Device Return Rate"
+                }
+              },
+              "queryRef": "_Measures.Device Return Rate",
+              "nativeQueryRef": "Device Return Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "CRM Messages Sent"
+                }
+              },
+              "queryRef": "_Measures.CRM Messages Sent",
+              "nativeQueryRef": "CRM Messages Sent"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "CX Tickets"
+                }
+              },
+              "queryRef": "_Measures.CX Tickets",
+              "nativeQueryRef": "CX Tickets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "CX SLA Met %"
+                }
+              },
+              "queryRef": "_Measures.CX SLA Met %",
+              "nativeQueryRef": "CX SLA Met %"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'FT-08 to FT-12'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

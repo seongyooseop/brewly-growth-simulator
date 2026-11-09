@@ -1,0 +1,42 @@
+table 'Fact CRM Messages'
+	lineageTag: acd2f017-8c45-52be-8f76-f225cb91a5d2
+
+	column week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9c01a44b-ce2d-51a2-9adb-8fb6829d661b
+		summarizeBy: none
+		sourceColumn: week_id
+
+	column region_code
+		dataType: string
+		isHidden
+		lineageTag: b21b2e2e-2ff8-55bd-9b6e-0bd64fb08037
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column send_type
+		dataType: string
+		lineageTag: 9db450cb-860f-5cac-a6b0-c37cea450cf1
+		summarizeBy: none
+		sourceColumn: send_type
+
+	column messages
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 972549ab-5dcb-57fa-93a1-0b27e970c4a4
+		summarizeBy: sum
+		sourceColumn: messages
+
+	partition 'Fact CRM Messages-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_crm_messages.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"week_id", Int64.Type}, {"region_code", type text}, {"send_type", type text}, {"messages", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

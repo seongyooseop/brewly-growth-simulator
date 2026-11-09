@@ -1,0 +1,7 @@
+check_id,source_table,rule,rows_checked,rows_failed_before,fix_applied,rows_failed_after,status
+DQ-01,orders,"One refill order per member per week (member_id, week unique)",1027023,2221,Removed rows from the Yeongnam week-61 batch that was loaded twice,0,Pass
+DQ-02,marketing_spend,"Weekly spend within 1%-10,000% of the channel-region median (unit check)",1248,8,"Multiplied rows entered in thousand KRW by 1,000 (Rest of Korea brand events, weeks 40-47)",0,Pass
+DQ-03,retail_sellout,Every store code matches the store master (ST-000 format),11406,3595,"Normalised partner codes (st012, 'ST-12 ') to ST-012 via the store master",0,Pass
+DQ-04,retail_sellout,Units are non-negative; returns are reported separately,11406,376,Split negative rows into units_returned; net revenue = gross - returns,0,Pass
+DQ-05,cx_tickets,Every ticket has a region code,20269,597,Filled missing region from the member master (member_id),0,Pass
+DQ-06,retail_sellout,At least 95% of stores reported for the week (late files),104,1,Flagged incomplete weeks in dim_week (sellout_complete = 0); default views exclude them until the file lands,0,Pass

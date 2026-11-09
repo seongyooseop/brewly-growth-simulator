@@ -1,0 +1,106 @@
+// BREWLY commercial dashboard - DAX measures (all live in the _Measures table)
+
+// [Members] Capsule refill orders (one per member per week after de-duplication).
+Refill Orders =
+    COUNTROWS ( 'Fact Orders' )
+// format: #,0
+
+// [Members] Refill orders x refill box price by device model (assumption: basic 28,000, premium 34,000).
+Refill Revenue (KRW) =
+    SUMX ( 'Fact Orders', RELATED ( 'Dim Member'[refill_price_krw] ) )
+// format: #,0
+
+// [Members] Members with at least one refill order in the selected weeks.
+Ordering Members =
+    DISTINCTCOUNT ( 'Fact Orders'[member_id] )
+// format: #,0
+
+// [Members] Members with a refill order in the 8 weeks up to the last selected week (semi-additive: a quarter shows its last week).
+Active Members (8w) =
+    VAR LastWeek = MAX ( 'Dim Week'[week_id] ) RETURN IF ( NOT ISBLANK ( LastWeek ), CALCULATE ( DISTINCTCOUNT ( 'Fact Orders'[member_id] ), REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] > LastWeek - 8, 'Dim Week'[week_id] <= LastWeek ) )
+// format: #,0
+
+// [Members] Members who registered a machine in the selected weeks (from 2024).
+New Members =
+    CALCULATE ( COUNTROWS ( 'Dim Member' ), USERELATIONSHIP ( 'Dim Member'[join_week_id], 'Dim Week'[week_id] ), 'Dim Member'[join_week_id] >= 0 )
+// format: #,0
+
+// [Members] Members whose last refill order is 12 or more weeks before the latest data week. Ignores the week filter by design.
+Lapsed Members (12w+) =
+    VAR Cutoff = CALCULATE ( MAX ( 'Dim Week'[week_id] ), REMOVEFILTERS ( 'Dim Week' ) ) RETURN CALCULATE ( COUNTROWS ( 'Dim Member' ), NOT ISBLANK ( 'Dim Member'[last_order_week_id] ), 'Dim Member'[last_order_week_id] <= Cutoff - 12 )
+// format: #,0
+
+// [Acquisition] Spend on referral, store trial, retail partner incentive and brand events.
+Acquisition Spend (KRW) =
+    CALCULATE ( SUM ( 'Fact Spend'[spend_krw] ), 'Dim Channel'[is_acquisition] = TRUE () )
+// format: #,0
+
+// [Acquisition] Acquisition spend / new members. Channel-level CAC is out of scope (needs the MMM in the main project).
+Blended CAC (KRW) =
+    DIVIDE ( [Acquisition Spend (KRW)], [New Members] )
+// format: #,0
+
+// [Retail] Partner sell-out net of returns, complete weeks only (at least 95% of stores reported).
+Retail Net Revenue (KRW) =
+    CALCULATE ( SUM ( 'Fact Sellout'[net_revenue_krw] ), 'Dim Week'[sellout_complete] = 1 )
+// format: #,0
+
+// [Retail] Same as above including weeks still waiting for partner files.
+Retail Net Revenue incl. Incomplete (KRW) =
+    SUM ( 'Fact Sellout'[net_revenue_krw] )
+// format: #,0
+
+// [Retail] Machines sold through partners, complete weeks only.
+Device Units Sold =
+    CALCULATE ( SUM ( 'Fact Sellout'[units_sold] ), 'Dim Product'[product_type] = "Device", 'Dim Week'[sellout_complete] = 1 )
+// format: #,0
+
+// [Retail] Machines returned / machines sold.
+Device Return Rate =
+    DIVIDE ( CALCULATE ( SUM ( 'Fact Sellout'[units_returned] ), 'Dim Product'[product_type] = "Device", 'Dim Week'[sellout_complete] = 1 ), [Device Units Sold] )
+// format: 0.0%
+
+// [Retail] Lowest share of stores that reported in the selected weeks.
+Sell-out Store Coverage =
+    DIVIDE ( MIN ( 'Dim Week'[sellout_stores_reported] ), COUNTROWS ( ALL ( 'Dim Store' ) ) )
+// format: 0%
+
+// [CRM and CX] Trigger and boost messages; holdout-suppressed records are not sends.
+CRM Messages Sent =
+    CALCULATE ( SUM ( 'Fact CRM Messages'[messages] ), 'Fact CRM Messages'[send_type] <> "suppressed" )
+// format: #,0
+
+// [CRM and CX] Customer service tickets created in the selected weeks.
+CX Tickets =
+    COUNTROWS ( 'Fact CX Tickets' )
+// format: #,0
+
+// [CRM and CX] Resolved tickets closed within 3 days / resolved tickets.
+CX SLA Met % =
+    DIVIDE ( CALCULATE ( COUNTROWS ( 'Fact CX Tickets' ), 'Fact CX Tickets'[status] = "Resolved", 'Fact CX Tickets'[resolution_days] <= 3 ), CALCULATE ( COUNTROWS ( 'Fact CX Tickets' ), 'Fact CX Tickets'[status] = "Resolved" ) )
+// format: 0.0%
+
+// [CRM and CX] Median days to resolve, resolved tickets only.
+Median Resolution Days =
+    CALCULATE ( MEDIAN ( 'Fact CX Tickets'[resolution_days] ), 'Fact CX Tickets'[status] = "Resolved" )
+// format: 0.0
+
+// [CRM and CX] Tickets in the period per 1,000 members active at its end.
+Tickets per 1,000 Active Members =
+    DIVIDE ( [CX Tickets], [Active Members (8w)] ) * 1000
+// format: 0.0
+
+// [Members] Share of a join cohort ordering in the n-th 4-week period after joining. Use with cohort and month on the axes.
+Retention % =
+    DIVIDE ( SUM ( 'Fact Cohort Retention'[retained_members] ), SUM ( 'Fact Cohort Retention'[cohort_size] ) )
+// format: 0.0%
+
+// [Data quality] Checks with no failing rows after fixes.
+DQ Checks Passed =
+    CALCULATE ( COUNTROWS ( 'DQ Checks' ), 'DQ Checks'[status] = "Pass" )
+// format: 0
+
+// [Data quality] Rows that failed a check before the fix.
+DQ Rows Fixed =
+    SUM ( 'DQ Checks'[rows_failed_before] )
+// format: #,0

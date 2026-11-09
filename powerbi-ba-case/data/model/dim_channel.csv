@@ -1,0 +1,6 @@
+channel_code,channel_name,channel_group,is_acquisition,sort_order
+referral,Member referral,Owned,True,1
+store_trial,Store trial,Retail,True,2
+retail_partner,Retail partner incentive,Retail,True,3
+events,Brand event,Event,True,4
+crm,CRM messages,Owned,False,5

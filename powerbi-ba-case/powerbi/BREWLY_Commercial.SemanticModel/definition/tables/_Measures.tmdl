@@ -1,0 +1,144 @@
+table _Measures
+	lineageTag: db566bfb-4c92-5b15-a1f5-eb75060e4471
+
+	/// Capsule refill orders (one per member per week after de-duplication).
+	measure 'Refill Orders' = COUNTROWS ( 'Fact Orders' )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: 26721605-aba5-5ea1-8e62-bbc302a24f98
+
+	/// Refill orders x refill box price by device model (assumption: basic 28,000, premium 34,000).
+	measure 'Refill Revenue (KRW)' = SUMX ( 'Fact Orders', RELATED ( 'Dim Member'[refill_price_krw] ) )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: 1b4f0e5d-53ba-556b-9e07-cb7a5b299358
+
+	/// Members with at least one refill order in the selected weeks.
+	measure 'Ordering Members' = DISTINCTCOUNT ( 'Fact Orders'[member_id] )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: d6dd20fe-d96e-5b7b-9423-d1eaf0dc667e
+
+	/// Members with a refill order in the 8 weeks up to the last selected week (semi-additive: a quarter shows its last week).
+	measure 'Active Members (8w)' = VAR LastWeek = MAX ( 'Dim Week'[week_id] ) RETURN IF ( NOT ISBLANK ( LastWeek ), CALCULATE ( DISTINCTCOUNT ( 'Fact Orders'[member_id] ), REMOVEFILTERS ( 'Dim Week' ), 'Dim Week'[week_id] > LastWeek - 8, 'Dim Week'[week_id] <= LastWeek ) )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: f279024c-bf26-58b9-b4eb-e70a9672f8ea
+
+	/// Members who registered a machine in the selected weeks (from 2024).
+	measure 'New Members' = CALCULATE ( COUNTROWS ( 'Dim Member' ), USERELATIONSHIP ( 'Dim Member'[join_week_id], 'Dim Week'[week_id] ), 'Dim Member'[join_week_id] >= 0 )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: 2eadf375-4999-58c8-a4bf-02aa2004572f
+
+	/// Members whose last refill order is 12 or more weeks before the latest data week. Ignores the week filter by design.
+	measure 'Lapsed Members (12w+)' = VAR Cutoff = CALCULATE ( MAX ( 'Dim Week'[week_id] ), REMOVEFILTERS ( 'Dim Week' ) ) RETURN CALCULATE ( COUNTROWS ( 'Dim Member' ), NOT ISBLANK ( 'Dim Member'[last_order_week_id] ), 'Dim Member'[last_order_week_id] <= Cutoff - 12 )
+		formatString: #,0
+		displayFolder: Members
+		lineageTag: 64438d8d-fbf9-5024-8ee2-b27a89797618
+
+	/// Spend on referral, store trial, retail partner incentive and brand events.
+	measure 'Acquisition Spend (KRW)' = CALCULATE ( SUM ( 'Fact Spend'[spend_krw] ), 'Dim Channel'[is_acquisition] = TRUE () )
+		formatString: #,0
+		displayFolder: Acquisition
+		lineageTag: 31132584-986c-5ac0-8211-abafe261b009
+
+	/// Acquisition spend / new members. Channel-level CAC is out of scope (needs the MMM in the main project).
+	measure 'Blended CAC (KRW)' = DIVIDE ( [Acquisition Spend (KRW)], [New Members] )
+		formatString: #,0
+		displayFolder: Acquisition
+		lineageTag: 02a99bf8-3000-55cb-8576-7359e1e82005
+
+	/// Partner sell-out net of returns, complete weeks only (at least 95% of stores reported).
+	measure 'Retail Net Revenue (KRW)' = CALCULATE ( SUM ( 'Fact Sellout'[net_revenue_krw] ), 'Dim Week'[sellout_complete] = 1 )
+		formatString: #,0
+		displayFolder: Retail
+		lineageTag: d362296c-342f-526a-84db-2911389bf904
+
+	/// Same as above including weeks still waiting for partner files.
+	measure 'Retail Net Revenue incl. Incomplete (KRW)' = SUM ( 'Fact Sellout'[net_revenue_krw] )
+		formatString: #,0
+		displayFolder: Retail
+		lineageTag: 352c978c-5f37-556a-b82a-c7b763bfd57b
+
+	/// Machines sold through partners, complete weeks only.
+	measure 'Device Units Sold' = CALCULATE ( SUM ( 'Fact Sellout'[units_sold] ), 'Dim Product'[product_type] = "Device", 'Dim Week'[sellout_complete] = 1 )
+		formatString: #,0
+		displayFolder: Retail
+		lineageTag: 887f3674-0ba1-5f13-b15d-fcb61958c41e
+
+	/// Machines returned / machines sold.
+	measure 'Device Return Rate' = DIVIDE ( CALCULATE ( SUM ( 'Fact Sellout'[units_returned] ), 'Dim Product'[product_type] = "Device", 'Dim Week'[sellout_complete] = 1 ), [Device Units Sold] )
+		formatString: 0.0%
+		displayFolder: Retail
+		lineageTag: 496323f3-8c17-53ba-b313-9a27b2fffa34
+
+	/// Lowest share of stores that reported in the selected weeks.
+	measure 'Sell-out Store Coverage' = DIVIDE ( MIN ( 'Dim Week'[sellout_stores_reported] ), COUNTROWS ( ALL ( 'Dim Store' ) ) )
+		formatString: 0%
+		displayFolder: Retail
+		lineageTag: 8b650aeb-d5d8-591c-8e1a-fb7dd55ac5cd
+
+	/// Trigger and boost messages; holdout-suppressed records are not sends.
+	measure 'CRM Messages Sent' = CALCULATE ( SUM ( 'Fact CRM Messages'[messages] ), 'Fact CRM Messages'[send_type] <> "suppressed" )
+		formatString: #,0
+		displayFolder: CRM and CX
+		lineageTag: ded8e81a-c831-5cd5-a43e-685d5e2ddb97
+
+	/// Customer service tickets created in the selected weeks.
+	measure 'CX Tickets' = COUNTROWS ( 'Fact CX Tickets' )
+		formatString: #,0
+		displayFolder: CRM and CX
+		lineageTag: c5da6d64-181c-512a-a6d1-6f6f8c543ab1
+
+	/// Resolved tickets closed within 3 days / resolved tickets.
+	measure 'CX SLA Met %' = DIVIDE ( CALCULATE ( COUNTROWS ( 'Fact CX Tickets' ), 'Fact CX Tickets'[status] = "Resolved", 'Fact CX Tickets'[resolution_days] <= 3 ), CALCULATE ( COUNTROWS ( 'Fact CX Tickets' ), 'Fact CX Tickets'[status] = "Resolved" ) )
+		formatString: 0.0%
+		displayFolder: CRM and CX
+		lineageTag: 2fbf041d-e3d9-5531-91ce-e9fb68b7ec8d
+
+	/// Median days to resolve, resolved tickets only.
+	measure 'Median Resolution Days' = CALCULATE ( MEDIAN ( 'Fact CX Tickets'[resolution_days] ), 'Fact CX Tickets'[status] = "Resolved" )
+		formatString: 0.0
+		displayFolder: CRM and CX
+		lineageTag: 0dd5348a-56b0-5936-8218-612adf769f7b
+
+	/// Tickets in the period per 1,000 members active at its end.
+	measure 'Tickets per 1,000 Active Members' = DIVIDE ( [CX Tickets], [Active Members (8w)] ) * 1000
+		formatString: 0.0
+		displayFolder: CRM and CX
+		lineageTag: 9773466b-379b-58ab-91c6-72e88408586f
+
+	/// Share of a join cohort ordering in the n-th 4-week period after joining. Use with cohort and month on the axes.
+	measure 'Retention %' = DIVIDE ( SUM ( 'Fact Cohort Retention'[retained_members] ), SUM ( 'Fact Cohort Retention'[cohort_size] ) )
+		formatString: 0.0%
+		displayFolder: Members
+		lineageTag: b58ce94d-4a80-57c0-9d0f-08107dc61791
+
+	/// Checks with no failing rows after fixes.
+	measure 'DQ Checks Passed' = CALCULATE ( COUNTROWS ( 'DQ Checks' ), 'DQ Checks'[status] = "Pass" )
+		formatString: 0
+		displayFolder: Data quality
+		lineageTag: aaa1150e-09ef-5911-b6b5-56ae6c2f02b5
+
+	/// Rows that failed a check before the fix.
+	measure 'DQ Rows Fixed' = SUM ( 'DQ Checks'[rows_failed_before] )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: 34b64f5f-82b8-5530-8b75-5a511c0d09da
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: 07df93fb-7387-5046-a68d-d66ce4993387
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+	partition _Measures-empty = m
+		mode: import
+		source =
+				let
+				    EmptyTable = #table(type table [Placeholder = text], {})
+				in
+				    EmptyTable
+

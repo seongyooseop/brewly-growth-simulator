@@ -1,0 +1,204 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1520.0515571623062,
+            "y": 715.07094211636718
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "db566bfb-4c92-5b15-a1f5-eb75060e4471",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -50
+          },
+          "nodeIndex": "Dim Channel",
+          "nodeLineageTag": "742dbceb-9971-52c3-bc36-71e1bfa3984f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 931.96126286041613,
+            "y": 1054.6485921071478
+          },
+          "nodeIndex": "Dim Member",
+          "nodeLineageTag": "a5cb3e1b-a958-5c42-a65b-e54e7fe554c4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 334.96223683640591,
+            "y": 45.959148090403232
+          },
+          "nodeIndex": "Dim Product",
+          "nodeLineageTag": "68d52b82-1c45-5eb5-9def-15d6b50a8383",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 755.47805581755142,
+            "y": 502.30783850146372
+          },
+          "nodeIndex": "Dim Region",
+          "nodeLineageTag": "ddf6d6a7-d32b-5faa-a952-a70c449d53ae",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1028.8054935691127,
+            "y": 225.9489227461479
+          },
+          "nodeIndex": "Dim Store",
+          "nodeLineageTag": "e6a64427-1940-593a-84c9-04b2651535e1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 998.36239866470407,
+            "y": 705.05180544237976
+          },
+          "nodeIndex": "Dim Week",
+          "nodeLineageTag": "b3e93cf4-7837-5305-886d-5047b229e4ce",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1804.0515571623062,
+            "y": 729.07094211636718
+          },
+          "nodeIndex": "DQ Checks",
+          "nodeLineageTag": "92c2ec9b-cb8f-53a2-9011-89a839acf1c5",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2088.0515571623064,
+            "y": 777.07094211636718
+          },
+          "nodeIndex": "Fact Cohort Retention",
+          "nodeLineageTag": "ed3dc64b-1ccd-5b9a-a457-4dce833b76cd",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 468.46810417641461,
+            "y": 684.80366887234766
+          },
+          "nodeIndex": "Fact CRM Messages",
+          "nodeLineageTag": "acd2f017-8c45-52be-8f76-f225cb91a5d2",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 670.46787059867381,
+            "y": 1408.1418842327346
+          },
+          "nodeIndex": "Fact CX Tickets",
+          "nodeLineageTag": "c6a29556-58de-5a09-9f23-9fb85e1c72fb",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1218.9512032627215,
+            "y": 1381.2793074497838
+          },
+          "nodeIndex": "Fact Orders",
+          "nodeLineageTag": "6e258c6d-48ac-5e7b-b7ac-3009e3b2f853",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1286.0515571623062,
+            "y": 503.08212380139321
+          },
+          "nodeIndex": "Fact Sellout",
+          "nodeLineageTag": "896bf45c-197d-5339-8402-1e3414a44cab",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 469.7130407126059,
+            "y": 274.05765885121764
+          },
+          "nodeIndex": "Fact Spend",
+          "nodeLineageTag": "49f8d341-2508-595c-bdb4-d62fa6f2bc79",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "모든 테이블",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "모든 테이블",
+  "defaultDiagram": "모든 테이블"
+}

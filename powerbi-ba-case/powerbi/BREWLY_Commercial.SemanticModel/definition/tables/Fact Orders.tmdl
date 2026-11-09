@@ -1,0 +1,29 @@
+table 'Fact Orders'
+	lineageTag: 6e258c6d-48ac-5e7b-b7ac-3009e3b2f853
+
+	column member_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 957d3930-69e1-545b-a6d9-32eea70ce6e5
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ea77ec15-c08f-5ef6-b379-282afa219fa1
+		summarizeBy: none
+		sourceColumn: week_id
+
+	partition 'Fact Orders-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"member_id", Int64.Type}, {"week_id", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

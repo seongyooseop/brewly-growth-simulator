@@ -1,0 +1,43 @@
+table 'Fact Spend'
+	lineageTag: 49f8d341-2508-595c-bdb4-d62fa6f2bc79
+
+	column week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: aada70d7-afd0-5b89-b225-3097ef19841a
+		summarizeBy: none
+		sourceColumn: week_id
+
+	column region_code
+		dataType: string
+		isHidden
+		lineageTag: b0005d6a-fc46-5bb1-9cec-da61b98ecce2
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column channel_code
+		dataType: string
+		isHidden
+		lineageTag: 41a954b4-1d69-570e-a30f-e35fe6479894
+		summarizeBy: none
+		sourceColumn: channel_code
+
+	column spend_krw
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 53ea8af8-54ca-53e3-b5f1-344f12b4ea66
+		summarizeBy: sum
+		sourceColumn: spend_krw
+
+	partition 'Fact Spend-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_spend.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"week_id", Int64.Type}, {"region_code", type text}, {"channel_code", type text}, {"spend_krw", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

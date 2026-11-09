@@ -1,0 +1,64 @@
+table 'DQ Checks'
+	lineageTag: 92c2ec9b-cb8f-53a2-9011-89a839acf1c5
+
+	column check_id
+		dataType: string
+		lineageTag: 082f8238-d869-5ede-9fad-b5a9aab43592
+		summarizeBy: none
+		sourceColumn: check_id
+
+	column source_table
+		dataType: string
+		lineageTag: 0d8e0791-974a-53ad-83f6-03e2d91dab41
+		summarizeBy: none
+		sourceColumn: source_table
+
+	column rule
+		dataType: string
+		lineageTag: 1763b311-231c-5af8-8251-017afdc8e534
+		summarizeBy: none
+		sourceColumn: rule
+
+	column rows_checked
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4a230a54-6d04-51de-b15e-4aeb1ef65fd0
+		summarizeBy: sum
+		sourceColumn: rows_checked
+
+	column rows_failed_before
+		dataType: int64
+		formatString: #,0
+		lineageTag: bc05f16b-873f-5f5d-84af-0c6c0827f8b0
+		summarizeBy: sum
+		sourceColumn: rows_failed_before
+
+	column fix_applied
+		dataType: string
+		lineageTag: bb10fec6-30c5-5de4-ae5d-13ef3b299a72
+		summarizeBy: none
+		sourceColumn: fix_applied
+
+	column rows_failed_after
+		dataType: int64
+		formatString: #,0
+		lineageTag: 994a678c-6693-5075-803e-a73e3f00e33f
+		summarizeBy: sum
+		sourceColumn: rows_failed_after
+
+	column status
+		dataType: string
+		lineageTag: 6f713370-bf89-5f18-96bc-5e75e348c7d9
+		summarizeBy: none
+		sourceColumn: status
+
+	partition 'DQ Checks-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dq_checks.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"check_id", type text}, {"source_table", type text}, {"rule", type text}, {"rows_checked", Int64.Type}, {"rows_failed_before", Int64.Type}, {"fix_applied", type text}, {"rows_failed_after", Int64.Type}, {"status", type text}}, "en-US")
+				in
+				    TypedTable
+

@@ -1,0 +1,42 @@
+table 'Fact Cohort Retention'
+	lineageTag: ed3dc64b-1ccd-5b9a-a457-4dce833b76cd
+
+	column join_cohort
+		dataType: string
+		lineageTag: dd5b597d-3bce-5709-b057-28856135d576
+		summarizeBy: none
+		sourceColumn: join_cohort
+
+	column months_since_join
+		dataType: int64
+		formatString: 0
+		lineageTag: d4f4c323-84dd-5e94-93bc-915435fba9ac
+		summarizeBy: none
+		sourceColumn: months_since_join
+
+	column cohort_size
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: bb8b0d50-e36d-5761-9f5b-3d2576270f8b
+		summarizeBy: sum
+		sourceColumn: cohort_size
+
+	column retained_members
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 986363a6-98b6-586d-b805-699899a91cd6
+		summarizeBy: sum
+		sourceColumn: retained_members
+
+	partition 'Fact Cohort Retention-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_cohort_retention.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"join_cohort", type text}, {"months_since_join", Int64.Type}, {"cohort_size", Int64.Type}, {"retained_members", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

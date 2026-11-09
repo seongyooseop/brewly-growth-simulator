@@ -1,0 +1,76 @@
+relationship 8fb32372-69de-5f03-95ce-e8558c97f6ca
+	fromColumn: 'Fact Orders'.member_id
+	toColumn: 'Dim Member'.member_id
+
+relationship 5cde4f56-b1fc-5f06-bb3c-c3920ec411c2
+	fromColumn: 'Fact Orders'.week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship 0443f37a-f2af-511d-85e6-160ffabcba92
+	fromColumn: 'Dim Member'.region_code
+	toColumn: 'Dim Region'.region_code
+
+relationship 6a74433b-2f99-55da-80af-db1c626f1b73
+	isActive: false
+	fromColumn: 'Dim Member'.join_week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship 2a9e8d34-568a-56fb-980a-ad94a2bbdb6b
+	fromColumn: 'Fact Spend'.week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship 3d50d415-b4c8-5471-b52b-8419b9f9b4dd
+	fromColumn: 'Fact Spend'.region_code
+	toColumn: 'Dim Region'.region_code
+
+relationship 9bf3b232-3d2e-5abf-a27e-d471b093d243
+	fromColumn: 'Fact Spend'.channel_code
+	toColumn: 'Dim Channel'.channel_code
+
+relationship 27d8db38-8870-5d3a-9129-6fe46d020e8f
+	fromColumn: 'Fact CRM Messages'.week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship 283824b7-f03e-5b77-88d8-209a67a749ee
+	fromColumn: 'Fact CRM Messages'.region_code
+	toColumn: 'Dim Region'.region_code
+
+relationship 8d2d144b-8242-57a5-a4a0-04153670241a
+	fromColumn: 'Fact Sellout'.week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship dbe5bd39-8b75-5905-9977-ab93251408da
+	fromColumn: 'Fact Sellout'.store_id
+	toColumn: 'Dim Store'.store_id
+
+relationship 3432e4c0-76cc-5651-964c-f7ce15b21fa2
+	fromColumn: 'Fact Sellout'.sku
+	toColumn: 'Dim Product'.sku
+
+relationship 88d1b0d4-c061-5432-9201-f89b7a2e447c
+	fromColumn: 'Dim Store'.region_code
+	toColumn: 'Dim Region'.region_code
+
+relationship 761ec2ac-1dde-567f-afe9-55731e066e35
+	fromColumn: 'Fact CX Tickets'.member_id
+	toColumn: 'Dim Member'.member_id
+
+relationship ce21729a-27c2-58cc-998c-717384710c95
+	fromColumn: 'Fact CX Tickets'.created_week_id
+	toColumn: 'Dim Week'.week_id
+
+relationship 6c4c951c-2538-4298-aca7-2d77362b0895
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Week'.week_start
+	toColumn: LocalDateTable_55ab4690-e188-4f0b-8c7a-57a51add7f3c.Date
+
+relationship 56794c2e-f4cf-4992-b463-620f93703c49
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Week'.month_start
+	toColumn: LocalDateTable_d8bc42b9-f0d4-4fdd-9bb6-a7f4ff8e3e4c.Date
+
+relationship 45549585-1d30-423d-aee9-27853c484dc0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Member'.join_date
+	toColumn: LocalDateTable_11a3792c-79b8-4773-a379-9eefb8802602.Date
+

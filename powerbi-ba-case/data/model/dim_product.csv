@@ -1,0 +1,5 @@
+sku,product_name,product_type,unit_price_krw
+DEV-BASIC,BREWLY Basic machine,Device,149000
+DEV-PREMIUM,BREWLY Premium machine,Device,249000
+CAP-CLASSIC,Classic capsules (10),Capsules,7900
+CAP-SIGNATURE,Signature capsules (10),Capsules,9900

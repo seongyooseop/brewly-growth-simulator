@@ -1,0 +1,179 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "p4v1",
+  "position": {
+    "x": 10,
+    "y": 125,
+    "z": 2000,
+    "height": 330,
+    "width": 1260,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "check_id"
+                }
+              },
+              "queryRef": "DQ Checks.check_id",
+              "nativeQueryRef": "check_id",
+              "displayName": "Check"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "source_table"
+                }
+              },
+              "queryRef": "DQ Checks.source_table",
+              "nativeQueryRef": "source_table",
+              "displayName": "Source"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rule"
+                }
+              },
+              "queryRef": "DQ Checks.rule",
+              "nativeQueryRef": "rule",
+              "displayName": "Rule"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rows_checked"
+                }
+              },
+              "queryRef": "DQ Checks.rows_checked",
+              "nativeQueryRef": "rows_checked",
+              "displayName": "Rows checked"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rows_failed_before"
+                }
+              },
+              "queryRef": "DQ Checks.rows_failed_before",
+              "nativeQueryRef": "rows_failed_before",
+              "displayName": "Failed before fix"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "fix_applied"
+                }
+              },
+              "queryRef": "DQ Checks.fix_applied",
+              "nativeQueryRef": "fix_applied",
+              "displayName": "Fix applied"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "rows_failed_after"
+                }
+              },
+              "queryRef": "DQ Checks.rows_failed_after",
+              "nativeQueryRef": "rows_failed_after",
+              "displayName": "Failed after fix"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DQ Checks"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "DQ Checks.status",
+              "nativeQueryRef": "status",
+              "displayName": "Status"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Data-quality checks run before this refresh'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

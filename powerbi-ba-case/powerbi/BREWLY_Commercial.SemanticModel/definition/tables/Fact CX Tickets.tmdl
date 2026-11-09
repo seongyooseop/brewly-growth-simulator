@@ -1,0 +1,67 @@
+table 'Fact CX Tickets'
+	lineageTag: c6a29556-58de-5a09-9f23-9fb85e1c72fb
+
+	column ticket_id
+		dataType: string
+		lineageTag: 268fba8c-3cc8-51b7-942a-5d45bde438eb
+		summarizeBy: none
+		sourceColumn: ticket_id
+
+	column member_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a3e80180-f84a-59f6-8054-d1e3c45fc7c8
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column region_code
+		dataType: string
+		isHidden
+		lineageTag: f044082f-c79a-55d9-ba0a-99d6f4a1c2a7
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column created_week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e5e525a7-22f8-56ef-8148-37b99125aa92
+		summarizeBy: none
+		sourceColumn: created_week_id
+
+	column category
+		dataType: string
+		lineageTag: 4032e26a-992f-53a8-a527-505079dd2e30
+		summarizeBy: none
+		sourceColumn: category
+
+	column contact_channel
+		dataType: string
+		lineageTag: 9698fc41-fbf4-5413-b275-a7bb3958e69b
+		summarizeBy: none
+		sourceColumn: contact_channel
+
+	column resolution_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 18b99000-d56f-5973-827f-f802e5f2ba2a
+		summarizeBy: none
+		sourceColumn: resolution_days
+
+	column status
+		dataType: string
+		lineageTag: 16e12b43-c710-5c2b-8266-4114bcde195b
+		summarizeBy: none
+		sourceColumn: status
+
+	partition 'Fact CX Tickets-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_cx_tickets.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"ticket_id", type text}, {"member_id", Int64.Type}, {"region_code", type text}, {"created_week_id", Int64.Type}, {"category", type text}, {"contact_channel", type text}, {"resolution_days", Int64.Type}, {"status", type text}}, "en-US")
+				in
+				    TypedTable
+

@@ -1,0 +1,75 @@
+table 'Fact Sellout'
+	lineageTag: 896bf45c-197d-5339-8402-1e3414a44cab
+
+	column week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: eee9be54-4b42-5102-a5ac-0d81f91d0499
+		summarizeBy: none
+		sourceColumn: week_id
+
+	column store_id
+		dataType: string
+		isHidden
+		lineageTag: 55f72ebb-b152-59ef-b5f5-2dcacf081d1a
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column sku
+		dataType: string
+		isHidden
+		lineageTag: d84706c7-261b-5b41-b54a-c0aecfa400fb
+		summarizeBy: none
+		sourceColumn: sku
+
+	column units_sold
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 1539f6fd-e9fb-5089-be0e-e591e94daab8
+		summarizeBy: sum
+		sourceColumn: units_sold
+
+	column units_returned
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: d751a0d8-457f-5cba-aad7-9310d4f2b16a
+		summarizeBy: sum
+		sourceColumn: units_returned
+
+	column gross_revenue_krw
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 07faadd5-699d-5df5-be9b-e4a53c9c69a7
+		summarizeBy: sum
+		sourceColumn: gross_revenue_krw
+
+	column returns_value_krw
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 6ce1aba6-9c44-5857-a077-6ac7fd73d5a0
+		summarizeBy: sum
+		sourceColumn: returns_value_krw
+
+	column net_revenue_krw
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: fe1ba0b3-4054-5732-bb42-21de3ad3e435
+		summarizeBy: sum
+		sourceColumn: net_revenue_krw
+
+	partition 'Fact Sellout-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_sellout.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"week_id", Int64.Type}, {"store_id", type text}, {"sku", type text}, {"units_sold", Int64.Type}, {"units_returned", Int64.Type}, {"gross_revenue_krw", Int64.Type}, {"returns_value_krw", Int64.Type}, {"net_revenue_krw", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

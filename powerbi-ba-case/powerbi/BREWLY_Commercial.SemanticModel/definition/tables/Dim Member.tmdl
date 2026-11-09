@@ -1,0 +1,98 @@
+table 'Dim Member'
+	lineageTag: a5cb3e1b-a958-5c42-a65b-e54e7fe554c4
+
+	column member_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b1fc9306-4d28-508e-9a74-03f766969788
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column region_code
+		dataType: string
+		isHidden
+		lineageTag: e7363b39-04b3-54c3-a271-5bcc0c808c1c
+		summarizeBy: none
+		sourceColumn: region_code
+
+	column join_week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 17b3c909-bf1b-548c-87c3-e37bc083141f
+		summarizeBy: sum
+		sourceColumn: join_week_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column join_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 97f89be9-2861-5543-aa03-3bf403efc5b1
+		summarizeBy: none
+		sourceColumn: join_date
+
+		variation Variation
+			isDefault
+			relationship: 45549585-1d30-423d-aee9-27853c484dc0
+			defaultHierarchy: LocalDateTable_11a3792c-79b8-4773-a379-9eefb8802602.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column join_cohort
+		dataType: string
+		lineageTag: dff1ac94-371f-54fc-90f8-bde62eb93748
+		summarizeBy: none
+		sourceColumn: join_cohort
+
+	column age_band
+		dataType: string
+		lineageTag: c8bee9ae-9a1e-56d5-a709-48d2324ba9bc
+		summarizeBy: none
+		sourceColumn: age_band
+
+	column device_model
+		dataType: string
+		lineageTag: ba3c28d0-8268-565a-8c29-ccdd64b39837
+		summarizeBy: none
+		sourceColumn: device_model
+
+	column refill_price_krw
+		dataType: int64
+		formatString: #,0
+		lineageTag: 7d22e37f-833e-5770-ac1a-282f7a0f9c19
+		summarizeBy: sum
+		sourceColumn: refill_price_krw
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 83cf7ae0-3ee4-5b18-a80b-2b335ed753ee
+		summarizeBy: sum
+		sourceColumn: first_order_week_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_order_week_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7b585292-88f8-51f0-90de-94e083b9945d
+		summarizeBy: sum
+		sourceColumn: last_order_week_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Member-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_member.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"member_id", Int64.Type}, {"region_code", type text}, {"join_week_id", Int64.Type}, {"join_date", type date}, {"join_cohort", type text}, {"age_band", type text}, {"device_model", type text}, {"refill_price_krw", Int64.Type}, {"first_order_week_id", Int64.Type}, {"last_order_week_id", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+

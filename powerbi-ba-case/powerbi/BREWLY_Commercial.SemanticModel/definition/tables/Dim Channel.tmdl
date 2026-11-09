@@ -1,0 +1,47 @@
+table 'Dim Channel'
+	lineageTag: 742dbceb-9971-52c3-bc36-71e1bfa3984f
+
+	column channel_code
+		dataType: string
+		isHidden
+		lineageTag: 02c75f89-eebc-579f-a86b-bae8fda156de
+		summarizeBy: none
+		sourceColumn: channel_code
+
+	column channel_name
+		dataType: string
+		lineageTag: 15fb7aeb-a2ad-5727-996f-f9521bfcc792
+		summarizeBy: none
+		sourceColumn: channel_name
+		sortByColumn: sort_order
+
+	column channel_group
+		dataType: string
+		lineageTag: b0e29f2d-86ce-5bfb-87b4-ccc2aeca3e7b
+		summarizeBy: none
+		sourceColumn: channel_group
+
+	column is_acquisition
+		dataType: boolean
+		lineageTag: c74d3ef7-4381-5e55-96b3-80db86fde9fb
+		summarizeBy: none
+		sourceColumn: is_acquisition
+
+	column sort_order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2de075d4-a1f1-5c1d-abe0-2c01b19afd8e
+		summarizeBy: none
+		sourceColumn: sort_order
+
+	partition 'Dim Channel-csv' = m
+		mode: import
+		source =
+				let
+				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_channel.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"channel_code", type text}, {"channel_name", type text}, {"channel_group", type text}, {"is_acquisition", type logical}, {"sort_order", Int64.Type}}, "en-US")
+				in
+				    TypedTable
+
