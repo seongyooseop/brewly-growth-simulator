@@ -72,6 +72,21 @@
         }
       }
     },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -86,7 +101,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Acquisition spend by channel'"
+                  "Value": "'Acquisition spend by channel (KRW)'"
                 }
               }
             }

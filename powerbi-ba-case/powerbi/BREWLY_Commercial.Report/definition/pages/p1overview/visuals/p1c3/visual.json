@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "_Measures.New Members",
-              "nativeQueryRef": "New Members"
+              "nativeQueryRef": "New Members",
+              "displayName": "New members, selected period"
             }
           ]
         }

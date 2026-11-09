@@ -71,6 +71,28 @@
         }
       }
     },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "secLabelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -85,7 +107,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'New members (columns) and blended CAC (line)'"
+                  "Value": "'New members (columns) and blended CAC in KRW (line)'"
                 }
               }
             }

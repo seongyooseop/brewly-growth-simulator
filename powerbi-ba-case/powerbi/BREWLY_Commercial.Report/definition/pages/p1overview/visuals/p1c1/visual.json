@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "_Measures.Refill Revenue (KRW)",
-              "nativeQueryRef": "Refill Revenue (KRW)"
+              "nativeQueryRef": "Refill Revenue (KRW)",
+              "displayName": "Refill revenue (KRW), selected period"
             }
           ]
         }

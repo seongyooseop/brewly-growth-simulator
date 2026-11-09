@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "_Measures.Active Members (8w)",
-              "nativeQueryRef": "Active Members (8w)"
+              "nativeQueryRef": "Active Members (8w)",
+              "displayName": "Active members at end of period"
             }
           ]
         }

@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "_Measures.Retail Net Revenue (KRW)",
-              "nativeQueryRef": "Retail Net Revenue (KRW)"
+              "nativeQueryRef": "Retail Net Revenue (KRW)",
+              "displayName": "Retail net revenue (KRW), selected period"
             }
           ]
         }

@@ -65,6 +65,22 @@ def slicer(name, x, y, w, table, column, title):
     return v
 
 
+FULL = lit("1D")  # display units: none (full numbers, no locale suffixes such as "천" or "십억")
+
+
+def axis_full(secondary: bool = False) -> dict:
+    props = {"labelDisplayUnits": FULL}
+    if secondary:
+        props["secLabelDisplayUnits"] = FULL
+    return {"valueAxis": [{"properties": props}]}
+
+
+def bar_labels() -> dict:
+    """Data labels with full numbers and no value axis (bar charts)."""
+    return {"labels": [{"properties": {"show": lit("true"), "labelDisplayUnits": FULL}}],
+            "valueAxis": [{"properties": {"show": lit("false")}}]}
+
+
 def gradient(measure: str, low: str, high: str) -> dict:
     """Background colour scale on a table or matrix value column."""
     rule = {"linearGradient2": {"min": {"color": {"Literal": {"Value": f"'{low}'"}}},
@@ -75,9 +91,9 @@ def gradient(measure: str, low: str, high: str) -> dict:
                         "selector": {"data": [{"dataViewWildcard": {"matchingOption": 1}}], "metadata": f"{M}.{measure}"}}]}
 
 
-def card(name, x, y, w, h, measure):
+def card(name, x, y, w, h, measure, label=None):
     # classic card: full numbers with thousand separators instead of auto units
-    return visual(name, "card", x, y, w, h, {"Values": [mea(measure)]},
+    return visual(name, "card", x, y, w, h, {"Values": [mea(measure, label)]},
                   objects={"labels": [{"properties": {"labelDisplayUnits": lit("1D"), "fontSize": lit("20D")}}]})
 
 
@@ -91,16 +107,16 @@ def slicers(prefix, with_quarter=True):
 
 pages = {
     ("p1overview", "1 Overview"): slicers("p1") + [
-        card("p1c1", 10, 85, 307, 105, "Refill Revenue (KRW)"),
-        card("p1c2", 327, 85, 307, 105, "Active Members (8w)"),
-        card("p1c3", 644, 85, 307, 105, "New Members"),
-        card("p1c4", 961, 85, 309, 105, "Retail Net Revenue (KRW)"),
+        card("p1c1", 10, 85, 307, 105, "Refill Revenue (KRW)", "Refill revenue (KRW), selected period"),
+        card("p1c2", 327, 85, 307, 105, "Active Members (8w)", "Active members at end of period"),
+        card("p1c3", 644, 85, 307, 105, "New Members", "New members, selected period"),
+        card("p1c4", 961, 85, 309, 105, "Retail Net Revenue (KRW)", "Retail net revenue (KRW), selected period"),
         visual("p1v1", "lineChart", 10, 200, 820, 510,
                {"Category": [col("Dim Week", "week_start")], "Y": [mea("Refill Orders")], "Series": [col("Dim Region", "region_name")]},
-               "Weekly refill orders by region"),
+               "Weekly refill orders by region", objects=axis_full()),
         visual("p1v2", "clusteredBarChart", 840, 200, 430, 360,
-               {"Category": [col("Dim Store", "partner")], "Y": [mea("Retail Net Revenue (KRW)")]},
-               "Partner net sell-out (complete weeks only)"),
+               {"Category": [col("Dim Store", "partner")], "Y": [mea("Retail Net Revenue (KRW)", "Net sell-out (KRW)")]},
+               "Partner net sell-out, KRW (complete weeks only)", objects=bar_labels()),
         visual("p1v3", "multiRowCard", 840, 570, 430, 140,
                {"Values": [mea("Refill Revenue YoY %", "Refill revenue"), mea("Active Members YoY %", "Active members"),
                            mea("New Members YoY %", "New members"), mea("Retail Net Revenue YoY %", "Retail revenue")]},
@@ -109,10 +125,10 @@ pages = {
     ("p2acquisition", "2 Acquisition"): slicers("p2", with_quarter=False) + [
         visual("p2v1", "columnChart", 10, 85, 625, 385,
                {"Category": [col("Dim Week", "quarter")], "Y": [mea("Acquisition Spend (KRW)")], "Series": [col("Dim Channel", "channel_name")]},
-               "Acquisition spend by channel"),
+               "Acquisition spend by channel (KRW)", objects=axis_full()),
         visual("p2v2", "lineClusteredColumnComboChart", 645, 85, 625, 385,
                {"Category": [col("Dim Week", "quarter")], "Y": [mea("New Members")], "Y2": [mea("Blended CAC (KRW)")]},
-               "New members (columns) and blended CAC (line)"),
+               "New members (columns) and blended CAC in KRW (line)", objects=axis_full(secondary=True)),
         visual("p2v3", "tableEx", 10, 480, 1260, 230,
                {"Values": [col("Dim Region", "region_name"), mea("Acquisition Spend (KRW)"), mea("New Members"), mea("Blended CAC (KRW)")]},
                "Blended CAC by region (channel CAC is out of scope: US-07)"),
@@ -126,12 +142,12 @@ pages = {
         visual("p3v1", "pivotTable", 10, 200, 640, 510,
                {"Rows": [col("Fact Cohort Retention", "join_cohort")], "Columns": [col("Fact Cohort Retention", "months_since_join")],
                 "Values": [mea("Retention %")]},
-               "Cohort retention: share ordering n months after joining", objects=gradient("Retention %", "#F3E9DC", "#2F6B5E")),
-        visual("p3v2", "clusteredBarChart", 660, 200, 610, 215,
-               {"Category": [col("Fact CX Tickets", "category")], "Y": [mea("CX Tickets")]}, "CX tickets by category"),
-        visual("p3v3", "tableEx", 660, 425, 610, 285,
+               "Cohort retention: share ordering n months after joining", objects=gradient("Retention %", "#F7F1E8", "#8FC5AF")),
+        visual("p3v2", "clusteredBarChart", 660, 200, 610, 245,
+               {"Category": [col("Fact CX Tickets", "category")], "Y": [mea("CX Tickets")]}, "CX tickets by category", objects=bar_labels()),
+        visual("p3v3", "tableEx", 660, 455, 610, 255,
                {"Values": [col("Fact CX Tickets", "category"), mea("CX Tickets"), mea("CX SLA Met %"), mea("Median Resolution Days")]},
-               "Service level by category (SLA = resolved within 3 days, target 85%)", objects=gradient("CX SLA Met %", "#B5473A", "#2F6B5E")),
+               "Service level by category (SLA = resolved within 3 days, target 85%)", objects=gradient("CX SLA Met %", "#EBA79D", "#A9D6C3")),
     ],
     ("p4quality", "4 Data quality"): [
         card("p4c1", 10, 10, 300, 105, "DQ Checks Passed"),
@@ -142,7 +158,7 @@ pages = {
                "Data-quality checks run before this refresh"),
         visual("p4v2", "lineChart", 10, 465, 1260, 245,
                {"Category": [col("Dim Week", "week_start")], "Y": [mea("Sell-out Store Coverage")]},
-               "Share of partner stores reported each week (below 95% = incomplete)"),
+               "Share of partner stores reported each week (below 95% = incomplete)", objects=axis_full()),
     ],
     ("p5tests", "5 Test sheet (QA)"): [
         visual("p5v1", "tableEx", 10, 10, 1260, 200,
