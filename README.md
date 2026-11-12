@@ -1,6 +1,7 @@
 # BREWLY Growth Analytics (synthetic data)
 
 **Live demo:** https://seongyooseop.github.io/brewly-growth-simulator/simulator/
+· **한국어 데모 (Korean):** https://seongyooseop.github.io/brewly-growth-simulator/simulator/ko/
 
 **Business Analyst case in Power BI:** [`powerbi-ba-case/`](powerbi-ba-case/) (requirements, design, decisions, data-quality checks, a 26-measure Power BI model, SQL-reconciled tests and an insight brief).
 
@@ -26,6 +27,7 @@ and CRM messages. All data is synthetic, generated from a known process so every
   The plan an analyst would make before experiments (attribution plus an observational model) raises CRM by 30%
   and loses margin in every region.
 - **Try it:** the live demo or `simulator/index.html` (six tabs, each with a "How to read this tab" guide).
+  Korean edition: `simulator/ko/index.html`, built from `simulator/template_ko.html` with the same data.
 - **How AI was used:** [`docs/ai_workflow_log.md`](docs/ai_workflow_log.md).
 
 ## Pipeline

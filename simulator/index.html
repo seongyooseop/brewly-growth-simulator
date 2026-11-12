@@ -158,6 +158,7 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
 #kpis, #upl-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 #upl-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 760px) { #kpis, #upl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+a.badge.lang { text-decoration: none; color: var(--accent); font-weight: 600; }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 @media (max-width: 900px) { .three { grid-template-columns: minmax(0, 1fr); } }
 </style>
@@ -172,7 +173,10 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
         a five-channel budget simulator, and an uplift model that decides who should get a CRM message.</p>
       <p class="start">Suggested path: <b>Weekly dashboard</b> → <b>Experiments</b> → <b>Model check</b> → <b>Budget simulator</b> → <b>CRM targeting</b> → <b>Decision memo</b>.</p>
     </div>
-    <span class="badge">All data synthetic · 121,634 simulated members · no real brand or customers</span>
+    <div class="actions">
+      <span class="badge">All data synthetic · 121,634 simulated members · no real brand or customers</span>
+      <a class="badge lang" href="ko/" hreflang="ko" lang="ko">한국어</a>
+    </div>
   </header>
 
   <div class="bar">

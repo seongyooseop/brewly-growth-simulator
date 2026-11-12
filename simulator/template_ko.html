@@ -1,0 +1,813 @@
+<title>BREWLY 성장 분석</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: a planning worksheet. Channel rows on the left, outcome readout on the right; stacks on phones. */
+:root {
+  --bg: #f6f4f1; --surface: #ffffff; --ink: #231a14; --muted: #6e6258; --line: #e2dbd3;
+  --accent: #8a4b24; --accent-soft: #f3e6dc; --band: rgba(138, 75, 36, 0.18); --guard: rgba(138, 75, 36, 0.14);
+  --track: #ece6df; --obs: #a99d92;
+  --gain: #2a7752; --loss: #ad3838; --warn: #9a5e14;
+  --f-display: "Archivo", "Noto Sans KR", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --f-body: "Source Sans 3", "Noto Sans KR", "Segoe UI", system-ui, sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #14110f; --surface: #1d1915; --ink: #efe8e1; --muted: #a89c90; --line: #3a322b;
+  --accent: #e0a479; --accent-soft: #3a2a20; --band: rgba(224, 164, 121, 0.22); --guard: rgba(224, 164, 121, 0.18);
+  --track: #2e2721; --obs: #7d7268; --gain: #5fc595; --loss: #ee8080; --warn: #e2a65a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #14110f; --surface: #1d1915; --ink: #efe8e1; --muted: #a89c90; --line: #3a322b;
+  --accent: #e0a479; --accent-soft: #3a2a20; --band: rgba(224, 164, 121, 0.22); --guard: rgba(224, 164, 121, 0.18);
+  --track: #2e2721; --obs: #7d7268; --gain: #5fc595; --loss: #ee8080; --warn: #e2a65a; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px; }
+h1, h2, h3 { font-family: var(--f-display); font-stretch: 85%; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 750; }
+h2 { font-size: 19px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-data); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+header.top .lede { max-width: 62ch; color: var(--muted); margin-top: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 10px; font-size: 12.5px; color: var(--muted); background: var(--surface); }
+
+.bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between;
+  border-block: 1px solid var(--line); padding-block: 10px; }
+.tabs, .seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button { border: 0; background: none; padding: 6px 10px; border-radius: 6px; font-weight: 600; color: var(--muted); }
+.tabs button[aria-selected="true"] { color: var(--ink); background: var(--accent-soft); }
+.seg { border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 4px 12px; border-radius: 5px; font-family: var(--f-data); font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.sim { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.right { display: grid; gap: 18px; min-width: 0; }
+@media (max-width: 900px) { .sim { grid-template-columns: minmax(0, 1fr); } }
+
+.plan-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 6px; font-size: 13.5px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; color: var(--muted); }
+
+.budget { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; border-block: 1px solid var(--line); padding-block: 10px; }
+.budget div { display: grid; gap: 2px; }
+.budget .v { font-family: var(--f-data); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+.rows { display: grid; gap: 4px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 12px; align-items: center;
+  padding: 10px 10px 8px; border-radius: 8px; border: 1px solid transparent; }
+.row.focus { border-color: var(--line); background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.row .name { border: 0; background: none; padding: 0; text-align: left; font-weight: 600; font-size: 15px; }
+.row .name small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+.row .spend { text-align: right; font-family: var(--f-data); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.row .mroi { text-align: right; min-width: 92px; font-size: 12.5px; color: var(--muted); }
+.row .mroi b { display: block; font-family: var(--f-data); font-size: 14px; font-weight: 500; }
+.row input[type="range"] { grid-column: 1 / -1; }
+.chip { display: inline-block; font-family: var(--f-data); font-size: 11.5px; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.chip.up { color: var(--gain); background: color-mix(in srgb, var(--gain) 13%, transparent); }
+.chip.down { color: var(--loss); background: color-mix(in srgb, var(--loss) 13%, transparent); }
+.chip.flat { color: var(--muted); background: var(--track); }
+.chip.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.good { color: var(--gain); } .bad { color: var(--loss); }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; }
+input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: var(--track-bg); }
+input[type="range"]::-moz-range-track { height: 8px; border-radius: 4px; background: var(--track-bg); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -5px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+.legend-line { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.sw { display: inline-block; width: 18px; height: 8px; border-radius: 3px; vertical-align: middle; margin-right: 5px; }
+
+.outcome { display: grid; gap: 4px; }
+.big { font-family: var(--f-display); font-stretch: 80%; font-weight: 800; font-size: clamp(40px, 6vw, 54px); line-height: 1; font-variant-numeric: tabular-nums; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.kpis div { display: grid; gap: 1px; }
+.kpis .v { font-family: var(--f-data); font-size: 15px; font-variant-numeric: tabular-nums; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { fill: var(--muted); font-family: var(--f-data); font-size: 11px; }
+.note { font-size: 12.5px; color: var(--muted); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stat { border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; display: grid; gap: 2px; }
+.stat .v { font-family: var(--f-display); font-stretch: 85%; font-weight: 750; font-size: 24px; font-variant-numeric: tabular-nums; }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-family: var(--f-data); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.n { text-align: right; font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+.two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.prose { display: grid; gap: 10px; max-width: 68ch; }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+
+.memo { max-width: 760px; display: grid; gap: 16px; }
+.memo .meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 13.5px; border-block: 1px solid var(--line); padding-block: 10px; }
+.memo .meta dt { font-family: var(--f-data); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding-top: 2px; }
+.memo .meta dd { margin: 0; }
+.aside { border: 1px dashed var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; font-size: 14px; }
+footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+@media (max-width: 520px) {
+  .budget { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .mroi { grid-column: 1 / -1; text-align: left; min-width: 0; }
+  .row .mroi b { display: inline; margin-right: 6px; }
+}
+@media (prefers-reduced-motion: no-preference) { .row { transition: background-color 120ms ease; } }
+</style>
+
+<style>
+.guide { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; background: var(--surface);
+  padding: 9px 14px; font-size: 14px; }
+.guide summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.guide[open] summary { margin-bottom: 6px; }
+.guide ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.view { display: grid; gap: 18px; }
+.metric-seg button { font-family: var(--f-body); font-size: 13px; }
+.heat { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 12px; }
+.heat td, .heat th { padding: 4px 2px; text-align: center; border: 0; font-family: var(--f-data); white-space: nowrap; }
+.heat th { font-size: 10.5px; }
+.funnel { display: grid; gap: 8px; }
+.funnel .f-row { display: grid; grid-template-columns: minmax(130px, 34%) 1fr; gap: 10px; align-items: center; font-size: 13.5px; }
+.funnel .f-bar { height: 22px; border-radius: 4px; background: var(--accent); opacity: 0.8; position: relative; min-width: 2px; }
+.funnel .f-val { font-family: var(--f-data); font-size: 12.5px; color: var(--muted); }
+.mix .f-bar { background: var(--obs); }
+.sig { color: var(--gain); font-weight: 600; } .ns { color: var(--muted); }
+.start { font-size: 13.5px; color: var(--muted); }
+.start b { color: var(--ink); }
+#kpis, #upl-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#upl-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) { #kpis, #upl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+a.badge.lang { text-decoration: none; color: var(--accent); font-weight: 600; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .three { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">BREWLY · 가상의 캡슐커피 브랜드 · 한국 · 회원 CRM과 2026 예산 계획</div>
+      <h1>BREWLY 성장 분석</h1>
+      <p class="lede">유료 브랜드 광고를 쓸 수 없다고 가정한 기기+캡슐 회원제 브랜드의 분석 데모입니다. SQL 마트로 만든 주간 KPI,
+        유의성 검정을 거친 무작위 CRM 실험, 베이지안 마케팅 믹스 모델(MMM), 5개 채널 예산 시뮬레이터, 그리고 누구에게 CRM 메시지를
+        보낼지 정하는 업리프트 모델까지 한 흐름으로 보여줍니다.</p>
+      <p class="start">추천 순서: <b>주간 대시보드</b> → <b>실험</b> → <b>모델 점검</b> → <b>예산 시뮬레이터</b> → <b>CRM 타깃팅</b> → <b>의사결정 메모</b></p>
+    </div>
+    <div class="actions">
+      <span class="badge">모든 데이터는 가상 · 시뮬레이션 회원 121,634명 · 실제 브랜드·고객 없음</span>
+      <a class="badge lang" href="../" hreflang="en" lang="en">English</a>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="화면">
+      <button role="tab" id="tab-dashboard" data-tab="dashboard" aria-selected="true">주간 대시보드</button>
+      <button role="tab" id="tab-experiments" data-tab="experiments" aria-selected="false">실험</button>
+      <button role="tab" id="tab-model" data-tab="model" aria-selected="false">모델 점검</button>
+      <button role="tab" id="tab-simulator" data-tab="simulator" aria-selected="false">예산 시뮬레이터</button>
+      <button role="tab" id="tab-targeting" data-tab="targeting" aria-selected="false">CRM 타깃팅</button>
+      <button role="tab" id="tab-memo" data-tab="memo" aria-selected="false">의사결정 메모</button>
+    </div>
+    <div class="seg" id="region-seg" aria-label="지역"></div>
+  </div>
+
+  <!-- ================= Dashboard ================= -->
+  <section id="view-dashboard" class="view" role="tabpanel" aria-labelledby="tab-dashboard">
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>팀 리더가 매주 월요일 여는 화면입니다. 모든 숫자는 회원 단위 이벤트로 만든 SQL 테이블(sql/marts.sql)에서 나옵니다.</li>
+        <li><b>카드:</b> 최근 4주(2025년 12월)와 1년 전 같은 4주 대비 변화입니다. 오른쪽 위 SEL(수도권) / YNG(영남) / ROK(그 외 지역)로 지역을 바꿉니다.</li>
+        <li><b>주간 추이:</b> 버튼으로 지표를 고릅니다. 옅은 세로 띠는 프로모션 주간(브랜드 데이, 블랙프라이데이, 연말)입니다.</li>
+        <li><b>라이프사이클 퍼널:</b> 신규 회원 중 4주 안에 첫 주문, 13주 안에 3회 이상 주문, 6개월 차에도 주문하는 회원 수(전체 지역). 각 단계는 앞 단계를 포함합니다.</li>
+        <li><b>코호트 히트맵:</b> 행은 가입 월, 열은 가입 후 4주 단위 기간(P0 = 첫 4주), 칸은 그 기간에 주문한 회원 비율(%)입니다. 오른쪽으로 옅어질수록 이탈입니다.</li>
+        <li><b>2025 예산:</b> 이 지역이 작년에 채널별로 쓴 돈입니다. 이 구성을 바꿀지가 나머지 탭에서 다루는 질문입니다.</li>
+      </ul></details>
+    <div class="stats" id="kpis"></div>
+    <div class="panel">
+      <div class="plan-head">
+        <div><h2 id="trend-title">주간 추이</h2><p class="note">104주, 2024–2025. 음영 띠는 프로모션 주간입니다.</p></div>
+        <div class="seg metric-seg" id="metric-seg"></div>
+      </div>
+      <svg class="chart" id="trend" viewBox="0 0 1100 260" role="img" aria-label="주간 추이"></svg>
+    </div>
+    <div class="three">
+      <div class="panel">
+        <div><h2>회원 라이프사이클 퍼널</h2><p class="note">0~77주차 가입 회원(26주 이상 추적), 전체 지역. 각 단계는 앞 단계를 포함합니다.</p></div>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="panel" style="grid-column: span 2; min-width: 0;">
+        <div><h2>가입 코호트: 주문을 이어가는 비율</h2><p class="note">2024년 월별 가입 코호트, 전체 지역. 각 칸은 가입 후 해당 4주 기간에 주문한 코호트 비율(%)입니다(P0 = 첫 4주).</p></div>
+        <div class="tbl-wrap"><table class="heat" id="heat"></table></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div><h2 id="mix-title">2025 예산은 어디에 쓰였나</h2><p class="note">채널별 연간 지출. CRM 비용 = 발송 메시지 수 × 120원(메시지 + 평균 쿠폰).</p></div>
+      <div class="funnel mix" id="mix"></div>
+    </div>
+  </section>
+
+  <!-- ================= Experiments ================= -->
+  <section id="view-experiments" class="view" role="tabpanel" aria-labelledby="tab-experiments" hidden>
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>회원을 무작위로 나눠 CRM 효과를 직접 잰 실험 2개입니다. 두 그룹은 받은 메시지만 다릅니다.</li>
+        <li><b>홀드아웃:</b> 회원 30%에게 8주간 메시지를 보내지 않았습니다. 이 그룹이 잃은 주문이 CRM의 평균 효과입니다.</li>
+        <li><b>빈도 테스트:</b> 회원 50%에게 6주간 메시지를 약 2배 보냈습니다. 주문이 늘었는지가 "메시지를 더 보내면 남는가"에 대한 답입니다.</li>
+        <li><b>표본 비율 점검(SRM):</b> 그룹 크기가 설계(30:70, 50:50)와 맞는지 봅니다. p값이 0.01 미만이면 배정이 깨진 것이므로 결과를 믿으면 안 됩니다.</li>
+        <li><b>표:</b> 회원당 주문 차이, 95% 신뢰구간(실제 차이가 들어 있을 가능성이 높은 범위), p값(이만한 차이가 우연히 나올 확률), 최소 검출 효과(MDE)입니다. 신뢰구간이 0을 포함하지 않고 p &lt; 0.05이면 초록색입니다.</li>
+        <li><b>차트:</b> 지역별 차이와 신뢰구간입니다. 막대가 0선을 지나면 우연과 구분할 수 없습니다.</li>
+      </ul></details>
+    <div id="exp-cards" class="view"></div>
+    <div class="panel">
+      <h2>지역 테스트 (신규 회원 채널)</h2>
+      <p class="note">한 지역에서 채널을 끄고 다른 지역과 비교해 효과를 읽었습니다. 이 결과로 마케팅 믹스 모델을 보정합니다.</p>
+      <div class="tbl-wrap"><table><thead><tr><th>지역</th><th>채널</th><th>테스트</th><th style="text-align:right">측정값 (신규 회원)</th><th style="text-align:right">보정 후 모델</th></tr></thead><tbody id="geo-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ================= Model check ================= -->
+  <section id="view-model" class="view" role="tabpanel" aria-labelledby="tab-model" hidden>
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>예산 이동을 권고하기 전에 그 근거가 되는 숫자를 채점하는 탭입니다. 데이터가 가상이라 모든 추정치를 정답(◇)과 비교할 수 있습니다.</li>
+        <li><b>점 차트:</b> 채널별로 다음 1원이 남기는 마진(한계 ROI)입니다. 회색 = 실험 전(신규 회원 채널은 관측 데이터 모델, CRM은 어트리뷰션), 갈색 = 실험 후. 1의 선이 손익분기입니다.</li>
+        <li><b>CRM 행:</b> 어트리뷰션은 약 20(화살표, 차트 밖)으로 읽지만 정답은 0보다 낮습니다. 실험 기반 곡선은 손익분기 아래로 읽으므로 결정은 맞습니다.</li>
+        <li><b>세 가지 답 표:</b> 같은 CRM을 어트리뷰션, 홀드아웃(평균), 빈도 테스트(다음 메시지)로 잰 값을 정답과 나란히 놓았습니다.</li>
+        <li><b>신규 회원 가치:</b> 가입 코호트 주문으로 계산한 12개월 마진입니다. 신규 회원 채널과 CRM을 같은 단위(원)로 비교하게 해 줍니다.</li>
+      </ul></details>
+    <div class="stats" id="stats"></div>
+    <div class="two">
+      <div class="panel">
+        <div><h2>한계 ROI vs 숨겨진 정답</h2>
+          <p class="note">현재 지출에서 다음 1원이 남기는 마진. 막대는 90% 구간입니다. 실험 전: 신규 회원 채널은 관측 데이터 MMM, CRM은 어트리뷰션.</p></div>
+        <svg class="chart" id="dots" viewBox="0 0 520 320" role="img" aria-label="채널별 한계 ROI"></svg>
+        <div class="legend-line"><span>◇ 정답</span><span><span class="sw" style="background: var(--obs)"></span>실험 전</span>
+          <span><span class="sw" style="background: var(--accent)"></span>실험 후</span></div>
+      </div>
+      <div class="panel prose">
+        <h2>점검 결과</h2>
+        <p><b>CRM: 어트리뷰션은 20, 정답은 한계 기준 0 아래.</b> 메시지 뒤에 나온 주문을 모두 메시지 덕으로 치면 CRM이 압도적으로 좋은
+          채널처럼 보입니다(1원당 마진 약 20원). 무작위 홀드아웃은 평균을 0.4~1.1원으로 잡았고, 메시지를 두 배로 늘려도 측정 가능한 효과가
+          없었습니다. "캡슐이 떨어져 간다"는 메시지는 대부분 어차피 재주문하려던 회원에게 갑니다.</p>
+        <p><b>CRM을 마케팅 믹스 모델에 넣지 않은 이유.</b> 메시지 발송량은 재주문 시점이 된 회원 수에 따라 늘고, 이 회원 수가 기본 주문도
+          움직입니다. 주간 모델에 CRM을 넣은 6가지 설정은 실험 결과와 어긋나거나 수렴하지 않았습니다. 그래서 CRM은 깨끗하게 잴 수 있는 곳,
+          곧 회원 단위 홀드아웃에서 측정합니다.</p>
+        <p><b>신규 회원 채널: 지역 테스트가 소매 파트너 함정을 바로잡음.</b> 소매 파트너 인센티브는 기기 판매 대수에 따라 지급되므로 수요와
+          함께 오릅니다. 관측 데이터 모델은 다음 1원을 약 1.2원(정답 0.4원)으로 읽었지만, 지역 테스트 후에는 손익분기 아래로 읽습니다.
+          이제 신규 회원 채널의 손익분기 판단은 모두 정답과 맞습니다(실험 전 12개 중 9개 → 12개 중 12개).</p>
+        <p><b>아직 어긋나는 것:</b> 두 모델 모두 브랜드 행사를 낮게 봅니다(0.4원 vs 0.8~0.9원). 이를 다룬 테스트가 없습니다. CRM 곡선은
+          0 아래로 내려갈 수 없어 다음 메시지를 약간의 마이너스 대신 약 0.1~0.25원으로 읽습니다. 결정(축소)은 같습니다.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h2 id="crm3-title">CRM: "메시지 하나가 무엇을 더하나"에 대한 세 가지 답</h2>
+      <div class="tbl-wrap"><table><thead><tr><th>방법</th><th>무엇을 재나</th><th style="text-align:right">ROI (1원당 마진)</th><th style="text-align:right">정답</th></tr></thead><tbody id="crm3-body"></tbody></table></div>
+      <p class="note">정답은 CRM이 있을 때와 없을 때로 회원 시뮬레이션을 다시 돌려 얻은 계획 연도 효과입니다. 그래서 리마인더가 시점만 앞당긴 구매까지 반영합니다.</p>
+    </div>
+    <div class="panel two">
+      <div class="prose"><h2>신규 회원 한 명의 가치</h2><p id="ltv-note"></p></div>
+      <div>
+        <svg class="chart" id="cohort" viewBox="0 0 520 220" role="img" aria-label="가입 후 기간별 회원당 캡슐 주문 수"></svg>
+        <div class="legend-line"><span><span class="sw" style="background: var(--accent)"></span>4주 기간의 회원당 주문 수</span>
+          <span><span class="sw" style="background: var(--obs)"></span>주문을 이어가는 비율 (오른쪽 축)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Simulator ================= -->
+  <section id="view-simulator" class="view" role="tabpanel" aria-labelledby="tab-simulator" hidden>
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>각 지역의 총예산은 그대로 두고 채널 구성을 바꿔 보는 도구입니다. 권장 구성으로 열립니다.</li>
+        <li><b>슬라이더:</b> 각 채널의 2025년 주간 패턴을 배수로 키우거나 줄입니다. 옅은 띠는 합의된 가드레일, 가운데 눈금은 작년 수준입니다.</li>
+        <li><b>오른쪽 숫자(한계 ROI):</b> 그 채널에 1원을 더 쓸 때 돌아오는 마진입니다. 초록 = 회수, 빨강 = 미회수.</li>
+        <li><b>큰 숫자:</b> 작년 구성 대비 연간 추가 마진(평균)입니다. 80% 구간과 히스토그램(시나리오 200개)이 불확실성을 보여줍니다.</li>
+        <li><b>곡선:</b> 채널 이름을 누르면 그 채널의 지출-마진 곡선을 봅니다. 평평해질수록 추가 지출의 효과가 줄어듭니다. 신규 회원 채널 곡선은 마케팅 믹스 모델, CRM 곡선은 실험에서 나옵니다.</li>
+      </ul></details>
+    <div class="sim">
+      <div class="panel">
+        <div class="plan-head">
+          <div><h2>2026 채널별 계획</h2><p class="note">슬라이더는 각 채널의 2025년 주간 패턴을 배수로 조정합니다. 음영 = 합의된 가드레일, 눈금 = 2025 수준.</p></div>
+          <div class="actions"><button class="btn" id="btn-2025">2025 구성</button><button class="btn primary" id="btn-rec">권장 구성</button></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="keep-total" checked> 총액을 2025 예산으로 유지 (다른 채널이 변화분을 흡수)</label>
+        <div class="budget">
+          <div><span class="eyebrow">2025 예산</span><span class="v" id="b-2025"></span></div>
+          <div><span class="eyebrow">2026 계획</span><span class="v" id="b-plan"></span></div>
+          <div><span class="eyebrow">차이</span><span class="v" id="b-diff"></span></div>
+        </div>
+        <div class="rows" id="rows"></div>
+        <p class="note">한계 ROI = 현재 계획에서 다음 1원이 만드는 매출총이익. 1.0보다 크면 회수, 작으면 미회수입니다.</p>
+      </div>
+      <div class="right">
+        <div class="panel">
+          <div class="outcome"><span class="eyebrow">2025 구성 대비 연간 추가 매출총이익</span><div class="big" id="o-mean"></div><p id="o-range" class="muted"></p></div>
+          <div class="kpis">
+            <div><span class="eyebrow">이익 가능성</span><span class="v" id="o-prob"></span></div>
+            <div><span class="eyebrow">지출 변화</span><span class="v" id="o-spend"></span></div>
+            <div><span class="eyebrow">연간 추가 신규 회원</span><span class="v" id="o-members"></span></div>
+            <div><span class="eyebrow">연간 추가 캡슐 주문</span><span class="v" id="o-orders"></span></div>
+          </div>
+          <svg class="chart" id="hist" viewBox="0 0 520 170" role="img" aria-label="시나리오 200개의 연간 추가 매출총이익 분포"></svg>
+          <p class="note">막대는 시나리오 수입니다. 시나리오 하나는 신규 회원 채널의 MMM 사후분포 추출값과 CRM 실험 추출값을 짝지은 것입니다.
+            페이지는 시나리오 1,000개 중 200개를 쓰므로 수치가 메모와 조금 다를 수 있습니다.</p>
+        </div>
+        <div class="panel">
+          <div><h2 id="c-title"></h2><p class="note" id="c-note"></p></div>
+          <svg class="chart" id="curve" viewBox="0 0 520 260" role="img" aria-label="반응 곡선"></svg>
+          <div class="legend-line"><span><span class="sw" style="background: var(--band)"></span>80% 구간</span><span><span class="sw" style="background: var(--guard)"></span>가드레일</span><span>○ 2025</span><span>● 계획</span><span>◇ 권장</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Targeting ================= -->
+  <section id="view-targeting" class="view" role="tabpanel" aria-labelledby="tab-targeting" hidden>
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>예산 계획은 CRM 메시지를 약 30% 줄이라고 합니다. 이 탭은 누구에게 보내지 않을지 정합니다.</li>
+        <li><b>업리프트 모델:</b> 홀드아웃 실험 데이터로 학습해 회원별로 메시지가 주문을 얼마나 더 만드는지 예측하는 머신러닝 모델입니다. 어차피 사는 충성 회원(sure things)이 아니라 메시지에 반응하는 회원(persuadables)을 찾습니다.</li>
+        <li><b>곡선:</b> 가로 = 메시지를 받는 회원 비율, 세로 = 그로 인한 추가 주문(평가용으로 남겨 둔 회원 40% 기준). 높을수록 같은 메시지 수로 주문이 더 많습니다. 갈색 = 예측 업리프트 순, 회색 점선 = 무작위, 회색 실선 = 구매 가능성 순(현재 여정과 비슷).</li>
+        <li><b>십분위 차트:</b> 예측 업리프트로 회원을 10개 그룹으로 나누고 숨겨진 실제 반응을 막대로 그렸습니다. 오른쪽으로 갈수록 오르면 모델이 회원 순서를 맞게 매긴 것입니다.</li>
+      </ul></details>
+    <div class="stats" id="upl-stats"></div>
+    <div class="two">
+      <div class="panel">
+        <div><h2>회원 선택 방식별 추가 주문</h2><p class="note">테스트 세트(트리거된 회원의 40%, 19,470명). 70% 점선: 예산 계획의 CRM 발송량.</p></div>
+        <svg class="chart" id="qini" viewBox="0 0 520 300" role="img" aria-label="메시지를 받은 회원 비율별 추가 주문"></svg>
+        <div class="legend-line"><span><span class="sw" style="background: var(--accent)"></span>예측 업리프트 순</span>
+          <span><span class="sw" style="background: var(--obs)"></span>구매 가능성 순</span><span>– – 무작위</span></div>
+      </div>
+      <div class="panel">
+        <div><h2>예측 업리프트 십분위별 실제 반응</h2><p class="note">숨겨진 정답: 각 십분위 회원의 메시지당 평균 주문 증가(테스트 세트).</p></div>
+        <svg class="chart" id="deciles" viewBox="0 0 520 260" role="img" aria-label="십분위별 실제 업리프트"></svg>
+        <div class="tbl-wrap"><table><thead><tr><th>십분위</th><th style="text-align:right">12주 주문</th><th style="text-align:right">마지막 주문 후 주</th><th style="text-align:right">20–39세 비율</th></tr></thead><tbody id="dec-body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="panel prose">
+      <h2>의미</h2>
+      <p>현재 여정은 구매 가능성이 높은 순서로 회원을 고릅니다. 그런데 이들이 메시지가 가장 덜 필요한 회원입니다. 구매 가능성 상위 70%에게
+        보내면 CRM이 만든 추가 주문의 절반 정도만 남아 무작위로 고르는 것보다 못합니다. 예측 업리프트 순으로 고르면 같은 메시지 수로 약 86%를 지킵니다.</p>
+      <p>누가 반응하나: 최근 주문이 적고, 마지막 주문 후 시간이 오래 지났고, 20~39세 비중이 높은 회원이 가장 많이 반응합니다(최상위 십분위:
+        12주 주문 1.6회, 마지막 주문 후 7.5주). 많이 사는 회원(최하위 십분위: 3.2회, 3.5주)은 어차피 삽니다.</p>
+      <p>한계: 모델은 8주짜리 홀드아웃 하나로 학습했고, 개인 단위 예측 업리프트는 노이즈가 큽니다(정답과의 순위 상관 0.26). 그룹의 순서를
+        매기는 데는 강하고, 타깃팅에 필요한 것이 바로 그것입니다. 분기마다 상시 홀드아웃으로 다시 학습해야 합니다.</p>
+    </div>
+  </section>
+
+  <!-- ================= Memo ================= -->
+  <section id="view-memo" class="view" role="tabpanel" aria-labelledby="tab-memo" hidden>
+    <details class="guide"><summary>이 탭 읽는 법</summary>
+      <ul>
+        <li>의사결정자가 1분 안에 읽도록 쓴 결과입니다. 제목이 결론이고, 이어서 표·근거·리스크·다음 단계가 나옵니다.</li>
+        <li>맨 아래 상자는 숨겨진 정답과 비교한 채점으로, 포트폴리오에서만 가능한 것입니다. 실제 메모에는 넣지 않습니다.</li>
+      </ul></details>
+    <article class="panel memo">
+      <div class="eyebrow">의사결정 메모 · 2026 성장 계획</div>
+      <h2 style="font-size: 24px;">CRM 메시지를 약 30% 줄이고(대상은 업리프트로 선정), 줄인 예산을 회원 추천과 매장 체험으로 옮긴다</h2>
+      <dl class="meta">
+        <dt>수신</dt><dd>BREWLY 한국 CRM·그로스 리드 (가상)</dd>
+        <dt>발신</dt><dd>Digital Performance Analytics</dd>
+        <dt>결정 사항</dt><dd>아래 채널 구성과 CRM 타깃팅 규칙을 2026년에 적용할지 승인</dd>
+      </dl>
+      <div class="prose">
+        <h3>권고</h3>
+        <p>각 지역의 총예산은 2025년 수준으로 유지합니다. CRM 메시지 발송량을 약 30% 줄이고, 반응 가능성이 가장 낮은 회원부터 발송을
+          멈춥니다(구매 가능성이 아니라 예측 업리프트 순). 회원 추천은 약 30%, 매장 체험은 16~28% 늘립니다. 소매 파트너 인센티브는
+          7~18%, 브랜드 행사는 약 20% 줄입니다.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>지역</th><th style="text-align: right">예산</th><th style="text-align: right">연간 기대 추가 마진</th><th style="text-align: right">80% 범위</th><th style="text-align: right">이익 가능성</th></tr></thead>
+          <tbody>
+            <tr><td>수도권</td><td class="n">4.89억 원</td><td class="n">+3,800만 원</td><td class="n">2,200만~5,500만 원</td><td class="n">99.5%</td></tr>
+            <tr><td>영남</td><td class="n">2.20억 원</td><td class="n">+1,700만 원</td><td class="n">1,000만~2,400만 원</td><td class="n">&gt;99.9%</td></tr>
+            <tr><td>그 외 지역</td><td class="n">1.84억 원</td><td class="n">+1,300만 원</td><td class="n">500만~2,000만 원</td><td class="n">97.6%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p class="note">마진은 추가 신규 회원의 12개월 매출총이익(1인당 113,027원)과 추가 캡슐 주문의 매출총이익(건당 11,000원)을 셉니다. 추가 지출은 없습니다.
+          업리프트 기반 타깃팅 효과는 여기에 더해지며, 수치에는 넣지 않았습니다.</p>
+        <h3>방향을 믿는 이유</h3>
+        <ul>
+          <li><b>CRM의 다음 메시지는 비용을 회수하지 못합니다.</b> 무작위 홀드아웃(회원 30%, 8주)에서 회원당 주문이 0.038건 줄었고
+            (95% 신뢰구간 0.016~0.060, p &lt; 0.001), 평균 수익은 1원당 0.4~1.1원입니다. 회원 절반에게 메시지를 두 배로 보내도 측정 가능한
+            효과가 없었습니다(p = 0.76). 어트리뷰션이 1원당 약 20원으로 보고하는 것은 메시지가 곧 재주문할 회원에게 가기 때문입니다.</li>
+          <li><b>얼마나 보내느냐만큼 누구에게 보내느냐가 중요합니다.</b> 예측 업리프트로 고른 70%에게만 보내면 CRM 추가 주문의 약 86%를
+            지키지만, 구매 가능성 상위 70%에게 보내면 약 51%만 남습니다.</li>
+          <li><b>회원 추천과 매장 체험은 여전히 회수됩니다.</b> 모든 지역에서 다음 1원이 1.0~1.5원을 돌려줍니다. 영남에서 매장 체험을
+            6주간 끄자 신규 회원이 84명(±15) 줄었고, 모델 예측 87명과 가깝습니다.</li>
+          <li><b>소매 파트너 인센티브는 수요를 따라갑니다.</b> 원자료에서는 강해 보이지만, 그 외 지역 중단 테스트에서 효과가 작았고 다음 1원의 수익이 1원 미만입니다.</li>
+        </ul>
+        <h3>답을 바꿀 수 있는 것</h3>
+        <ul>
+          <li>브랜드 행사: 모델이 낮게 볼 수 있고 이를 다룬 테스트가 없습니다. 테스트 결과가 나올 때까지 축소 폭을 20%로 묶어 둡니다.</li>
+          <li>영남·그 외 지역 CRM: 지역별 홀드아웃은 단독으로 읽기에 표본이 작았습니다(p = 0.36, 0.20). 계획에는 전국 결과를 씁니다.</li>
+        </ul>
+        <h3>다음 단계</h3>
+        <ol>
+          <li>CRM 상시 홀드아웃 10%를 유지하고, 분기마다 이를 바탕으로 업리프트 모델을 다시 학습합니다.</li>
+          <li>2026년 1분기에 브랜드 행사 지역 테스트를 진행합니다(1개 지역, 8주).</li>
+          <li>회원당 주간 메시지 수에 상한을 두고, 추가 재배분 전에 분기마다 마케팅 믹스 모델을 다시 적합합니다.</li>
+        </ol>
+      </div>
+      <div class="aside">
+        <strong>숨겨진 정답과 비교한 포트폴리오 채점</strong>
+        <p>실제 반응으로 다시 돌려 보면 이 계획은 달성 가능한 최대 이익의 87%(수도권), 78%(영남), 88%(그 외 지역)를 얻습니다.
+          실험 전에 분석가가 세울 계획(관측 데이터 모델 + 어트리뷰션 기준 CRM)은 CRM을 30% 늘리고 모든 지역에서 마진을 잃습니다
+          (최대 이익의 -11%~-31%). 모델의 기대치가 실제보다 낮으므로(수도권 +3,800만 원 vs +6,200만 원) 여기 범위는 보수적입니다.</p>
+      </div>
+    </article>
+  </section>
+
+  <footer>가상 데이터·가상 브랜드로 만든 포트폴리오입니다. 파이프라인: 회원 단위 시뮬레이션 → SQL 마트(DuckDB) →
+    CRM 실험(Welch t-검정, SRM, 검정력) → 신규 회원 채널 계층형 베이지안 MMM(PyMC, 지역 테스트로 보정) →
+    실험 기반 CRM 반응 곡선 → 예산 최적화 → T-learner 업리프트 모델. 2026년은 2025년 주간 패턴을 채널별로 배수 조정한다고 가정합니다.</footer>
+</div>
+
+<script id="sim-data" type="application/json">/*__SIM_DATA__*/</script>
+<script id="val-data" type="application/json">/*__VALIDATION__*/</script>
+<script id="dash-data" type="application/json">/*__DASHBOARD__*/</script>
+<script id="exp-data" type="application/json">/*__EXPERIMENTS__*/</script>
+<script id="upl-data" type="application/json">/*__UPLIFT__*/</script>
+<script>
+(() => {
+  const J = id => JSON.parse(document.getElementById(id).textContent);
+  const SIM = J("sim-data"), VAL = J("val-data"), DASH = J("dash-data"), EXP = J("exp-data"), UPL = J("upl-data");
+  const CH = SIM.channels, LAB = ["회원 추천", "매장 체험", "소매 파트너", "브랜드 행사", "CRM 메시지"], GRID = SIM.grid, IS_CRM = SIM.is_crm, UNIT = SIM.unit_value;
+  const STEP = GRID[1] - GRID[0], MAXM = GRID[GRID.length - 1];
+  const NAMES = { SEL: "수도권", YNG: "영남", ROK: "그 외 지역" }, SVGNS = "http://www.w3.org/2000/svg";
+  const state = { region: "SEL", focus: 0, keepTotal: true, mult: {}, metric: "new_members", tab: "dashboard" };
+  SIM.regions.forEach(r => { state.mult[r] = [...SIM.region_data[r].recommended_multiplier]; });
+
+  // ---------- helpers ----------
+  const quant = (arr, q) => { const s = [...arr].sort((a, b) => a - b); const i = (s.length - 1) * q, lo = Math.floor(i);
+    return s[lo] + (s[Math.min(lo + 1, s.length - 1)] - s[lo]) * (i - lo); };
+  const interp = (arr, m) => { const x = Math.min(Math.max(m, 0), MAXM) / STEP; const i = Math.min(Math.floor(x), arr.length - 2);
+    const t = x - i; return arr[i] * (1 - t) + arr[i + 1] * t; };
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  const fmtKRW = v => { const a = Math.abs(v); const s = v < 0 ? "-" : "";
+    return a >= 1e8 ? `${s}${(a / 1e8).toFixed(2)}억 원` : a >= 1e4 ? `${s}${Math.round(a / 1e4).toLocaleString("en-US")}만 원` : "0원"; };
+  const axKRW = m => { const a = Math.abs(m), s = m < 0 ? "-" : m > 0 ? "+" : ""; return a < 1e-9 ? "0" : a >= 100 ? `${s}${+(a / 100).toFixed(2)}억` : `${s}${num(a * 100)}만`; };
+  const signedKRW = v => (v > 0 ? "+" : "") + fmtKRW(v);
+  const num = (v, d = 0) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+  const signed = (v, d = 0) => (v > 0 ? "+" : v < 0 ? "-" : "") + num(v, d);
+  const pct = (v, d = 0) => `${v > 0 ? "+" : v < 0 ? "-" : ""}${Math.abs(v * 100).toFixed(d)}%`;
+  const share = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
+  const pfmt = p => p < 0.001 ? "<0.001" : p.toFixed(3);
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(SVGNS, tag);
+    Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); if (parent) parent.appendChild(n); return n; };
+  const ticks = (lo, hi, n = 5) => { const span = hi - lo || 1, step0 = span / n, mag = 10 ** Math.floor(Math.log10(step0));
+    const step = [1, 2, 2.5, 5, 10].map(f => f * mag).find(s => span / s <= n) || 10 * mag;
+    const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out; };
+  const txt = (svg, x, y, s, anchor = "middle", style) => { const t = el("text", { x, y, "text-anchor": anchor, ...(style ? { style } : {}) }, svg); t.textContent = s; return t; };
+
+  // ---------- region control ----------
+  const seg = document.getElementById("region-seg");
+  SIM.regions.forEach(r => { const b = document.createElement("button"); b.textContent = r; b.title = NAMES[r];
+    b.addEventListener("click", () => { state.region = r; renderAll(); }); seg.appendChild(b); });
+
+  // ================= Dashboard =================
+  const METRICS = { new_members: "신규 회원", capsule_orders: "캡슐 주문", active_members: "활성 회원 (8주)", crm_sends: "CRM 발송" };
+  const mseg = document.getElementById("metric-seg");
+  Object.entries(METRICS).forEach(([k, lab]) => { const b = document.createElement("button"); b.textContent = lab; b.dataset.k = k;
+    b.addEventListener("click", () => { state.metric = k; renderDashboard(); }); mseg.appendChild(b); });
+
+  function renderDashboard() {
+    const w = DASH.weekly[state.region], last = [100, 101, 102, 103], prev = [48, 49, 50, 51];
+    const sum = (k, ix) => ix.reduce((a, i) => a + w[k][i], 0), avg = (k, ix) => sum(k, ix) / ix.length;
+    const spendAll = i => ["spend_referral", "spend_store_trial", "spend_retail_partner", "spend_events", "spend_crm"].reduce((a, k) => a + w[k][i], 0);
+    const cards = [
+      ["신규 회원", sum("new_members", last), sum("new_members", prev), v => num(v)],
+      ["활성 회원 (8주)", avg("active_members", last), avg("active_members", prev), v => num(v)],
+      ["캡슐 주문", sum("capsule_orders", last), sum("capsule_orders", prev), v => num(v)],
+      ["활성 회원당 주간 주문", sum("capsule_orders", last) / sum("active_members", last), sum("capsule_orders", prev) / sum("active_members", prev), v => v.toFixed(3)],
+      ["활성 회원당 주간 CRM 메시지", sum("crm_sends", last) / sum("active_members", last), sum("crm_sends", prev) / sum("active_members", prev), v => v.toFixed(2)],
+      ["마케팅 지출", last.reduce((a, i) => a + spendAll(i), 0), prev.reduce((a, i) => a + spendAll(i), 0), v => fmtKRW(v)],
+    ];
+    document.getElementById("kpis").innerHTML = cards.map(([lab, now, before, f]) => {
+      const ch = now / before - 1, cls = Math.abs(ch) < 0.005 ? "" : ch > 0 ? "good" : "bad";
+      return `<div class="stat"><span class="v">${f(now)}</span><span class="note">${lab} · 최근 4주 · 2024년 같은 기간 대비 <span class="${cls}">${pct(ch, 1)}</span></span></div>`; }).join("");
+    [...mseg.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.k === state.metric));
+    document.getElementById("trend-title").textContent = `${METRICS[state.metric]} · ${NAMES[state.region]}`;
+    const svg = document.getElementById("trend"); svg.textContent = "";
+    const W = 1100, H = 260, L = 56, R = 12, T = 12, B = 30, ys = w[state.metric], n = ys.length;
+    const yMax = Math.max(...ys) * 1.1, x = i => L + i / (n - 1) * (W - L - R), y = v => H - B - v / yMax * (H - B - T);
+    w.event_promo.forEach((p, i) => { if (p) el("rect", { x: x(i) - 4, y: T, width: 8, height: H - B - T, fill: "var(--guard)" }, svg); });
+    ticks(0, yMax, 4).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg);
+      txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    [0, 13, 26, 39, 52, 65, 78, 91].forEach(i => txt(svg, x(i), H - 10, w.week_start[i].slice(0, 7)));
+    el("polyline", { points: ys.map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2 }, svg);
+
+    const f = DASH.funnel, steps = [["기기 등록", f.registered], ["4주 안에 첫 주문", f.first_order_4w],
+      ["13주 안에 3회 이상 주문", f.three_orders_13w], ["6개월 차에도 주문", f.ordering_month_6]];
+    document.getElementById("funnel").innerHTML = steps.map(([lab, v], i) => `<div class="f-row"><span>${lab}<br><span class="f-val">${num(v)} · ${share(v / f.registered, 0)}${i ? ` · 직전 단계의 ${share(v / steps[i - 1][1], 0)}` : ""}</span></span>
+      <div class="f-bar" style="width:${(v / f.registered * 100).toFixed(1)}%"></div></div>`).join("");
+
+    const c = DASH.cohort, MONTH = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+    document.getElementById("heat").innerHTML = `<tr><th>가입 월</th>${c.months.map(m => `<th>P${m}</th>`).join("")}</tr>` +
+      c.share.map((row, i) => `<tr><th>2024년 ${MONTH[c.cohorts[i]]}</th>${row.map(v => v < 0 ? "<td></td>" :
+        `<td style="background: color-mix(in srgb, var(--accent) ${Math.round(v * 85)}%, transparent); color:${v > 0.55 ? "var(--surface)" : "var(--ink)"}">${Math.round(v * 100)}</td>`).join("")}</tr>`).join("");
+
+    const S = SIM.region_data[state.region].spend_2025, tot = S.reduce((a, b) => a + b, 0), mx = Math.max(...S);
+    document.getElementById("mix-title").textContent = `2025 예산은 어디에 쓰였나 · ${NAMES[state.region]} (${fmtKRW(tot)})`;
+    document.getElementById("mix").innerHTML = S.map((v, k) => `<div class="f-row"><span>${LAB[k]}<br><span class="f-val">${fmtKRW(v)} · ${share(v / tot, 0)}</span></span>
+      <div class="f-bar" style="width:${(v / mx * 100).toFixed(1)}%"></div></div>`).join("");
+  }
+
+  // ================= Experiments =================
+  function forest(svg, rows, mde) {
+    svg.textContent = "";
+    const W = 520, H = 50 + rows.length * 34, L = 110, R = 16, T = 10, B = 42;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const lo = Math.min(-0.02, ...rows.map(r => r.ci_lo)) * 1.15, hi = Math.max(0.02, ...rows.map(r => r.ci_hi)) * 1.15;
+    const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+    ticks(lo, hi, 5).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg);
+      txt(svg, x(t), H - B + 16, (t > 0 ? "+" : "") + t.toFixed(2)); });
+    el("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--ink)", "stroke-width": 1.2 }, svg);
+    txt(svg, W - R, H - 4, "회원당 주문 차이 (8주 또는 6주)", "end");
+    rows.forEach((r, i) => { const cy = T + 17 + i * 34, sig = r.p_value < 0.05, col = sig ? "var(--accent)" : "var(--obs)";
+      txt(svg, L - 10, cy + 4, r.label, "end", "fill: var(--ink); font-family: var(--f-body); font-size: 13px");
+      el("line", { x1: x(r.ci_lo), x2: x(r.ci_hi), y1: cy, y2: cy, stroke: col, "stroke-width": 4, "stroke-linecap": "round", opacity: 0.6 }, svg);
+      el("circle", { cx: x(r.diff_per_member), cy, r: 5, fill: col }, svg); });
+  }
+
+  function renderExperiments() {
+    const DEF = {
+      crm_holdout_w80: { title: "CRM 홀드아웃: 회원 30%에게 8주간 메시지 미발송 (80~87주차)",
+        q: "CRM은 평균적으로 주문을 얼마나 더하나?", tlab: "홀드아웃", clab: "평소 운영" },
+      crm_frequency_w92: { title: "CRM 빈도 테스트: 회원 50%에게 6주간 메시지 약 2배 발송 (92~97주차)",
+        q: "메시지를 더 보내면 주문이 늘어나나?", tlab: "추가 발송", clab: "평소 운영" } };
+    const box = document.getElementById("exp-cards"); box.textContent = "";
+    Object.entries(EXP).forEach(([key, e]) => {
+      const d = DEF[key], all = e.regions.ALL, srmOk = e.srm_p_value >= 0.01;
+      const regs = ["SEL", "YNG", "ROK", "ALL"];
+      const rows = regs.map(r => ({ ...e.regions[r], label: r === "ALL" ? "전체 지역" : NAMES[r] }));
+      const panel = document.createElement("div"); panel.className = "panel";
+      panel.innerHTML = `<div><h2>${d.title}</h2><p class="note">질문: ${d.q} 대상: 테스트 시작 시점에 활동 중이었거나 기간 중 가입한 회원 ${num(e.n_population)}명 (배정 기준 분석, ITT).</p></div>
+        <div class="stats">
+          <div class="stat"><span class="v">${pfmt(e.srm_p_value)}</span><span class="note">표본 비율 점검 p값: 그룹 크기가 설계(${Math.round(e.design.share * 100)}:${Math.round((1 - e.design.share) * 100)})와 ${srmOk ? "일치" : "불일치"}</span></div>
+          <div class="stat"><span class="v">${all.sends_treated.toFixed(1)} vs ${all.sends_control.toFixed(1)}</span><span class="note">기간 중 회원당 메시지 수: ${d.tlab} vs 평소 운영 (발송 점검)</span></div>
+          <div class="stat"><span class="v ${all.p_value < 0.05 ? "sig" : "ns"}">${signed(all.diff_per_member, 3)}</span><span class="note">회원당 주문 차이, 전체 지역 (95% 신뢰구간 ${signed(all.ci_lo, 3)} ~ ${signed(all.ci_hi, 3)}; p = ${pfmt(all.p_value)})</span></div>
+          <div class="stat"><span class="v">${signed(all.total_effect_orders)}</span><span class="note">기간 중 주문 수 차이, ${d.tlab} 그룹 규모 기준 (표준오차 ± ${num(all.total_effect_se)})</span></div>
+        </div>
+        <div style="display:grid; gap:12px">
+          <div class="tbl-wrap"><table><thead><tr><th>지역</th><th style="text-align:right">n (${d.tlab} / 평소)</th><th style="text-align:right">회원당 주문</th><th style="text-align:right">차이 [95% 신뢰구간]</th><th style="text-align:right">p</th><th style="text-align:right">증가율</th><th style="text-align:right">MDE</th></tr></thead>
+          <tbody>${rows.map(r => `<tr><td>${r.label}</td><td class="n">${num(r.n_treated)} / ${num(r.n_control)}</td><td class="n">${r.mean_treated.toFixed(3)} vs ${r.mean_control.toFixed(3)}</td>
+            <td class="n ${r.p_value < 0.05 ? "sig" : "ns"}">${signed(r.diff_per_member, 3)} [${signed(r.ci_lo, 3)}, ${signed(r.ci_hi, 3)}]</td><td class="n">${pfmt(r.p_value)}</td>
+            <td class="n">${pct(r.relative_lift, 1)}</td><td class="n">±${r.mde_per_member.toFixed(3)}</td></tr>`).join("")}</tbody></table></div>
+          <div style="max-width:640px"><svg class="chart"></svg><p class="note">점 = 차이, 막대 = 95% 신뢰구간. p &lt; 0.05이면 갈색. MDE = 검정력 80%로 이 테스트가 잡아낼 수 있는 최소 차이.</p></div>
+        </div>`;
+      box.appendChild(panel);
+      forest(panel.querySelector("svg"), rows);
+    });
+    const LBL = { store_trial: "매장 체험", retail_partner: "소매 파트너" };
+    document.getElementById("geo-body").innerHTML = VAL.geo_tests.map(t => `<tr><td>${NAMES[t.region]}</td><td>${LBL[t.channel]}</td>
+      <td>${t.start_week}~${t.start_week + t.n_weeks - 1}주차 중단</td><td class="n">${signed(t.observed_lift)} ± ${num(t.se)}</td><td class="n">${signed(t.model_implied)}</td></tr>`).join("");
+  }
+
+  // ================= Model check =================
+  function renderModel() {
+    const v = VAL.regions[state.region], u = v.uplift, c = v.crm;
+    const stats = [
+      [share(v.holdout_mape), `학습에 쓰지 않은 12주의 신규 회원 예측 오차 · ${NAMES[state.region]}`],
+      [`${VAL.coverage_mroi.cal} / ${VAL.coverage_mroi.n}`, `신규 회원 채널: 실제 한계 ROI가 90% 구간 안에 든 수 (지역 테스트 전: ${VAL.coverage_mroi.nolift})`],
+      [share(u.share_of_best_captured), `정답 기준 최대 이익 중 이 계획이 얻는 비율 (실험 전 계획: ${share(u.before_experiments_share_of_best, 0)})`],
+      [`${VAL.convergence.divergences} · ${VAL.convergence.max_r_hat}`, `${VAL.convergence.draws.toLocaleString()}회 추출의 발산 수와 최대 R-hat`],
+    ];
+    document.getElementById("stats").innerHTML = stats.map(([val, lab]) => `<div class="stat"><span class="v">${val}</span><span class="note">${lab}</span></div>`).join("");
+
+    const svg = document.getElementById("dots"); svg.textContent = "";
+    const rows = v.channels.map(ch => ({ ...ch })).concat([{ true_mroi: c.true_marginal_roi, nolift_mroi: c.attributed_roi, nolift_mroi_lo90: null, nolift_mroi_hi90: null,
+      cal_mroi: c.curve_mroi_mean, cal_mroi_lo90: c.curve_mroi_90[0], cal_mroi_hi90: c.curve_mroi_90[1], crm: true }]);
+    const W = 520, H = 320, L = 128, R = 26, T = 18, B = 34;
+    const xMin = Math.floor(Math.min(0, ...rows.map(r => Math.min(r.true_mroi, r.cal_mroi_lo90))) * 2) / 2;
+    const xMax = Math.ceil(Math.max(...rows.map(r => Math.max(r.true_mroi, r.cal_mroi_hi90, r.crm ? 0 : r.nolift_mroi_hi90))) + 0.2);
+    const x = val => L + (clamp(val, xMin, xMax) - xMin) / (xMax - xMin) * (W - L - R), rowH = (H - T - B) / rows.length;
+    ticks(xMin, xMax, 6).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: T, y2: H - B, stroke: "var(--line)", "stroke-dasharray": t === 1 ? "" : "2 3" }, svg); txt(svg, x(t), H - B + 16, t); });
+    txt(svg, x(1) + 4, T - 4, "손익분기", "start");
+    txt(svg, W - R, H - 4, "다음 1원이 남기는 마진", "end");
+    rows.forEach((r, i) => {
+      const cy = T + rowH * (i + 0.5);
+      txt(svg, L - 10, cy + 4, LAB[i], "end", "fill: var(--ink); font-family: var(--f-body); font-size: 13px");
+      if (r.crm) {
+        const off = r.nolift_mroi > xMax, gx = x(r.nolift_mroi);
+        el("circle", { cx: gx - (off ? 6 : 0), cy: cy - 7, r: 4.5, fill: "var(--obs)" }, svg);
+        if (off) { el("path", { d: `M${gx},${cy - 7} l-8,-5 v10 z`, fill: "var(--obs)" }, svg); txt(svg, gx - 14, cy - 13, `어트리뷰션 ${r.nolift_mroi.toFixed(1)} →`, "end"); }
+      } else {
+        el("line", { x1: x(r.nolift_mroi_lo90), x2: x(r.nolift_mroi_hi90), y1: cy - 7, y2: cy - 7, stroke: "var(--obs)", "stroke-width": 4, "stroke-linecap": "round", opacity: 0.55 }, svg);
+        el("circle", { cx: x(r.nolift_mroi), cy: cy - 7, r: 4.5, fill: "var(--obs)" }, svg);
+      }
+      el("line", { x1: x(r.cal_mroi_lo90), x2: x(r.cal_mroi_hi90), y1: cy + 7, y2: cy + 7, stroke: "var(--accent)", "stroke-width": 4, "stroke-linecap": "round", opacity: 0.55 }, svg);
+      el("circle", { cx: x(r.cal_mroi), cy: cy + 7, r: 4.5, fill: "var(--accent)" }, svg);
+      const tx = x(r.true_mroi);
+      el("polygon", { points: `${tx},${cy - 7} ${tx + 7},${cy} ${tx},${cy + 7} ${tx - 7},${cy}`, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.6 }, svg);
+    });
+    document.getElementById("crm3-title").textContent = `CRM: "메시지 하나가 무엇을 더하나"에 대한 세 가지 답 · ${NAMES[state.region]}`;
+    const ci = a => `[${a[0].toFixed(2)}, ${a[1].toFixed(2)}]`;
+    document.getElementById("crm3-body").innerHTML = [
+      ["어트리뷰션", "메시지와 같은 주에 나온 주문을 메시지 덕으로 계산", c.attributed_roi.toFixed(1), "—"],
+      ["홀드아웃 (평균)", "30% 홀드아웃이 잃은 주문 ÷ 받았을 메시지 수", `${c.holdout_avg_roi.toFixed(2)} ${ci(c.holdout_avg_roi_ci)}`, `${c.true_roi.toFixed(2)} (평균)`],
+      ["빈도 테스트 (다음 메시지)", "추가 메시지 1건당 추가 주문", `${c.frequency_marginal_roi.toFixed(2)} ${ci(c.frequency_marginal_roi_ci)}`, `${c.true_marginal_roi.toFixed(2)} (한계)`],
+      ["실험 곡선 (계획에 사용)", "홀드아웃 수준 + 전국 곡률, 현재 발송량에서의 한계값", `${c.curve_mroi_mean.toFixed(2)} [${c.curve_mroi_90[0].toFixed(2)}, ${c.curve_mroi_90[1].toFixed(2)}]`, `${c.true_marginal_roi.toFixed(2)} (한계)`],
+    ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td></tr>`).join("");
+  }
+
+  function renderCohort() {
+    const co = VAL.cohort, svg = document.getElementById("cohort"); svg.textContent = "";
+    document.getElementById("ltv-note").textContent =
+      `2024년 가입 코호트는 가입 후 52주 동안 회원당 캡슐을 ${co.orders_per_member_12m.toFixed(1)}회 주문합니다(코호트 마트 기준). ` +
+      `주문당 마진 ${co.margin_per_order.toLocaleString("en-US")}원에 기기 마진 ${co.device_margin.toLocaleString("en-US")}원을 더하면 ` +
+      `신규 회원 한 명의 가치는 ${co.value_per_new_member.toLocaleString("en-US")}원입니다. 이 값으로 신규 회원 수를 원 단위로 바꾸면 신규 회원 채널과 CRM이 같은 기준에서 예산을 다툴 수 있습니다.`;
+    const W = 520, H = 220, L = 40, R = 40, T = 12, B = 34, n = co.orders_per_member.length;
+    const x = i => L + i / (n - 1) * (W - L - R), yMax = Math.ceil(Math.max(...co.orders_per_member) * 5 + 0.5) / 5;
+    const y = v => H - B - v / yMax * (H - B - T), y2 = v => H - B - v * (H - B - T);
+    ticks(0, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, t.toFixed(1), "end"); });
+    [0, 0.5, 1].forEach(t => txt(svg, W - R + 6, y2(t) + 4, `${t * 100}%`, "start"));
+    co.orders_per_member.forEach((_, i) => txt(svg, x(i), H - B + 16, i));
+    txt(svg, W - R, H - 2, "가입 후 4주 단위 기간", "end");
+    el("polyline", { points: co.active_share.map((v, i) => `${x(i)},${y2(v)}`).join(" "), fill: "none", stroke: "var(--obs)", "stroke-width": 2, "stroke-dasharray": "5 4" }, svg);
+    el("polyline", { points: co.orders_per_member.map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2.2 }, svg);
+    co.orders_per_member.forEach((v, i) => el("circle", { cx: x(i), cy: y(v), r: 3, fill: "var(--accent)" }, svg));
+  }
+
+  // ================= Simulator =================
+  const SUM = {};
+  SIM.regions.forEach(r => { const curves = SIM.region_data[r].curves;
+    SUM[r] = CH.map((_, c) => { const mean = [], p10 = [], p90 = [];
+      GRID.forEach((_, g) => { const v = curves.map(d => d[c][g]); mean.push(v.reduce((a, b) => a + b, 0) / v.length); p10.push(quant(v, 0.1)); p90.push(quant(v, 0.9)); });
+      return { mean, p10, p90 }; }); });
+
+  function compute() {
+    const r = state.region, rd = SIM.region_data[r], mult = state.mult[r], S = rd.spend_2025;
+    const uplift = rd.curves.map(d => d.reduce((acc, row, c) => acc + interp(row, mult[c]) - interp(row, 1), 0) * 1e6);
+    const mean = uplift.reduce((a, b) => a + b, 0) / uplift.length;
+    const plan = S.reduce((a, s, c) => a + s * mult[c], 0), base = S.reduce((a, b) => a + b, 0);
+    const delta = CH.map((_, c) => (interp(SUM[r][c].mean, mult[c]) - interp(SUM[r][c].mean, 1)) * 1e6 / UNIT[c]);
+    const members = delta.reduce((a, v, c) => a + (IS_CRM[c] ? 0 : v), 0), orders = delta.reduce((a, v, c) => a + (IS_CRM[c] ? v : 0), 0);
+    const mroi = CH.map((_, c) => { const h = 0.02, lo = clamp(mult[c] - h, 0, MAXM), hi = clamp(mult[c] + h, 0, MAXM);
+      return (interp(SUM[r][c].mean, hi) - interp(SUM[r][c].mean, lo)) * 1e6 / ((hi - lo) * S[c]); });
+    return { uplift, mean, p10: quant(uplift, 0.1), p90: quant(uplift, 0.9), prob: uplift.filter(u => u > 0).length / uplift.length, plan, base, members, orders, mroi };
+  }
+
+  function setMult(k, v) {
+    const r = state.region, mult = state.mult[r], S = SIM.region_data[r].spend_2025;
+    v = clamp(v, 0, MAXM);
+    if (!state.keepTotal) { mult[k] = v; return; }
+    let remaining = (v - mult[k]) * S[k], free = CH.map((_, j) => j).filter(j => j !== k);
+    for (let pass = 0; pass < 8 && Math.abs(remaining) > 1 && free.length; pass++) {
+      const w = free.map(j => mult[j] * S[j] + 1), Wt = w.reduce((a, b) => a + b, 0);
+      free.forEach((j, i) => { const target = clamp(mult[j] - remaining * w[i] / Wt / S[j], 0, MAXM); remaining -= (mult[j] - target) * S[j]; mult[j] = target; });
+      free = free.filter(j => remaining > 0 ? mult[j] > 1e-6 : mult[j] < MAXM - 1e-6);
+    }
+    mult[k] = clamp(v - remaining / S[k], 0, MAXM);
+  }
+
+  function buildRows() {
+    const rows = document.getElementById("rows"); rows.textContent = "";
+    CH.forEach((c, k) => {
+      const [lo, hi] = SIM.bounds[c];
+      const row = document.createElement("div"); row.className = "row"; row.dataset.k = k;
+      row.innerHTML = `<button class="name" id="name-${k}">${LAB[k]}<small id="sub-${k}"></small></button>
+        <div class="spend" id="sp-${k}"></div><div class="mroi"><b id="mr-${k}"></b>한계 ROI</div>
+        <input type="range" id="sl-${k}" min="0" max="${MAXM}" step="0.01" aria-labelledby="name-${k}">`;
+      const sl = row.querySelector("input"), a = (lo / MAXM) * 100, b = (hi / MAXM) * 100;
+      sl.style.setProperty("--track-bg", `linear-gradient(to right, transparent calc(50% - 1px), var(--muted) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(to right, var(--track) ${a}%, var(--guard) ${a}% ${b}%, var(--track) ${b}%)`);
+      sl.addEventListener("input", () => { setMult(k, parseFloat(sl.value)); state.focus = k; updateSim(); });
+      row.querySelector(".name").addEventListener("click", () => { state.focus = k; updateSim(); });
+      rows.appendChild(row);
+    });
+  }
+  document.getElementById("btn-2025").addEventListener("click", () => { state.mult[state.region] = CH.map(() => 1); updateSim(); });
+  document.getElementById("btn-rec").addEventListener("click", () => { state.mult[state.region] = [...SIM.region_data[state.region].recommended_multiplier]; updateSim(); });
+  document.getElementById("keep-total").addEventListener("change", e => { state.keepTotal = e.target.checked; });
+
+  function drawHist(res) {
+    const svg = document.getElementById("hist"); svg.textContent = "";
+    const W = 520, H = 170, L = 12, R = 12, T = 8, B = 26, u = res.uplift.map(v => v / 1e6);
+    const lo = Math.min(0, ...u), hi = Math.max(0, ...u), pad = (hi - lo) * 0.05 || 1, x0 = lo - pad, x1 = hi + pad;
+    const x = v => L + (v - x0) / (x1 - x0) * (W - L - R), nb = 28, bw = (x1 - x0) / nb, counts = Array(nb).fill(0);
+    u.forEach(v => counts[Math.min(nb - 1, Math.floor((v - x0) / bw))]++);
+    const cmax = Math.max(...counts), y = c => H - B - c / cmax * (H - B - T);
+    counts.forEach((c, i) => { if (c) el("rect", { x: x(x0 + i * bw) + 0.5, y: y(c), width: Math.max(1, x(x0 + (i + 1) * bw) - x(x0 + i * bw) - 1), height: H - B - y(c), fill: "var(--accent)", opacity: 0.55 }, svg); });
+    el("line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--line)" }, svg);
+    ticks(x0, x1, 6).forEach(t => { el("line", { x1: x(t), x2: x(t), y1: H - B, y2: H - B + 4, stroke: "var(--line)" }, svg); txt(svg, x(t), H - 8, axKRW(t)); });
+    el("line", { x1: x(0), x2: x(0), y1: T, y2: H - B, stroke: "var(--loss)", "stroke-width": 1.2 }, svg);
+    el("line", { x1: x(res.mean / 1e6), x2: x(res.mean / 1e6), y1: T, y2: H - B, stroke: "var(--accent)", "stroke-width": 2 }, svg);
+  }
+
+  function drawCurve() {
+    const r = state.region, k = state.focus, S = SIM.region_data[r].spend_2025[k], sum = SUM[r][k];
+    const mult = state.mult[r][k], rec = SIM.region_data[r].recommended_multiplier[k], [glo, ghi] = SIM.bounds[CH[k]];
+    document.getElementById("c-title").textContent = `${LAB[k]} 반응 곡선 · ${NAMES[r]}`;
+    document.getElementById("c-note").textContent = IS_CRM[k]
+      ? "발송량별로 추가 캡슐 주문이 만드는 연간 매출총이익. 홀드아웃·빈도 테스트로 만들었습니다. 채널 이름을 누르면 바뀝니다."
+      : "지출 수준별로 이 채널이 데려오는 신규 회원의 연간 매출총이익(마케팅 믹스 모델). 채널 이름을 누르면 바뀝니다.";
+    const svg = document.getElementById("curve"); svg.textContent = "";
+    const W = 520, H = 260, L = 50, R = 14, T = 12, B = 36, xMax = MAXM * S / 1e6, yMax = Math.max(...sum.p90) * 1.08;
+    const x = v => L + v / xMax * (W - L - R), y = v => H - B - v / yMax * (H - B - T);
+    el("rect", { x: x(glo * S / 1e6), y: T, width: x(ghi * S / 1e6) - x(glo * S / 1e6), height: H - B - T, fill: "var(--guard)" }, svg);
+    ticks(0, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    ticks(0, xMax, 5).forEach(t => txt(svg, x(t), H - B + 16, axKRW(t).replace("+", "")));
+    txt(svg, W - R, H - 4, "연간 지출 (원)", "end"); txt(svg, 4, T + 2, "연간 마진 (백만 원)", "start");
+    const band = GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.p90[i])}`).join(" ") + " " + GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.p10[i])}`).reverse().join(" ");
+    el("polygon", { points: band, fill: "var(--band)", stroke: "none" }, svg);
+    el("polyline", { points: GRID.map((g, i) => `${x(g * S / 1e6)},${y(sum.mean[i])}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 2 }, svg);
+    const mark = (mm, shape) => { const cx = x(mm * S / 1e6), cy = y(interp(sum.mean, mm));
+      if (shape === "diamond") el("polygon", { points: `${cx},${cy - 7} ${cx + 7},${cy} ${cx},${cy + 7} ${cx - 7},${cy}`, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.6 }, svg);
+      else el("circle", { cx, cy, r: shape === "open" ? 5 : 6, fill: shape === "open" ? "var(--surface)" : "var(--accent)", stroke: shape === "open" ? "var(--muted)" : "var(--surface)", "stroke-width": 2 }, svg); };
+    mark(1, "open"); mark(rec, "diamond"); mark(mult, "filled");
+  }
+
+  function updateSim() {
+    const r = state.region, rd = SIM.region_data[r], mult = state.mult[r], res = compute();
+    CH.forEach((c, k) => {
+      const [lo, hi] = SIM.bounds[c], ch = mult[k] - 1, sl = document.getElementById(`sl-${k}`);
+      sl.value = mult[k].toFixed(2); sl.setAttribute("aria-valuetext", `${fmtKRW(rd.spend_2025[k] * mult[k])}, 2025 대비 ${pct(ch)}`);
+      const cls = Math.abs(ch) < 0.005 ? "flat" : ch > 0 ? "up" : "down", out = mult[k] < lo - 1e-6 || mult[k] > hi + 1e-6;
+      document.getElementById(`sp-${k}`).innerHTML = `${fmtKRW(rd.spend_2025[k] * mult[k])}<span class="chip ${cls}">${pct(ch)}</span>`;
+      document.getElementById(`sub-${k}`).innerHTML = `2025: ${fmtKRW(rd.spend_2025[k])} · ${IS_CRM[k] ? "주문 증가" : "신규 회원 유입"}` + (out ? `<span class="chip warn">가드레일 밖</span>` : "");
+      const mr = document.getElementById(`mr-${k}`); mr.textContent = res.mroi[k].toFixed(2); mr.className = res.mroi[k] >= 1 ? "good" : "bad";
+      document.querySelector(`.row[data-k="${k}"]`).classList.toggle("focus", k === state.focus);
+    });
+    const diff = res.plan - res.base, onBudget = Math.abs(diff) < 5e4;
+    document.getElementById("b-2025").textContent = fmtKRW(res.base);
+    document.getElementById("b-plan").textContent = fmtKRW(res.plan);
+    const bd = document.getElementById("b-diff"); bd.textContent = onBudget ? "예산 동일" : signedKRW(diff); bd.className = "v " + (onBudget ? "" : diff > 0 ? "bad" : "good");
+    const om = document.getElementById("o-mean"); om.textContent = signedKRW(res.mean); om.className = "big " + (res.mean >= 0 ? "good" : "bad");
+    document.getElementById("o-range").textContent = `${NAMES[r]} 연간 80% 구간 ${signedKRW(res.p10)} ~ ${signedKRW(res.p90)}` + (onBudget ? "" : ` · 지출 변화 차감 후 ${signedKRW(res.mean - diff)}`);
+    document.getElementById("o-prob").textContent = res.prob >= 0.999 ? ">99.9%" : share(res.prob);
+    document.getElementById("o-spend").textContent = onBudget ? "없음" : signedKRW(diff);
+    document.getElementById("o-members").textContent = signed(res.members);
+    document.getElementById("o-orders").textContent = signed(res.orders);
+    drawHist(res); drawCurve();
+  }
+
+  // ================= Targeting =================
+  function renderTargeting() {
+    const s = UPL.summary, tot = s.extra_orders_all_messaged;
+    const cards = [
+      [share(s.extra_orders_keep_by_uplift / tot, 0), "예측 업리프트 순으로 고른 70%에게 보낼 때 지키는 추가 주문 비율"],
+      [share(s.extra_orders_keep_random / tot, 0), "70%를 무작위로 고를 때"],
+      [share(s.extra_orders_keep_by_likely_to_buy / tot, 0), "구매 가능성 상위 70%에게 보낼 때 ('캡슐 소진' 여정이 고르는 방식)"],
+      [s.spearman_pred_vs_true_uplift.toFixed(2), "예측 업리프트와 숨겨진 실제 업리프트의 순위 상관 (테스트 세트)"],
+    ];
+    document.getElementById("upl-stats").innerHTML = cards.map(([v, l]) => `<div class="stat"><span class="v">${v}</span><span class="note">${l}</span></div>`).join("");
+    const svg = document.getElementById("qini"); svg.textContent = "";
+    const W = 520, H = 300, L = 50, R = 14, T = 12, B = 36, xs = UPL.shares, cv = UPL.curves;
+    const all = [...cv.uplift_model, ...cv.likely_to_buy, ...cv.random], yMin = Math.min(0, ...all), yMax = Math.max(...all) * 1.1;
+    const x = v => L + v * (W - L - R), y = v => H - B - (v - yMin) / (yMax - yMin) * (H - B - T);
+    ticks(yMin, yMax, 5).forEach(t => { el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, svg); txt(svg, L - 6, y(t) + 4, num(t), "end"); });
+    [0, 0.25, 0.5, 0.75, 1].forEach(t => txt(svg, x(t), H - B + 16, `${t * 100}%`));
+    txt(svg, W - R, H - 4, "메시지를 받은 회원 비율 (트리거 대상 중)", "end"); txt(svg, 4, T + 2, "추가 주문 (8주)", "start");
+    el("line", { x1: x(0.7), x2: x(0.7), y1: T, y2: H - B, stroke: "var(--muted)", "stroke-dasharray": "4 3" }, svg);
+    const line = (vals, col, dash, w) => el("polyline", { points: vals.map((v, i) => `${x(xs[i])},${y(v)}`).join(" "), fill: "none", stroke: col, "stroke-width": w, ...(dash ? { "stroke-dasharray": dash } : {}) }, svg);
+    line(cv.random, "var(--muted)", "5 4", 1.5); line(cv.likely_to_buy, "var(--obs)", null, 2); line(cv.uplift_model, "var(--accent)", null, 2.4);
+
+    const dsvg = document.getElementById("deciles"); dsvg.textContent = "";
+    const D = UPL.deciles, dW = 520, dH = 260, dL = 50, dR = 12, dT = 12, dB = 36, mx = Math.max(...D.map(d => d.true_uplift_per_message)) * 1.15;
+    const bw = (dW - dL - dR) / D.length, dy = v => dH - dB - v / mx * (dH - dB - dT);
+    ticks(0, mx, 4).forEach(t => { el("line", { x1: dL, x2: dW - dR, y1: dy(t), y2: dy(t), stroke: "var(--line)", "stroke-dasharray": t ? "2 3" : "" }, dsvg); txt(dsvg, dL - 6, dy(t) + 4, t.toFixed(2), "end"); });
+    D.forEach((d, i) => { el("rect", { x: dL + i * bw + 4, y: dy(d.true_uplift_per_message), width: bw - 8, height: dH - dB - dy(d.true_uplift_per_message), fill: "var(--accent)", opacity: 0.75 }, dsvg);
+      txt(dsvg, dL + i * bw + bw / 2, dH - dB + 16, `D${d.decile + 1}`); });
+    txt(dsvg, dW - dR, dH - 4, "예측 업리프트 십분위 (낮음 → 높음)", "end"); txt(dsvg, 4, dT + 2, "메시지당 실제 증가", "start");
+    document.getElementById("dec-body").innerHTML = [0, 4, 9].map(i => D[i]).map(d => `<tr><td>D${d.decile + 1}${d.decile === 0 ? " (최하위)" : d.decile === 9 ? " (최상위)" : ""}</td>
+      <td class="n">${d.orders_12w.toFixed(1)}</td><td class="n">${d.recency_weeks.toFixed(1)}</td><td class="n">${share(d.share_young, 0)}</td></tr>`).join("");
+  }
+
+  // ================= Tabs =================
+  const TABS = ["dashboard", "experiments", "model", "simulator", "targeting", "memo"];
+  const REGION_TABS = ["dashboard", "model", "simulator"];
+  function renderAll() {
+    [...seg.children].forEach(b => b.setAttribute("aria-pressed", b.textContent === state.region));
+    renderDashboard(); renderModel(); buildRows(); updateSim();
+  }
+  function showTab(name) {
+    state.tab = name;
+    TABS.forEach(t => { document.getElementById(`view-${t}`).hidden = t !== name; document.getElementById(`tab-${t}`).setAttribute("aria-selected", t === name); });
+    seg.style.visibility = REGION_TABS.includes(name) ? "visible" : "hidden";
+  }
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { showTab(b.dataset.tab); history.replaceState(null, "", `#${b.dataset.tab}`); }));
+  renderAll(); renderExperiments(); renderCohort(); renderTargeting();
+  const fromHash = () => { const h = location.hash.replace("#", ""); showTab(TABS.includes(h) ? h : "dashboard"); };
+  window.addEventListener("hashchange", fromHash);
+  fromHash();
+})();
+</script>

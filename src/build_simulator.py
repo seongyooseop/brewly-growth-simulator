@@ -71,19 +71,30 @@ def main():
         "/*__EXPERIMENTS__*/": json.loads((OUT / "step2a_experiments.json").read_text()),
         "/*__UPLIFT__*/": json.loads((OUT / "step4_uplift.json").read_text()),
     }
-    html = (ROOT / "simulator" / "template.html").read_text(encoding="utf-8")
-    for key, data in blocks.items():
-        assert key in html, key
-        html = html.replace(key, json.dumps(data, separators=(",", ":"), default=float))
+    payload = {key: json.dumps(data, separators=(",", ":"), default=float) for key, data in blocks.items()}
+
+    def render(template):
+        html = (ROOT / "simulator" / template).read_text(encoding="utf-8")
+        for key, data in payload.items():
+            assert key in html, key
+            html = html.replace(key, data)
+        return html
+
+    def standalone(html, lang):
+        return (f'<!doctype html>\n<html lang="{lang}">\n<meta charset="utf-8">\n'
+                '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+                "<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>\n"
+                + html + "\n</html>\n")
+
     # artifact.html: page body for the Artifact host, which adds its own document skeleton.
     # index.html: the same page as a standalone document for GitHub Pages or a local browser.
+    # ko/index.html: the Korean edition (template_ko.html), same data and logic.
+    html = render("template.html")
     (ROOT / "simulator" / "artifact.html").write_text(html, encoding="utf-8")
-    standalone = ('<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n'
-                  '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-                  "<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>\n"
-                  + html + "\n</html>\n")
-    (ROOT / "simulator" / "index.html").write_text(standalone, encoding="utf-8")
-    print(f"simulator/index.html and artifact.html  {len(html) / 1e6:.2f} MB")
+    (ROOT / "simulator" / "index.html").write_text(standalone(html, "en"), encoding="utf-8")
+    (ROOT / "simulator" / "ko").mkdir(exist_ok=True)
+    (ROOT / "simulator" / "ko" / "index.html").write_text(standalone(render("template_ko.html"), "ko"), encoding="utf-8")
+    print(f"simulator/index.html, ko/index.html and artifact.html  {len(html) / 1e6:.2f} MB")
 
 
 if __name__ == "__main__":
