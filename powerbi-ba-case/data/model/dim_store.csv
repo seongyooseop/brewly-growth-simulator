@@ -1,31 +1,31 @@
-store_id,store_name,partner,store_format,region_code,size_index
-ST-001,Partner A Seoul metro #1,Partner A,Department store,SEL,0.88
-ST-002,Partner B Seoul metro #1,Partner B,Hypermarket,SEL,1.29
-ST-003,Partner C Seoul metro #1,Partner C,Electronics retailer,SEL,1.49
-ST-004,Partner A Seoul metro #2,Partner A,Department store,SEL,0.95
-ST-005,Partner B Seoul metro #2,Partner B,Hypermarket,SEL,1.32
-ST-006,Partner C Seoul metro #2,Partner C,Electronics retailer,SEL,1.32
-ST-007,Partner A Seoul metro #3,Partner A,Department store,SEL,1.39
-ST-008,Partner B Seoul metro #3,Partner B,Hypermarket,SEL,1.22
-ST-009,Partner C Seoul metro #3,Partner C,Electronics retailer,SEL,0.88
-ST-010,Partner A Seoul metro #4,Partner A,Department store,SEL,1.02
-ST-011,Partner B Seoul metro #4,Partner B,Hypermarket,SEL,0.65
-ST-012,Partner C Seoul metro #4,Partner C,Electronics retailer,SEL,1.03
-ST-013,Partner A Seoul metro #5,Partner A,Department store,SEL,1.39
-ST-014,Partner B Seoul metro #5,Partner B,Hypermarket,SEL,1.22
-ST-015,Partner A Yeongnam #1,Partner A,Department store,YNG,1.35
-ST-016,Partner B Yeongnam #1,Partner B,Hypermarket,YNG,0.93
-ST-017,Partner C Yeongnam #1,Partner C,Electronics retailer,YNG,1.13
-ST-018,Partner A Yeongnam #2,Partner A,Department store,YNG,1.32
-ST-019,Partner B Yeongnam #2,Partner B,Hypermarket,YNG,1.48
-ST-020,Partner C Yeongnam #2,Partner C,Electronics retailer,YNG,1.05
-ST-021,Partner A Yeongnam #3,Partner A,Department store,YNG,0.79
-ST-022,Partner B Yeongnam #3,Partner B,Hypermarket,YNG,1.11
-ST-023,Partner A Rest of Korea #1,Partner A,Department store,ROK,0.84
-ST-024,Partner B Rest of Korea #1,Partner B,Hypermarket,ROK,1.07
-ST-025,Partner C Rest of Korea #1,Partner C,Electronics retailer,ROK,0.71
-ST-026,Partner A Rest of Korea #2,Partner A,Department store,ROK,1.15
-ST-027,Partner B Rest of Korea #2,Partner B,Hypermarket,ROK,1.0
-ST-028,Partner C Rest of Korea #2,Partner C,Electronics retailer,ROK,0.9
-ST-029,Partner A Rest of Korea #3,Partner A,Department store,ROK,1.19
-ST-030,Partner B Rest of Korea #3,Partner B,Hypermarket,ROK,1.21
+store_id,store_name,partner,store_format,region_code,size_index,partner_ko
+ST-001,Partner A Seoul metro #1,Partner A,Department store,SEL,0.88,파트너 A(백화점)
+ST-002,Partner B Seoul metro #1,Partner B,Hypermarket,SEL,1.29,파트너 B(대형마트)
+ST-003,Partner C Seoul metro #1,Partner C,Electronics retailer,SEL,1.49,파트너 C(가전 매장)
+ST-004,Partner A Seoul metro #2,Partner A,Department store,SEL,0.95,파트너 A(백화점)
+ST-005,Partner B Seoul metro #2,Partner B,Hypermarket,SEL,1.32,파트너 B(대형마트)
+ST-006,Partner C Seoul metro #2,Partner C,Electronics retailer,SEL,1.32,파트너 C(가전 매장)
+ST-007,Partner A Seoul metro #3,Partner A,Department store,SEL,1.39,파트너 A(백화점)
+ST-008,Partner B Seoul metro #3,Partner B,Hypermarket,SEL,1.22,파트너 B(대형마트)
+ST-009,Partner C Seoul metro #3,Partner C,Electronics retailer,SEL,0.88,파트너 C(가전 매장)
+ST-010,Partner A Seoul metro #4,Partner A,Department store,SEL,1.02,파트너 A(백화점)
+ST-011,Partner B Seoul metro #4,Partner B,Hypermarket,SEL,0.65,파트너 B(대형마트)
+ST-012,Partner C Seoul metro #4,Partner C,Electronics retailer,SEL,1.03,파트너 C(가전 매장)
+ST-013,Partner A Seoul metro #5,Partner A,Department store,SEL,1.39,파트너 A(백화점)
+ST-014,Partner B Seoul metro #5,Partner B,Hypermarket,SEL,1.22,파트너 B(대형마트)
+ST-015,Partner A Yeongnam #1,Partner A,Department store,YNG,1.35,파트너 A(백화점)
+ST-016,Partner B Yeongnam #1,Partner B,Hypermarket,YNG,0.93,파트너 B(대형마트)
+ST-017,Partner C Yeongnam #1,Partner C,Electronics retailer,YNG,1.13,파트너 C(가전 매장)
+ST-018,Partner A Yeongnam #2,Partner A,Department store,YNG,1.32,파트너 A(백화점)
+ST-019,Partner B Yeongnam #2,Partner B,Hypermarket,YNG,1.48,파트너 B(대형마트)
+ST-020,Partner C Yeongnam #2,Partner C,Electronics retailer,YNG,1.05,파트너 C(가전 매장)
+ST-021,Partner A Yeongnam #3,Partner A,Department store,YNG,0.79,파트너 A(백화점)
+ST-022,Partner B Yeongnam #3,Partner B,Hypermarket,YNG,1.11,파트너 B(대형마트)
+ST-023,Partner A Rest of Korea #1,Partner A,Department store,ROK,0.84,파트너 A(백화점)
+ST-024,Partner B Rest of Korea #1,Partner B,Hypermarket,ROK,1.07,파트너 B(대형마트)
+ST-025,Partner C Rest of Korea #1,Partner C,Electronics retailer,ROK,0.71,파트너 C(가전 매장)
+ST-026,Partner A Rest of Korea #2,Partner A,Department store,ROK,1.15,파트너 A(백화점)
+ST-027,Partner B Rest of Korea #2,Partner B,Hypermarket,ROK,1.0,파트너 B(대형마트)
+ST-028,Partner C Rest of Korea #2,Partner C,Electronics retailer,ROK,0.9,파트너 C(가전 매장)
+ST-029,Partner A Rest of Korea #3,Partner A,Department store,ROK,1.19,파트너 A(백화점)
+ST-030,Partner B Rest of Korea #3,Partner B,Hypermarket,ROK,1.21,파트너 B(대형마트)

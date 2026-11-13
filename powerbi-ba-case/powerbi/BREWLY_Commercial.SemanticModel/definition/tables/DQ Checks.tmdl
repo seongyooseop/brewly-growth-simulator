@@ -52,13 +52,31 @@ table 'DQ Checks'
 		summarizeBy: none
 		sourceColumn: status
 
+	column rule_ko
+		dataType: string
+		lineageTag: 3ec91e2f-c9d3-58b9-a92c-e5b0764aef26
+		summarizeBy: none
+		sourceColumn: rule_ko
+
+	column fix_applied_ko
+		dataType: string
+		lineageTag: 0ac5db1a-ed93-5585-bf29-4515e9f19e18
+		summarizeBy: none
+		sourceColumn: fix_applied_ko
+
+	column status_ko
+		dataType: string
+		lineageTag: 200a1d4a-904d-51f0-b6e9-c1df6f1d04a2
+		summarizeBy: none
+		sourceColumn: status_ko
+
 	partition 'DQ Checks-csv' = m
 		mode: import
 		source =
 				let
 				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dq_checks.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
-				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"check_id", type text}, {"source_table", type text}, {"rule", type text}, {"rows_checked", Int64.Type}, {"rows_failed_before", Int64.Type}, {"fix_applied", type text}, {"rows_failed_after", Int64.Type}, {"status", type text}}, "en-US")
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"check_id", type text}, {"source_table", type text}, {"rule", type text}, {"rows_checked", Int64.Type}, {"rows_failed_before", Int64.Type}, {"fix_applied", type text}, {"rows_failed_after", Int64.Type}, {"status", type text}, {"rule_ko", type text}, {"fix_applied_ko", type text}, {"status_ko", type text}}, "en-US")
 				in
 				    TypedTable
 

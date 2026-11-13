@@ -55,13 +55,19 @@ table 'Fact CX Tickets'
 		summarizeBy: none
 		sourceColumn: status
 
+	column category_ko
+		dataType: string
+		lineageTag: 292f772a-b7ca-53d7-8a5d-5ad3cc735df7
+		summarizeBy: none
+		sourceColumn: category_ko
+
 	partition 'Fact CX Tickets-csv' = m
 		mode: import
 		source =
 				let
 				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\fact_cx_tickets.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
-				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"ticket_id", type text}, {"member_id", Int64.Type}, {"region_code", type text}, {"created_week_id", Int64.Type}, {"category", type text}, {"contact_channel", type text}, {"resolution_days", Int64.Type}, {"status", type text}}, "en-US")
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"ticket_id", type text}, {"member_id", Int64.Type}, {"region_code", type text}, {"created_week_id", Int64.Type}, {"category", type text}, {"contact_channel", type text}, {"resolution_days", Int64.Type}, {"status", type text}, {"category_ko", type text}}, "en-US")
 				in
 				    TypedTable
 

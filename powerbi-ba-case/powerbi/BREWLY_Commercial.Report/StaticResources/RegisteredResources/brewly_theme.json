@@ -1,14 +1,6 @@
 {
   "name": "BREWLY",
-  "dataColors": [
-    "#7A4A2E",
-    "#2F6B5E",
-    "#C8875A",
-    "#5B6C8F",
-    "#D9B44A",
-    "#8FB9A8",
-    "#A3A3A3"
-  ],
+  "dataColors": ["#7A4A2E", "#2F6B5E", "#C8875A", "#5B6C8F", "#D9B44A", "#8FB9A8", "#A3A3A3"],
   "background": "#FFFFFF",
   "foreground": "#2B2B2B",
   "tableAccent": "#7A4A2E",

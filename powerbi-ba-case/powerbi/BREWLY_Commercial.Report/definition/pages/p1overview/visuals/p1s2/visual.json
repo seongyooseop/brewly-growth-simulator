@@ -28,13 +28,13 @@
               },
               "queryRef": "Dim Week.quarter",
               "nativeQueryRef": "quarter",
-              "active": true,
               "displayName": "Quarter"
             }
           ]
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "objects": {
       "data": [
         {
@@ -54,7 +54,6 @@
       "groupName": "Quarter",
       "fieldChanges": true,
       "filterChanges": true
-    },
-    "drillFilterOtherVisuals": true
+    }
   }
 }

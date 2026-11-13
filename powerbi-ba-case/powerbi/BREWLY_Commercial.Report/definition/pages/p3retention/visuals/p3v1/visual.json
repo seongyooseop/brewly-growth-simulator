@@ -13,26 +13,6 @@
     "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Columns": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Fact Cohort Retention"
-                    }
-                  },
-                  "Property": "months_since_join"
-                }
-              },
-              "queryRef": "Fact Cohort Retention.months_since_join",
-              "nativeQueryRef": "months_since_join",
-              "active": true,
-              "displayName": "Month"
-            }
-          ]
-        },
         "Rows": {
           "projections": [
             {
@@ -48,8 +28,26 @@
               },
               "queryRef": "Fact Cohort Retention.join_cohort",
               "nativeQueryRef": "join_cohort",
-              "active": true,
               "displayName": "Join cohort"
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Cohort Retention"
+                    }
+                  },
+                  "Property": "months_since_join"
+                }
+              },
+              "queryRef": "Fact Cohort Retention.months_since_join",
+              "nativeQueryRef": "months_since_join",
+              "displayName": "Month"
             }
           ]
         },
@@ -73,6 +71,7 @@
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "objects": {
       "values": [
         {
@@ -170,7 +169,6 @@
           }
         }
       ]
-    },
-    "drillFilterOtherVisuals": true
+    }
   }
 }

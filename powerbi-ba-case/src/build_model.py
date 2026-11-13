@@ -343,6 +343,30 @@ fact_cohort = fact_cohort[fact_cohort.months_since_join <= 12]
 
 # --------------------------------------------------------------------------- write model
 dq_df = pd.DataFrame(dq_rows).sort_values("check_id")
+
+# --------------------------------------------------------------------------- Korean display names (for the Korean study guide)
+REGIONS["region_name_ko"] = REGIONS.region_code.map({"SEL": "수도권", "YNG": "영남", "ROK": "그 외 지역"})
+dim_channel["channel_name_ko"] = dim_channel.channel_code.map({
+    "referral": "회원 추천", "store_trial": "매장 체험", "retail_partner": "리테일 파트너 인센티브", "events": "브랜드 이벤트", "crm": "CRM 메시지"})
+dim_store["partner_ko"] = dim_store.partner.map({"Partner A": "파트너 A(백화점)", "Partner B": "파트너 B(대형마트)", "Partner C": "파트너 C(가전 매장)"})
+fact_cx["category_ko"] = fact_cx.category.map({
+    "Refill delivery": "리필 배송", "Device issue": "기기 고장", "Billing and payment": "결제·청구",
+    "Subscription change or cancel": "구독 변경·해지", "Product question": "제품 문의"})
+dq_df["rule_ko"] = dq_df.check_id.map({
+    "DQ-01": "회원·주(week)당 리필 주문은 1건(중복 없음)",
+    "DQ-02": "주간 지출은 채널·권역 중앙값의 1%~10,000% 범위(단위 점검)",
+    "DQ-03": "모든 매장 코드가 매장 마스터(ST-000 형식)와 일치",
+    "DQ-04": "판매 수량은 음수가 아니고 반품은 따로 보고",
+    "DQ-05": "모든 문의에 권역 코드가 있음",
+    "DQ-06": "그 주에 매장 95% 이상이 보고(늦게 온 파일 점검)"})
+dq_df["fix_applied_ko"] = dq_df.check_id.map({
+    "DQ-01": "두 번 적재된 영남 61주차 배치의 중복 행 제거",
+    "DQ-02": "천 원 단위로 입력된 행(그 외 지역 브랜드 이벤트, 40~47주차)에 1,000을 곱함",
+    "DQ-03": "파트너 코드(st012, 'ST-12 ')를 매장 마스터 기준 ST-012로 통일",
+    "DQ-04": "음수 행을 반품 수량으로 분리, 순매출 = 총매출 - 반품",
+    "DQ-05": "회원 마스터(member_id)에서 권역을 채움",
+    "DQ-06": "미완료 주를 표시(sellout_complete = 0), 파일이 올 때까지 기본 화면에서 제외"})
+dq_df["status_ko"] = dq_df.status.map({"Pass": "통과", "Open": "미해결"})
 tables = {
     "dim_week": wk,
     "dim_region": REGIONS,

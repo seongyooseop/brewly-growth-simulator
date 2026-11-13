@@ -22,13 +22,20 @@ table 'Dim Region'
 		summarizeBy: none
 		sourceColumn: sort_order
 
+	column region_name_ko
+		dataType: string
+		lineageTag: 878a4097-6907-5e20-a6bc-ceaced7d749b
+		summarizeBy: none
+		sourceColumn: region_name_ko
+		sortByColumn: sort_order
+
 	partition 'Dim Region-csv' = m
 		mode: import
 		source =
 				let
 				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_region.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
-				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"region_code", type text}, {"region_name", type text}, {"sort_order", Int64.Type}}, "en-US")
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"region_code", type text}, {"region_name", type text}, {"sort_order", Int64.Type}, {"region_name_ko", type text}}, "en-US")
 				in
 				    TypedTable
 

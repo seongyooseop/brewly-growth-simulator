@@ -35,13 +35,20 @@ table 'Dim Channel'
 		summarizeBy: none
 		sourceColumn: sort_order
 
+	column channel_name_ko
+		dataType: string
+		lineageTag: 95b4236c-f24b-5255-bdea-fff47ec9ec6e
+		summarizeBy: none
+		sourceColumn: channel_name_ko
+		sortByColumn: sort_order
+
 	partition 'Dim Channel-csv' = m
 		mode: import
 		source =
 				let
 				    CsvRaw = Csv.Document(File.Contents("C:\Users\seong\Downloads\이력서\brewly-growth-simulator\powerbi-ba-case\data\model\dim_channel.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    WithHeaders = Table.PromoteHeaders(CsvRaw, [PromoteAllScalars = true]),
-				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"channel_code", type text}, {"channel_name", type text}, {"channel_group", type text}, {"is_acquisition", type logical}, {"sort_order", Int64.Type}}, "en-US")
+				    TypedTable = Table.TransformColumnTypes(WithHeaders, {{"channel_code", type text}, {"channel_name", type text}, {"channel_group", type text}, {"is_acquisition", type logical}, {"sort_order", Int64.Type}, {"channel_name_ko", type text}}, "en-US")
 				in
 				    TypedTable
 

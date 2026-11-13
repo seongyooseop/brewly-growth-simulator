@@ -28,8 +28,25 @@
               },
               "queryRef": "Dim Week.week_start",
               "nativeQueryRef": "week_start",
-              "active": true,
               "displayName": "Week"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Refill Orders"
+                }
+              },
+              "queryRef": "_Measures.Refill Orders",
+              "nativeQueryRef": "Refill Orders"
             }
           ]
         },
@@ -51,27 +68,10 @@
               "displayName": "Region"
             }
           ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Refill Orders"
-                }
-              },
-              "queryRef": "_Measures.Refill Orders",
-              "nativeQueryRef": "Refill Orders"
-            }
-          ]
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "objects": {
       "valueAxis": [
         {
@@ -121,7 +121,6 @@
           }
         }
       ]
-    },
-    "drillFilterOtherVisuals": true
+    }
   }
 }

@@ -28,7 +28,6 @@
               },
               "queryRef": "Fact CX Tickets.category",
               "nativeQueryRef": "category",
-              "active": true,
               "displayName": "Category"
             }
           ]
@@ -53,6 +52,7 @@
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "objects": {
       "labels": [
         {
@@ -122,7 +122,6 @@
           }
         }
       ]
-    },
-    "drillFilterOtherVisuals": true
+    }
   }
 }

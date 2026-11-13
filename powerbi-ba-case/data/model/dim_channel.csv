@@ -1,6 +1,6 @@
-channel_code,channel_name,channel_group,is_acquisition,sort_order
-referral,Member referral,Owned,True,1
-store_trial,Store trial,Retail,True,2
-retail_partner,Retail partner incentive,Retail,True,3
-events,Brand event,Event,True,4
-crm,CRM messages,Owned,False,5
+channel_code,channel_name,channel_group,is_acquisition,sort_order,channel_name_ko
+referral,Member referral,Owned,True,1,회원 추천
+store_trial,Store trial,Retail,True,2,매장 체험
+retail_partner,Retail partner incentive,Retail,True,3,리테일 파트너 인센티브
+events,Brand event,Event,True,4,브랜드 이벤트
+crm,CRM messages,Owned,False,5,CRM 메시지

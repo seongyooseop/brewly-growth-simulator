@@ -9,7 +9,10 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 from pathlib import Path
+
+LANG = "ko" if "--lang=ko" in sys.argv else "en"  # Korean labels for the Korean study guide; the published report is English
 
 CASE = Path(__file__).resolve().parents[1]
 PAGES = CASE / "powerbi" / "BREWLY_Commercial.Report" / "definition" / "pages"
@@ -30,17 +33,61 @@ LABELS = {"iso_year": "Year", "quarter": "Quarter", "region_name": "Region", "we
           "status": "Status"}
 
 
+KO_COL = {"region_name": "region_name_ko", "channel_name": "channel_name_ko", "partner": "partner_ko", "category": "category_ko",
+          "rule": "rule_ko", "fix_applied": "fix_applied_ko", "status": "status_ko"}
+KO_LABEL = {"Year": "연도", "Quarter": "분기", "Region": "권역", "Week": "주", "Partner": "파트너", "Channel": "채널",
+            "Join cohort": "가입 시기", "Month": "가입 후 개월", "Category": "문의 유형", "Check": "점검", "Source": "원천 테이블",
+            "Rule": "규칙", "Rows checked": "점검 행 수", "Failed before fix": "수정 전 오류", "Fix applied": "조치",
+            "Failed after fix": "수정 후 오류", "Status": "상태"}
+KO_MEA = {
+    "Refill Orders": "리필 주문 수", "Refill Revenue (KRW)": "리필 매출(원)", "Active Members (8w)": "활성 회원(8주)",
+    "New Members": "신규 회원", "Acquisition Spend (KRW)": "획득 지출(원)", "Blended CAC (KRW)": "블렌디드 CAC(원)",
+    "Retail Net Revenue (KRW)": "리테일 순매출(원)", "Device Return Rate": "기기 반품률", "Sell-out Store Coverage": "매장 보고율",
+    "CRM Messages Sent": "CRM 발송 수", "CX Tickets": "고객 문의 수", "CX SLA Met %": "SLA 달성률(3일 내 처리)",
+    "CX SLA Gap vs Target": "SLA 목표(85%) 대비 차이", "Median Resolution Days": "처리 기간 중앙값(일)",
+    "Tickets per 1,000 Active Members": "활성 회원 1,000명당 문의", "Lapsed Members (12w+)": "이탈 회원(12주+)",
+    "Retention %": "재주문율", "DQ Checks Passed": "통과한 품질 점검", "DQ Rows Fixed": "고친 행 수",
+    "Refill Revenue YoY %": "리필 매출 전년 대비", "Active Members YoY %": "활성 회원 전년 대비",
+    "New Members YoY %": "신규 회원 전년 대비", "Retail Net Revenue YoY %": "리테일 매출 전년 대비",
+    "Refill revenue (KRW), selected period": "리필 매출(원), 선택 기간", "Active members at end of period": "기간 말 활성 회원",
+    "New members, selected period": "신규 회원, 선택 기간", "Retail net revenue (KRW), selected period": "리테일 순매출(원), 선택 기간",
+    "Net sell-out (KRW)": "순 판매액(원)", "Refill revenue": "리필 매출", "Active members": "활성 회원", "New members": "신규 회원",
+    "Retail revenue": "리테일 매출", "Blended CAC": "블렌디드 CAC", "Revenue YoY": "매출 전년 대비", "Active YoY": "활성 전년 대비",
+    "New YoY": "신규 전년 대비", "Retail YoY": "리테일 전년 대비", "SLA gap": "SLA 차이"}
+KO_TITLE = {
+    "Weekly refill orders by region": "권역별 주간 리필 주문",
+    "Partner net sell-out, KRW (complete weeks only)": "파트너별 순 판매액(원, 완료된 주만)",
+    "Year over year (latest year selected vs prior year)": "전년 대비(선택한 최신 연도 vs 전년)",
+    "Acquisition spend by channel (KRW)": "채널별 획득 지출(원)",
+    "New members (columns) and blended CAC in KRW (line)": "신규 회원(막대)과 블렌디드 CAC(선, 원)",
+    "Blended CAC by region (channel CAC is out of scope: US-07)": "권역별 블렌디드 CAC(채널별 CAC는 범위 밖: US-07)",
+    "Cohort retention: share ordering n months after joining": "가입 시기별 재주문율: 가입 n개월 후 주문한 비율",
+    "CX tickets by category": "유형별 고객 문의 수",
+    "Service level by category (SLA = resolved within 3 days, target 85%)": "유형별 서비스 수준(SLA = 3일 내 처리, 목표 85%)",
+    "Data-quality checks run before this refresh": "이번 새로 고침 전에 실행한 데이터 품질 점검",
+    "Share of partner stores reported each week (below 95% = incomplete)": "주별 파트너 매장 보고율(95% 미만 = 미완료)",
+    "FT-01, FT-02, FT-03, FT-05, FT-06 (compare the 2025 row with tests/expected_values.csv)": "FT-01·02·03·05·06 (2025년 줄을 expected_values.csv와 비교)",
+    "FT-08 to FT-12": "FT-08~12",
+    "FT-04 (2025, Seoul metro) and FT-07 (2025, Yeongnam)": "FT-04(2025, 수도권)와 FT-07(2025, 영남)",
+    "FT-15 to FT-19 (2025 row; 2024 is blank: no 2023 data)": "FT-15~19 (2025년 줄, 2024년은 2023 데이터가 없어 빈칸)"}
+KO_PAGE = {"1 Overview": "1 개요", "2 Acquisition": "2 회원 획득", "3 Retention and CX": "3 리텐션·고객 문의",
+           "4 Data quality": "4 데이터 품질", "5 Test sheet (QA)": "5 테스트 시트(QA)"}
+
+
 def col(table: str, column: str) -> dict:
-    p = {"field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": column}},
-         "queryRef": f"{table}.{column}", "nativeQueryRef": column}
+    prop = KO_COL.get(column, column) if LANG == "ko" else column
+    p = {"field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": prop}},
+         "queryRef": f"{table}.{prop}", "nativeQueryRef": prop}
     if column in LABELS:
-        p["displayName"] = LABELS[column]
+        p["displayName"] = KO_LABEL.get(LABELS[column], LABELS[column]) if LANG == "ko" else LABELS[column]
     return p
 
 
 def mea(name: str, label: str | None = None) -> dict:
     p = {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": M}}, "Property": name}},
          "queryRef": f"{M}.{name}", "nativeQueryRef": name}
+    if LANG == "ko":
+        label = KO_MEA.get(label or name, label or name)
     if label:
         p["displayName"] = label
     return p
@@ -51,6 +98,8 @@ def visual(name, vtype, x, y, w, h, roles: dict, title: str | None = None, objec
          "drillFilterOtherVisuals": True}
     if objects:
         v["objects"] = objects
+    if title and LANG == "ko":
+        title = KO_TITLE.get(title, title)
     if title:
         v["visualContainerObjects"] = {"title": [{"properties": {"show": lit("true"), "text": lit(f"'{title}'")}}],
                                        "subTitle": [{"properties": {"show": lit("false")}}]}
@@ -188,7 +237,7 @@ for (pname, display), visuals in pages.items():
     pdir = PAGES / pname
     (pdir / "visuals").mkdir(parents=True)
     (pdir / "page.json").write_text(json.dumps(
-        {"$schema": S_PAGE, "name": pname, "displayName": display, "displayOption": "FitToPage", "height": 720, "width": 1280},
+        {"$schema": S_PAGE, "name": pname, "displayName": KO_PAGE.get(display, display) if LANG == "ko" else display, "displayOption": "FitToPage", "height": 720, "width": 1280},
         indent=2), encoding="utf-8")
     for i, v in enumerate(visuals):
         v["position"]["z"] = i * 1000

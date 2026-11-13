@@ -28,7 +28,6 @@
               },
               "queryRef": "Dim Store.partner",
               "nativeQueryRef": "partner",
-              "active": true,
               "displayName": "Partner"
             }
           ]
@@ -54,6 +53,7 @@
         }
       }
     },
+    "drillFilterOtherVisuals": true,
     "objects": {
       "labels": [
         {
@@ -123,7 +123,6 @@
           }
         }
       ]
-    },
-    "drillFilterOtherVisuals": true
+    }
   }
 }
