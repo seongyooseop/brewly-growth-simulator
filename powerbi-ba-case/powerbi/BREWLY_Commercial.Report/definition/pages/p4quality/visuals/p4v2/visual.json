@@ -28,6 +28,7 @@
               },
               "queryRef": "Dim Week.week_start",
               "nativeQueryRef": "week_start",
+              "active": true,
               "displayName": "Week"
             }
           ]
@@ -52,7 +53,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "valueAxis": [
         {
@@ -102,6 +102,7 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

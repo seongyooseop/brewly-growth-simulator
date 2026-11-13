@@ -28,13 +28,13 @@
               },
               "queryRef": "Dim Week.iso_year",
               "nativeQueryRef": "iso_year",
+              "active": true,
               "displayName": "Year"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "data": [
         {
@@ -54,6 +54,7 @@
       "groupName": "Year",
       "fieldChanges": true,
       "filterChanges": true
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

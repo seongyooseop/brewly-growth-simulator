@@ -28,6 +28,7 @@
               },
               "queryRef": "Dim Week.quarter",
               "nativeQueryRef": "quarter",
+              "active": true,
               "displayName": "Quarter"
             }
           ]
@@ -70,7 +71,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "valueAxis": [
         {
@@ -127,6 +127,7 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

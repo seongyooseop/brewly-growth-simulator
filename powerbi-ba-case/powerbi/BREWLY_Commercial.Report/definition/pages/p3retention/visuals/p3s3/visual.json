@@ -28,13 +28,13 @@
               },
               "queryRef": "Dim Region.region_name",
               "nativeQueryRef": "region_name",
+              "active": true,
               "displayName": "Region"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "data": [
         {
@@ -54,6 +54,7 @@
       "groupName": "Region",
       "fieldChanges": true,
       "filterChanges": true
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

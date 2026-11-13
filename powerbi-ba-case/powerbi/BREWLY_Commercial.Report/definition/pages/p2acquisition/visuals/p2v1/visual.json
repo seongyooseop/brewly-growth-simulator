@@ -28,25 +28,8 @@
               },
               "queryRef": "Dim Week.quarter",
               "nativeQueryRef": "quarter",
+              "active": true,
               "displayName": "Quarter"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Acquisition Spend (KRW)"
-                }
-              },
-              "queryRef": "_Measures.Acquisition Spend (KRW)",
-              "nativeQueryRef": "Acquisition Spend (KRW)"
             }
           ]
         },
@@ -68,10 +51,27 @@
               "displayName": "Channel"
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Acquisition Spend (KRW)"
+                }
+              },
+              "queryRef": "_Measures.Acquisition Spend (KRW)",
+              "nativeQueryRef": "Acquisition Spend (KRW)"
+            }
+          ]
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "valueAxis": [
         {
@@ -121,6 +121,7 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }
